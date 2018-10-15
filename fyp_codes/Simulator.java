@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;	//see what this does
 import java.awt.event.MouseEvent;	//see what this does
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.*;	//use TimeUnit 
 public class Simulator {
 	private static JFrame _frame = null; //display job list
@@ -18,10 +19,30 @@ public class Simulator {
 	private static JLabel _label = new JLabel("Simulator"); //set title here 
 	
 	private static JobList joblist; 
+	private static ArrayList<Agv> agvList = new ArrayList<>();
+	
+	private static int agvNo = 4; 	//number of agv
 	
 	public static void main(String[] args){
 		joblist = new JobList(); 
+		seeJobList(); 
+		
+		for(int i=0; i<agvNo; i++){
+			Agv agv = new Agv(i); 
+			agvList.add(agv); 
+		}
+		System.out.println("agv done");
+		
 		viewSimulator();
+	}
+	
+	public static void seeJobList(){
+		for(int i=0; i<Constants.MAX_Y; i++){
+			for(int j=0; j<Constants.MAX_X; j++){
+				System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");
+			}
+			System.out.println(" ");
+		}
 	}
 	
 	//don't add buttons yet 

@@ -10,11 +10,13 @@ public class JobList extends JPanel{
 	//private Agv agv = null; 
 	
 	public JobList(){
+		int jIndex = 0;
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				jobs[i][j] = new Job(i,j); 
 				//only test loading task for now
 				jobs[i][j].setLoading();
+				//jobs[i][j].setIndex(jIndex);
 			}
 		}
 		System.out.println("job list done");
@@ -30,6 +32,10 @@ public class JobList extends JPanel{
 	
 	public boolean isComplete(int y, int x){
 		return jobs[y][x].getComplete(); 
+	}
+	
+	public Job getJob(int y, int x){
+		return jobs[y][x]; 
 	}
 	
 	//GUI

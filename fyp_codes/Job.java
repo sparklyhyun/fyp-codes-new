@@ -3,17 +3,21 @@ package fyp_codes;
 import java.util.Random;
 
 public class Job {
-	private final int x;	//no. of bay
-	private final int y;	//tier 
+	private final int x;	//no. of bay (column)
+	private final int y;	//tier 		(row) 
 	//private int index; //priority 
 	private boolean	loading = false;	//for unloading task, false. for loading task, true
 	private boolean visited = false; 	//if visited = true, else = false
 	private boolean complete = false; 	//if job complete = true, else = false
-	private int travel; 	//time taken to travel to the pick up point
-	private final int pCost = 1; 	//time taken to execute the task (pickup)
+	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
+	//private final int pCost = 1; 	//time taken to execute the task (pickup)
 	private final int dCost = 1;	//time takent to drop off 
 	
-	public Job(int x, int y){
+	private int idealEnd = 0; 		//idealEnd == previous.endtime, or can be later than prev.endtime 
+	//private int idealStart = 0; 	//idealStart = prev.idealEnd 
+	private int buffer = 0; 		//buffer = prev.idealEnd - travel, later sort according to buffer 
+	
+	public Job(int y, int x){
 		this.x = x;
 		this.y = y;
 		initCost();
@@ -52,8 +56,22 @@ public class Job {
 	}
 	
 	public int getTotalCost(){
-		return travel + pCost + dCost; 
+		return travel + dCost; 
 	}
+	
+	public int getIdealEnd(){
+		return idealEnd;
+	}
+	
+	/*
+	public int getIdealStart(){
+		return idealStart; 
+	}*/
+	
+	public int getBuffer(){
+		return buffer; 
+	}
+	
 	
 	/*
 	public void setIndex(int i){
@@ -71,5 +89,10 @@ public class Job {
 	public void setComplete(){
 		complete = true;
 	}
+	
+	public void setBuffer(int prev){	//previous.end time 
+		buffer = prev - travel; 
+	}
+	
 	
 }

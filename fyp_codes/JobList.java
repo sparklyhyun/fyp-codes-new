@@ -10,9 +10,10 @@ public class JobList extends JPanel{
 	//private Agv agv = null; 
 	
 	public JobList(){
-		int jIndex = 0;
+		//int jIndex = 0;
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
+				//System.out.println("i: " + i + ", j: " + j);
 				jobs[i][j] = new Job(i,j); 
 				//only test loading task for now
 				jobs[i][j].setLoading();

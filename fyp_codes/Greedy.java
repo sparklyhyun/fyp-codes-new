@@ -25,6 +25,21 @@ public class Greedy {
 			//for 1 column, x should be the same 
 		}
 		
+		//test simulator repaint
+		for(int k=0; k<q_jobs.size(); k++){
+			q_jobs.get(k).setComplete();
+			
+			//wait for 1 second 
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			jobList.repaint();
+		}
+		
 		
 		
 		//continue with the next column, then the next column - more time saving (crane need not move much) 
@@ -51,7 +66,8 @@ public class Greedy {
 	 * - agv distance from the crane
 	 */
 	
-	public int idealEnd(){
+	public int idealStart(Job prev, Job curr){	//start from index 2
+		int newIdealStart = prev.getTotalCost(); //ideal start time is when prev just finishes drop off 
 		return 0; 
 	}
 	

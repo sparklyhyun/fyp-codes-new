@@ -12,6 +12,7 @@ public class Job {
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
 	private final int dCost = 1;	//time takent to drop off 
+	private int tCost; 				//actual end time 
 	
 	private int idealEnd = 0; 		//idealEnd == previous.endtime, or can be later than prev.endtime 
 	//private int idealStart = 0; 	//idealStart = prev.idealEnd 
@@ -28,6 +29,7 @@ public class Job {
 		int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
 		this.travel = randomCost; 
 		System.out.println("job i, j: " + y+ ", " +x+ ", cost: " + randomCost);
+		setTotalCost(); 
 	}
 	
 	public int getX(){
@@ -56,7 +58,7 @@ public class Job {
 	}
 	
 	public int getTotalCost(){
-		return travel + dCost; 
+		return tCost; 
 	}
 	
 	public int getIdealEnd(){
@@ -90,9 +92,19 @@ public class Job {
 		complete = true;
 	}
 	
+	public void setTotalCost(){	//previous total cost
+		tCost = travel + dCost;
+	}
+	
+	//check again!!! 
+	public void updateTotalCost(Job prev){
+		tCost = prev.getIdealEnd() + 1; 
+	}
+	
 	public void setBuffer(int prev){	//previous.end time 
 		buffer = prev - travel; 
 	}
+	
 	
 	
 }

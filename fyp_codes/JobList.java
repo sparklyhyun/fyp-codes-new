@@ -49,7 +49,7 @@ public class JobList extends JPanel{
 			}
 		}
 		
-		System.out.println("populating simulator");
+		System.out.println("paint simulator");
 		
 		
 		//cell colours 
@@ -60,11 +60,14 @@ public class JobList extends JPanel{
 					cellColor = Constants.COLOR_LOADING;
 				}else if(!isLoading(i,j)){
 					cellColor = Constants.COLOR_UNLOADING;
-				}else if(isComplete(i,j)){
-					cellColor = Constants.COLOR_COMPLETE; 
+				}
+				
+				//for repaint when complete
+				if(isComplete(i,j)){
+					cellColor = Constants.COLOR_COMPLETE;
 				}
 				g.setColor(cellColor);
-				g.fillRect(guiCells[i][j].x, guiCells[i][j].y, guiCells[i][j].cellSize, guiCells[i][j].cellSize);
+				g.fillRect(guiCells[Constants.MAX_Y-i-1][j].x, guiCells[Constants.MAX_Y-i-1][j].y, guiCells[Constants.MAX_Y-i-1][j].cellSize, guiCells[Constants.MAX_Y-i-1][j].cellSize);
 			}
 			
 			

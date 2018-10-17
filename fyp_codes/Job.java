@@ -9,6 +9,7 @@ public class Job {
 	private boolean	loading = false;	//for unloading task, false. for loading task, true
 	private boolean visited = false; 	//if visited = true, else = false
 	private boolean complete = false; 	//if job complete = true, else = false
+	private boolean assigned = false; 	//if the load on the agv = true 
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
 	private final int dCost = 1;	//time takent to drop off 
@@ -57,6 +58,10 @@ public class Job {
 		return complete; 
 	}
 	
+	public boolean getAssigned(){
+		return assigned; 
+	}
+	
 	public int getTotalCost(){
 		return tCost; 
 	}
@@ -86,6 +91,10 @@ public class Job {
 	
 	public void setVisited(){
 		visited = true;
+	}
+	
+	public void setAssigned(){
+		assigned = true; 
 	}
 	
 	public void setComplete(){

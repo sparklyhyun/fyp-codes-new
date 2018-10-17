@@ -35,10 +35,13 @@ public class Simulator {
 		
 		viewSimulator();
 		
-		
-		//just testing greedy class
 		Greedy g = new Greedy(joblist, agvList); 
-		g.startGreedy();
+		
+		//testing the simulator 
+		//g.testSimulator();
+		
+		//test simple greedy
+		g.startGreedy1();
 	}
 	
 	public static void seeJobList(){

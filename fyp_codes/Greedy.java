@@ -12,33 +12,98 @@ public class Greedy {
 		this.agvList = agvL; 
 	}
 	
-	public void startGreedy(){
-		//put the 1st column into a queue (test first) 
+	public void startGreedy1(){	//generic greedy algorithm, start from first row, then move onto the next row
+		//cost = just total cost
+		long startTime = System.currentTimeMillis();  //to see the performance
+		
+		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		for(int i=0; i<Constants.MAX_Y; i++){
-			q_jobs.add(jobList.getJob(i, 0)); 
+			for(int j=0; j<Constants.MAX_X; j++){
+				sortArray[j] = jobList.getJob(i, j);
+			}
+			sortArray = sortDescending(sortArray);
+			for(int k=0; k<Constants.MAX_X; k++){
+				q_jobs.add(sortArray[k]);
+			}
 		}
 		
-		//print array elements 
-		System.out.println("test queue elements");
-		for(int j=0; j<q_jobs.size(); j++){
-			System.out.println("job y: " + q_jobs.get(j).getY() + " job x: " +q_jobs.get(j).getX());
-			//for 1 column, x should be the same 
-		}
-		
-		//test simulator repaint
-		for(int k=0; k<q_jobs.size(); k++){
-			q_jobs.get(k).setComplete();
-			
-			//wait for 1 second 
+		//test assignment paint
+		/*
+		for(int i=0; i<q_jobs.size(); i++){
+			q_jobs.get(i).setAssigned();
+			System.out.println("index :" + i);
+			jobList.repaint(); 
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			jobList.repaint();
 		}
+		
+		long endtime = System.currentTimeMillis()-startTime;
+		System.out.println("dispatching order: ");
+		for(int i=0; i<q_jobs.size(); i++){
+			System.out.println("index: " + i + ", job: y, x: " + q_jobs.get(i).getY() + ", "
+					+ q_jobs.get(i).getX() + ", total cost: " + q_jobs.get(i).getTotalCost());
+		}
+		
+		System.out.println("time taken: " + endtime);
+		updateSimulator();
+		*/
+		
+	}
+	
+	public Job[] sortDescending(Job[] arr){	//add high cost first
+		//simple bubble sort 
+		for(int i=Constants.MAX_X-1; i>0; i--){
+			for(int j=0; j<i; j++){
+				if(arr[j].getTotalCost()>arr[j+1].getTotalCost()){
+					Job temp = arr[j];
+					arr[j] = arr[j+1];
+					arr[j+1] = temp; 
+				}
+				
+			}
+		}
+		return arr; 
+	}
+	
+		public void updateSimulator(){
+			//don't update unless:
+			// 1. only assign if agv is available
+			// 2. only complete if previous job is complete
+			
+			for(int k=0; k<q_jobs.size(); k++){
+				jobList.repaint();
+				q_jobs.get(k).setComplete();
+				
+				//wait for 1 second 
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	
+	public void testSimulator(){
+		//put the 1st column into a queue 
+		for(int i=0; i<Constants.MAX_Y; i++){
+			q_jobs.add(jobList.getJob(i, 0)); 
+		}
+
+		//print array elements 
+		System.out.println("test queue elements");
+		for(int j=0; j<q_jobs.size(); j++){
+			System.out.println("job y: " + q_jobs.get(j).getY() + " job x: " +q_jobs.get(j).getX()
+					+ " job cost: " + q_jobs.get(j).getTotalCost());
+			//for 1 column, x should be the same 
+		}
+		
+		//test simulator repaint
+		updateSimulator();
 		
 		
 		

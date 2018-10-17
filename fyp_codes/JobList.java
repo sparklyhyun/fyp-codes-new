@@ -31,6 +31,10 @@ public class JobList extends JPanel{
 		return jobs[y][x].getVisited();
 	}
 	
+	public boolean isAssigned(int y, int x){
+		return jobs[y][x].getAssigned();
+	}
+	
 	public boolean isComplete(int y, int x){
 		return jobs[y][x].getComplete(); 
 	}
@@ -56,15 +60,25 @@ public class JobList extends JPanel{
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				Color cellColor = null; 
-				if(isLoading(i,j)){
-					cellColor = Constants.COLOR_LOADING;
-				}else if(!isLoading(i,j)){
-					cellColor = Constants.COLOR_UNLOADING;
-				}
 				
 				//for repaint when complete
 				if(isComplete(i,j)){
 					cellColor = Constants.COLOR_COMPLETE;
+				}else{
+					if(isLoading(i,j)){
+						if(isAssigned(i,j)){
+							cellColor = Constants.COLOR_LOADING_ASSIGNED;
+						}else{
+							cellColor = Constants.COLOR_LOADING;
+						}
+					}else if(!isLoading(i,j)){
+						if(isAssigned(i,j)){
+							cellColor = Constants.COLOR_UNLOADING_ASSIGNED;
+						}
+						else{
+							cellColor = Constants.COLOR_UNLOADING;
+						}
+					}
 				}
 				g.setColor(cellColor);
 				g.fillRect(guiCells[Constants.MAX_Y-i-1][j].x, guiCells[Constants.MAX_Y-i-1][j].y, guiCells[Constants.MAX_Y-i-1][j].cellSize, guiCells[Constants.MAX_Y-i-1][j].cellSize);

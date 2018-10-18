@@ -19,6 +19,10 @@ public class Agv {
 		return idle; 
 	}
 	
+	public int getAgvNum(){
+		return agvNum; 
+	}
+	
 	public void taskExecute(){
 		//TimeUnit.MILLISECONDS.sleep(100); 
 		//1 cost unit  = 100 milliseconds 

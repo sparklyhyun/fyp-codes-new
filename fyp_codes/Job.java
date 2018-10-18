@@ -19,6 +19,8 @@ public class Job {
 	//private int idealStart = 0; 	//idealStart = prev.idealEnd 
 	private int buffer = 0; 		//buffer = prev.idealEnd - travel, later sort according to buffer 
 	
+	private Agv agv; 
+	
 	public Job(int y, int x){
 		this.x = x;
 		this.y = y;
@@ -29,7 +31,7 @@ public class Job {
 		Random rand = new Random();
 		int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
 		this.travel = randomCost; 
-		System.out.println("job i, j: " + y+ ", " +x+ ", cost: " + randomCost);
+		//System.out.println("job i, j: " + y+ ", " +x+ ", cost: " + randomCost);
 		setTotalCost(); 
 	}
 	
@@ -79,6 +81,10 @@ public class Job {
 		return buffer; 
 	}
 	
+	public Agv getAgv(){
+		return agv; 
+	}
+	
 	
 	/*
 	public void setIndex(int i){
@@ -112,6 +118,10 @@ public class Job {
 	
 	public void setBuffer(int prev){	//previous.end time 
 		buffer = prev - travel; 
+	}
+	
+	public void setAgv(Agv agv){
+		this.agv = agv; 
 	}
 	
 	

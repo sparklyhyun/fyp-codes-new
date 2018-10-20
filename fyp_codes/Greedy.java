@@ -1,11 +1,18 @@
 package fyp_codes;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+//import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Greedy {
 	public static JobList jobList;
 	public static ArrayList<Agv> agvList;	//kind of idle list. 
 	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
+	private static Lock lock = new ReentrantLock(); 
+	//private static Lock lock = new Lock();
+	//private static boolean occupied = false; 
+	//private static Semaphore semaphore = new Semaphore(1); 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -21,7 +28,7 @@ public class Greedy {
 			for(int j=0; j<Constants.MAX_X; j++){
 				sortArray[j] = jobList.getJob(i, j);
 			}
-			sortArray = sortDescending(sortArray);
+			sortArray = sortAscending(sortArray);
 			for(int k=0; k<Constants.MAX_X; k++){
 				q_jobs.add(sortArray[k]);
 			}
@@ -59,11 +66,11 @@ public class Greedy {
 		
 	}
 	
-	public Job[] sortDescending(Job[] arr){	//add high cost first
+	public Job[] sortAscending(Job[] arr){	//add high cost first
 		//simple bubble sort 
 		for(int i=Constants.MAX_X-1; i>0; i--){
 			for(int j=0; j<i; j++){
-				if(arr[j].getTotalCost()>arr[j+1].getTotalCost()){
+				if(arr[j].getTotalCost()<arr[j+1].getTotalCost()){
 					Job temp = arr[j];
 					arr[j] = arr[j+1];
 					arr[j+1] = temp; 
@@ -165,6 +172,29 @@ public class Greedy {
 		int newIdealStart = prev.getTotalCost(); //ideal start time is when prev just finishes drop off 
 		return 0; 
 	}
+	/*
+	class Lock{
+		private boolean isLocked; 
+		
+		public synchronized void lock(){
+			while(isLocked){
+				try {
+					System.out.println("qc locked");
+					wait(); 
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			isLocked = true; 
+		}
+		
+		public synchronized void unlock(){
+			isLocked = false; 
+			notify(); 
+		}
+		
+	}*/
 	
 	//create thread class 
 	class AtomicJob implements Runnable{
@@ -173,7 +203,8 @@ public class Greedy {
 		private String name; 
 		private Agv agv;
 		
-		private Lock lock = new Lock(); 
+		//private Lock lock = new Lock(); 
+		//private ReentrantLock lock = new ReentrantLock(); 
 		
 		public AtomicJob(Job j, String name, Agv agv){	//update this, add shared resource 
 			this.j = j; 
@@ -231,43 +262,69 @@ public class Greedy {
 					}
 				}
 			}
-			
-			//then assign complete. introduce lock here to lock the qc? <- still doesnt work lol 
-			lock.lock();
-			j.setComplete();
-			jobList.getJob(j.getY(), j.getX()).setComplete();
-			lock.unlock();
-			
-			agvList.add(agv);
-			System.out.println("agv added to the queue, new queue length" + agvList.size());
-			
 			jobList.repaint();
-			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");			
+			completeTask(); 
+					
 		}
 		
-	}
-	
-	class Lock{
-		private boolean isLocked = false;
-		
-		public synchronized void lock(){
-			while(isLocked){
+		public void completeTask(){		
+			/*
+			lock.lock();
+			System.out.println("locked, job: " + name);
+			try{
+				j.setComplete();
+				jobList.getJob(j.getY(), j.getX()).setComplete();
+				agvList.add(agv);
+				System.out.println("agv added to the queue, new queue length" + agvList.size());
+				//occupied = false; 
+				System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
+			}finally{
+				lock.unlock();
+				System.out.println("unlocked, job:" + name);
+				jobList.repaint();
 				try {
-					wait(); 
+					Thread.sleep(Constants.SLEEP);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			isLocked = true; 
-		}
-		
-		public synchronized void unlock(){
-			isLocked = false; 
-			notify(); 
+				
+			}*/
+			
+			lock.lock();
+			j.setComplete();			
+			jobList.getJob(j.getY(), j.getX()).setComplete();
+			jobList.repaint();
+			agvList.add(agv);
+			System.out.println("agv added to the queue, new queue length" + agvList.size());
+
+			//occupied = false; 
+			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
+			
+			lock.unlock();
+			
+			/*
+			synchronized(this){
+				j.setComplete();
+				jobList.getJob(j.getY(), j.getX()).setComplete();
+				agvList.add(agv);
+				System.out.println("agv added to the queue, new queue length" + agvList.size());
+				
+				jobList.repaint();
+				System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");	
+			}*/
+			//then assign complete. introduce lock here to lock the qc? <- still doesnt work lol 
+			//variable qc? only 1 can access at a time. priority given to the job with lower index. 
+			//lock.lock();
+			
+			//lock.unlock();
+			
+			
 		}
 		
 	}
+	
+	
 	
 	
 }

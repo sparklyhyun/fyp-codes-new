@@ -1,18 +1,14 @@
 package fyp_codes;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-//import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.ReentrantLock;
+
 
 public class Greedy {
 	public static JobList jobList;
 	public static ArrayList<Agv> agvList;	//kind of idle list. 
 	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
-	private static Lock lock = new ReentrantLock(); 
-	//private static Lock lock = new Lock();
-	//private static boolean occupied = false; 
-	//private static Semaphore semaphore = new Semaphore(1); 
+	Lock l = new Lock(); 
+	private static boolean complete = false; 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -21,7 +17,7 @@ public class Greedy {
 	
 	public void startGreedy1(){	//generic greedy algorithm, start from first row, then move onto the next row
 		//cost = just total cost
-		long startTime = System.currentTimeMillis();  //to see the performance
+		long startTime = System.nanoTime();  //to see the performance
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		for(int i=0; i<Constants.MAX_Y; i++){
@@ -33,38 +29,18 @@ public class Greedy {
 				q_jobs.add(sortArray[k]);
 			}
 		}
-		long endtime = System.currentTimeMillis()-startTime;
+		long endtime = System.nanoTime()-startTime;
 		System.out.println("time taken for scheduling: " + endtime);
 		
 		showJobSeq(); 
+		
+		long startTime2 = System.currentTimeMillis();
 		showExecution();		
 		
-		//test assignment paint
-		/*
-		for(int i=0; i<q_jobs.size(); i++){
-			q_jobs.get(i).setAssigned();
-			System.out.println("index :" + i);
-			jobList.repaint(); 
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		
-		long endtime = System.currentTimeMillis()-startTime;
-		System.out.println("dispatching order: ");
-		for(int i=0; i<q_jobs.size(); i++){
-			System.out.println("index: " + i + ", job: y, x: " + q_jobs.get(i).getY() + ", "
-					+ q_jobs.get(i).getX() + ", total cost: " + q_jobs.get(i).getTotalCost());
-		}
-		
-		System.out.println("time taken: " + endtime);
-		updateSimulator();
-		*/
 		
 	}
+	
 	
 	public Job[] sortAscending(Job[] arr){	//add high cost first
 		//simple bubble sort 
@@ -80,7 +56,7 @@ public class Greedy {
 		}
 		return arr; 
 	}
-	
+		
 	public void updateSimulator(){
 			
 		for(int k=0; k<q_jobs.size(); k++){
@@ -99,47 +75,47 @@ public class Greedy {
 	
 	public void showExecution(){
 		//wait if agv list is empty
-				while(q_jobs.isEmpty()==false){
-					//wait until there is idle agv
-					while(true){
-						if(agvList.isEmpty()==false){
-							try {
-								Thread.sleep(Constants.SLEEP);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							
-							System.out.println("agv empty: " + agvList.isEmpty()+ ", "+ "agvList size: " + agvList.size());
-							Agv idleAgv = agvList.get(0);
-							//System.out.println("agv removed from the waiting queue: " + idleAgv.getAgvNum());
-							agvList.remove(0);	//agv not idle anymore 
-							
-							
-							Job j = q_jobs.get(0);
-							q_jobs.remove(0); 	//remove the first job in the queue 
-							String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-							System.out.println("job i,j: " + threadName);
-							
-							AtomicJob a = new AtomicJob(j, threadName, idleAgv);
-							a.start();
-							
-							//agv should be added the queue when the job completes! 
-							//agvList.add(idleAgv);
-							//System.out.println("agv added to the queue, new queue length" + agvList.size());
-							
-							break;
-						}
-						System.out.println("agv not available, waiting.....");
-						try {
-							Thread.sleep(Constants.SLEEP);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+		while(q_jobs.isEmpty()==false){
+			//wait until there is idle agv
+			while(true){
+				if(agvList.isEmpty()==false){
+					try {
+						Thread.sleep(Constants.SLEEP);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-
+							
+					System.out.println("agv empty: " + agvList.isEmpty()+ ", "+ "agvList size: " + agvList.size());
+					Agv idleAgv = agvList.get(0);
+					//System.out.println("agv removed from the waiting queue: " + idleAgv.getAgvNum());
+					agvList.remove(0);	//agv not idle anymore 
+							
+							
+					Job j = q_jobs.get(0);
+					q_jobs.remove(0); 	//remove the first job in the queue 
+					String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
+					System.out.println("job i,j: " + threadName);
+							
+					AtomicJob a = new AtomicJob(j, threadName, idleAgv);
+					a.start();
+							
+					//agv should be added the queue when the job completes! 
+					//agvList.add(idleAgv);
+					//System.out.println("agv added to the queue, new queue length" + agvList.size());
+							
+					break;
 				}
+				System.out.println("agv not available, waiting.....");
+				try {
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
 	}
 	
 	public void testSimulator(){
@@ -172,29 +148,41 @@ public class Greedy {
 		int newIdealStart = prev.getTotalCost(); //ideal start time is when prev just finishes drop off 
 		return 0; 
 	}
-	/*
+	
 	class Lock{
-		private boolean isLocked; 
+		private AtomicJob aj; 
+		private boolean completion; 
 		
-		public synchronized void lock(){
-			while(isLocked){
+		public void lock(AtomicJob aj, boolean complete){
+			this.aj = aj;
+			if(complete){
+				System.out.println("qc locked, completion on the way");
+				aj.completeTask();
 				try {
-					System.out.println("qc locked");
-					wait(); 
+					System.out.println("wait for qc release");
+					Thread.sleep(Constants.SLEEP);
+					System.out.println("qc released");
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else{
+				System.out.println("qc locked, asignment on the way");
+				aj.getJob().setAssigned();
+				try {
+					System.out.println("wait for qc release");
+					Thread.sleep(Constants.SLEEP);
+					System.out.println("qc released");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			isLocked = true; 
+			
+			
 		}
 		
-		public synchronized void unlock(){
-			isLocked = false; 
-			notify(); 
-		}
-		
-	}*/
+	}
 	
 	//create thread class 
 	class AtomicJob implements Runnable{
@@ -203,14 +191,10 @@ public class Greedy {
 		private String name; 
 		private Agv agv;
 		
-		//private Lock lock = new Lock(); 
-		//private ReentrantLock lock = new ReentrantLock(); 
-		
 		public AtomicJob(Job j, String name, Agv agv){	//update this, add shared resource 
 			this.j = j; 
 			this.name = name;
 			System.out.println("thread name: " + this.name);
-			//t.start();
 		}
 		
 		@Override
@@ -230,9 +214,14 @@ public class Greedy {
 			}
 		}
 		
+		public Job getJob(){
+			return j; 
+		}
+		
 		public void traveling(Agv agv){
 			//set job assigned first
 			j.setAssigned();
+		
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
 			
 			jobList.repaint();
@@ -262,36 +251,12 @@ public class Greedy {
 					}
 				}
 			}
-			jobList.repaint();
-			completeTask(); 
-					
+			synchronized(l){
+				l.lock(this, true);
+			}
 		}
 		
-		public void completeTask(){		
-			/*
-			lock.lock();
-			System.out.println("locked, job: " + name);
-			try{
-				j.setComplete();
-				jobList.getJob(j.getY(), j.getX()).setComplete();
-				agvList.add(agv);
-				System.out.println("agv added to the queue, new queue length" + agvList.size());
-				//occupied = false; 
-				System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
-			}finally{
-				lock.unlock();
-				System.out.println("unlocked, job:" + name);
-				jobList.repaint();
-				try {
-					Thread.sleep(Constants.SLEEP);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			}*/
-			
-			lock.lock();
+		public void completeTask(){				
 			j.setComplete();			
 			jobList.getJob(j.getY(), j.getX()).setComplete();
 			jobList.repaint();
@@ -301,25 +266,11 @@ public class Greedy {
 			//occupied = false; 
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			
-			lock.unlock();
-			
-			/*
-			synchronized(this){
-				j.setComplete();
-				jobList.getJob(j.getY(), j.getX()).setComplete();
-				agvList.add(agv);
-				System.out.println("agv added to the queue, new queue length" + agvList.size());
+			if(j.getY() == Constants.MAX_Y-1 && j.getX() == Constants.MAX_X){
+				complete = true; 
+				System.out.println("All tasks completed..........................");
+			}
 				
-				jobList.repaint();
-				System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");	
-			}*/
-			//then assign complete. introduce lock here to lock the qc? <- still doesnt work lol 
-			//variable qc? only 1 can access at a time. priority given to the job with lower index. 
-			//lock.lock();
-			
-			//lock.unlock();
-			
-			
 		}
 		
 	}

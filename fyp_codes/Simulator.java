@@ -42,6 +42,7 @@ public class Simulator {
 		
 		//test simple greedy
 		g.startGreedy1();
+		//g.startGreedyVertical();
 	}
 	
 	public static void seeJobList(){

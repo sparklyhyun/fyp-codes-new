@@ -43,6 +43,9 @@ public class Simulator {
 		//test simple greedy
 		//g.startGreedy1();
 		g.startGreedy2();
+		
+		
+		System.out.println("-------------------all jobs complete---------------");
 	}
 	
 	public static void seeJobList(){

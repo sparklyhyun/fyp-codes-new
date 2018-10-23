@@ -9,6 +9,8 @@ public class Greedy {
 	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
 	Lock l = new Lock(); 
 	private static boolean complete = false; 
+	private static int totalDelay = 0;
+	private static int totalCostEverything = 0; 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -23,12 +25,16 @@ public class Greedy {
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				sortArray[j] = jobList.getJob(i, j);
+				totalCostEverything += jobList.getJob(i, j).getTotalCost();
 			}
 			sortArray = sortAscending(sortArray);
 			for(int k=0; k<Constants.MAX_X; k++){
 				q_jobs.add(sortArray[k]);
 			}
 		}
+		
+		//q_jobs.get(q_jobs.size()-1).setLastJob();
+		
 		long endtime = System.nanoTime()-startTime;
 		System.out.println("time taken for scheduling: " + endtime);
 		
@@ -36,7 +42,6 @@ public class Greedy {
 		
 		long startTime2 = System.currentTimeMillis();
 		showExecution();		
-		
 		
 		
 	}
@@ -82,6 +87,7 @@ public class Greedy {
 		long startTime2 = System.currentTimeMillis();
 		showExecution();
 		
+		System.out.println("-------------------all jobs complete---------------");
 	}
 	
 	
@@ -109,6 +115,8 @@ public class Greedy {
 			//wait for 1 second 
 			try {
 				Thread.sleep(Constants.SLEEP);
+				totalDelay++;
+				totalCostEverything++; 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -117,6 +125,7 @@ public class Greedy {
 	}
 	
 	public void showExecution(){
+		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		//wait if agv list is empty
 		while(q_jobs.isEmpty()==false){
 			//wait until there is idle agv
@@ -124,6 +133,8 @@ public class Greedy {
 				if(agvList.isEmpty()==false){
 					try {
 						Thread.sleep(Constants.SLEEP);
+						totalDelay++;
+						totalCostEverything++; 
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -134,14 +145,14 @@ public class Greedy {
 					//System.out.println("agv removed from the waiting queue: " + idleAgv.getAgvNum());
 					agvList.remove(0);	//agv not idle anymore 
 							
-							
 					Job j = q_jobs.get(0);
 					q_jobs.remove(0); 	//remove the first job in the queue 
 					String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 					//System.out.println("job i,j: " + threadName);
 							
 					AtomicJob a = new AtomicJob(j, threadName, idleAgv);
-					a.start();
+					atomicJobList.add(a);
+					a.start(); 
 							
 					//agv should be added the queue when the job completes! 
 					//agvList.add(idleAgv);
@@ -152,6 +163,8 @@ public class Greedy {
 				System.out.println("agv not available, waiting.....");
 				try {
 					Thread.sleep(Constants.SLEEP);
+					totalDelay++;
+					totalCostEverything++; 
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -159,6 +172,17 @@ public class Greedy {
 			}
 
 		}
+		
+		//join to track children threads end time
+		for(int i=0; i<atomicJobList.size(); i++){
+			try {
+				atomicJobList.get(i).getThread().join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}
+		
 	}
 	
 	public void testSimulator(){
@@ -204,6 +228,8 @@ public class Greedy {
 				try {
 					//System.out.println("wait for qc release");
 					Thread.sleep(Constants.SLEEP);
+					totalDelay++;
+					totalCostEverything++; 
 					System.out.println("qc released");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -215,6 +241,8 @@ public class Greedy {
 				try {
 					//System.out.println("wait for qc release");
 					Thread.sleep(Constants.SLEEP);
+					totalDelay++;
+					totalCostEverything++; 
 					System.out.println("qc released");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -245,7 +273,13 @@ public class Greedy {
 			//System.out.println("run start");
 			
 			traveling(agv);
-			t.interrupt();	//end of the thread
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			//t.interrupt();	//end of the thread
 			// TODO Auto-generated method stub
 		}
 		
@@ -254,11 +288,16 @@ public class Greedy {
 			if(t==null){
 				t = new Thread(this, name);
 				t.start();
+				
 			}
 		}
 		
 		public Job getJob(){
 			return j; 
+		}
+		
+		public Thread getThread(){
+			return t; 
 		}
 		
 		public void traveling(Agv agv){
@@ -275,6 +314,8 @@ public class Greedy {
 			try {
 				System.out.println("sleep for: " + c + " units");
 				Thread.sleep(Constants.SLEEP * c);
+				totalDelay += c;
+				totalCostEverything += c; 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -288,6 +329,8 @@ public class Greedy {
 					System.out.println("prev i, j: " + prev.getY() + ", " + prev.getX()); 
 					try {
 						Thread.sleep(Constants.SLEEP);
+						totalDelay++;
+						totalCostEverything++; 
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -296,7 +339,6 @@ public class Greedy {
 			}
 			synchronized(l){
 				l.lock(this, true);
-				System.out.println("is this activated?");
 			}
 		}
 		
@@ -305,15 +347,20 @@ public class Greedy {
 			jobList.getJob(j.getY(), j.getX()).setComplete();
 			jobList.repaint();
 			agvList.add(agv);
-			System.out.println("agv added to the queue, new queue length" + agvList.size());
+			System.out.println("agv added to the queue, new queue length: " + agvList.size());
 
 			//occupied = false; 
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			
-			if(j.getY() == Constants.MAX_Y-1 && j.getX() == Constants.MAX_X){
+			//remove this? 
+			/*
+			if(j.getLastJob()){
 				complete = true; 
 				System.out.println("All tasks completed..........................");
-			}
+				
+				System.out.println("total cost = " + totalCostEverything);
+				System.out.println("total delay = " + totalDelay);
+			}*/
 				
 		}
 		

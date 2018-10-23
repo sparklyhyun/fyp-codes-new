@@ -18,8 +18,10 @@ public class Job {
 	private int idealEnd = 0; 		//idealEnd == previous.endtime, or can be later than prev.endtime 
 	//private int idealStart = 0; 	//idealStart = prev.idealEnd 
 	private int buffer = 0; 		//buffer = prev.idealEnd - travel, later sort according to buffer 
+	private boolean lastJob = false; 
 	
 	private Agv agv; 
+
 	
 	public Job(int y, int x){
 		this.x = x;
@@ -62,6 +64,10 @@ public class Job {
 	
 	public boolean getAssigned(){
 		return assigned; 
+	}
+	
+	public boolean getLastJob(){
+		return lastJob; 
 	}
 	
 	public int getTotalCost(){
@@ -109,6 +115,10 @@ public class Job {
 	
 	public void setTotalCost(){	//previous total cost
 		tCost = travel + dCost;
+	}
+	
+	public void setLastJob(){
+		lastJob = true; 
 	}
 	
 	//check again!!! 

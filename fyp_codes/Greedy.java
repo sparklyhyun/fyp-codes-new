@@ -41,6 +41,49 @@ public class Greedy {
 		
 	}
 	
+	public void startGreedy2(){	//1 item lookahead
+		long startTime = System.nanoTime();  //to see the performance
+		
+		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
+		for(int i=0; i<Constants.MAX_Y; i++){
+			for(int j=0; j<Constants.MAX_X; j++){
+				sortArray[j] = jobList.getJob(i, j);
+			}
+			sortArray = sortAscending(sortArray);
+			
+			for(int k=0; k<Constants.MAX_X; k++){
+				//new step, check next item and add the next item in front if it has higher cost
+				int y = sortArray[k].getY();
+				int nexty = y+1;
+				int x = sortArray[k].getX();
+				int count = 0; 
+				
+				if(nexty<Constants.MAX_Y && count < 3){
+					Job nextJob = jobList.getJob(nexty, x); 
+					if(!sortArray[k].getVisited()){
+						//compare, when setting visited, set in the joblist
+						int nextCost = nextJob.getTotalCost();
+						if(nextCost > sortArray[k].getTotalCost()){
+							//add next task into the queue first 
+							q_jobs.add(nextJob);
+							jobList.getJob(nexty, x).setVisited();
+							count++; 
+						}
+					}
+				}
+				q_jobs.add(sortArray[k]);
+			}
+		}
+		long endtime = System.nanoTime()-startTime;
+		System.out.println("time taken for scheduling: " + endtime);
+		
+		showJobSeq(); 
+		
+		long startTime2 = System.currentTimeMillis();
+		showExecution();
+		
+	}
+	
 	
 	public Job[] sortAscending(Job[] arr){	//add high cost first
 		//simple bubble sort 
@@ -86,7 +129,7 @@ public class Greedy {
 						e.printStackTrace();
 					}
 							
-					System.out.println("agv empty: " + agvList.isEmpty()+ ", "+ "agvList size: " + agvList.size());
+					System.out.println("agvList size: " + agvList.size());
 					Agv idleAgv = agvList.get(0);
 					//System.out.println("agv removed from the waiting queue: " + idleAgv.getAgvNum());
 					agvList.remove(0);	//agv not idle anymore 
@@ -95,7 +138,7 @@ public class Greedy {
 					Job j = q_jobs.get(0);
 					q_jobs.remove(0); 	//remove the first job in the queue 
 					String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-					System.out.println("job i,j: " + threadName);
+					//System.out.println("job i,j: " + threadName);
 							
 					AtomicJob a = new AtomicJob(j, threadName, idleAgv);
 					a.start();
@@ -159,7 +202,7 @@ public class Greedy {
 				System.out.println("qc locked, completion on the way");
 				aj.completeTask();
 				try {
-					System.out.println("wait for qc release");
+					//System.out.println("wait for qc release");
 					Thread.sleep(Constants.SLEEP);
 					System.out.println("qc released");
 				} catch (InterruptedException e) {
@@ -170,7 +213,7 @@ public class Greedy {
 				System.out.println("qc locked, asignment on the way");
 				aj.getJob().setAssigned();
 				try {
-					System.out.println("wait for qc release");
+					//System.out.println("wait for qc release");
 					Thread.sleep(Constants.SLEEP);
 					System.out.println("qc released");
 				} catch (InterruptedException e) {
@@ -194,12 +237,12 @@ public class Greedy {
 		public AtomicJob(Job j, String name, Agv agv){	//update this, add shared resource 
 			this.j = j; 
 			this.name = name;
-			System.out.println("thread name: " + this.name);
+			//System.out.println("thread name: " + this.name);
 		}
 		
 		@Override
 		public void run() {	
-			System.out.println("run start");
+			//System.out.println("run start");
 			
 			traveling(agv);
 			t.interrupt();	//end of the thread
@@ -207,7 +250,7 @@ public class Greedy {
 		}
 		
 		public void start(){
-			System.out.println("starting thread " + name);
+			//System.out.println("starting thread " + name);
 			if(t==null){
 				t = new Thread(this, name);
 				t.start();
@@ -230,7 +273,7 @@ public class Greedy {
 			int c = j.getTotalCost();
 			// wait for total cost
 			try {
-				System.out.println("sleep for: " + c + "units");
+				System.out.println("sleep for: " + c + " units");
 				Thread.sleep(Constants.SLEEP * c);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -253,6 +296,7 @@ public class Greedy {
 			}
 			synchronized(l){
 				l.lock(this, true);
+				System.out.println("is this activated?");
 			}
 		}
 		

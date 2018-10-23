@@ -53,7 +53,7 @@ public class JobList extends JPanel{
 			}
 		}
 		
-		System.out.println("paint simulator");
+		//System.out.println("paint simulator");
 		
 		
 		//cell colours 

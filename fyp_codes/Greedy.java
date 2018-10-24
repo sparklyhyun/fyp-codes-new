@@ -11,7 +11,7 @@ public class Greedy {
 	private static boolean complete = false; 
 	private static int totalDelay = 0;
 	private static int totalCostEverything = 0; 
-	private static int jobNo; 
+	private static int jobNo =0 ; 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -44,7 +44,8 @@ public class Greedy {
 		long startTime2 = System.currentTimeMillis();
 		showExecution();		
 		
-		//System.out.println("all jobs ended---------------------------------" );
+		
+		System.out.println("all jobs ended---------------------------------" );
 		
 		
 	}
@@ -96,8 +97,22 @@ public class Greedy {
 		long startTime2 = System.currentTimeMillis();
 		showExecution();
 		
+		while(true){
+			//System.out.println("\t\t\t\t\t\t\t\t\t\t" + jobNo);
+
+			if(jobNo >= 40){
+				System.out.println("-------------------all jobs complete---------------");
+				break;
+			}
+			try {
+				Thread.sleep(Constants.SLEEP);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
-		System.out.println("-------------------all jobs complete---------------");
+		//System.out.println("-------------------all jobs complete---------------");
 		long endtime2 = System.currentTimeMillis() - startTime2; 
 		System.out.println("time taken until job completion: " + endtime2);
 	}
@@ -140,6 +155,7 @@ public class Greedy {
 		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		//wait if agv list is empty
 		while(q_jobs.isEmpty()==false){
+			//System.out.println("\t\t\t\t\t is job empty: " + q_jobs.isEmpty());
 			//wait until there is idle agv
 			while(true){
 				if(agvList.isEmpty()==false){
@@ -246,8 +262,8 @@ public class Greedy {
 					totalDelay++;
 					totalCostEverything++; 
 					System.out.println("qc released");
-					jobNo+= 1;
 					System.out.println("completed jobs: " + jobNo);
+					jobNo+= 1;
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

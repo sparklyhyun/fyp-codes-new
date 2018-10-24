@@ -13,5 +13,5 @@ public class Constants {
 	public static final Color COLOR_UNLOADING_ASSIGNED = Color.ORANGE;	//when assgined a vehicle
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	
-	public static final int SLEEP = 300; 
+	public static final int SLEEP = 100; 
 }

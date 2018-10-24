@@ -11,6 +11,7 @@ public class Greedy {
 	private static boolean complete = false; 
 	private static int totalDelay = 0;
 	private static int totalCostEverything = 0; 
+	private static int jobNo; 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -27,7 +28,7 @@ public class Greedy {
 				sortArray[j] = jobList.getJob(i, j);
 				totalCostEverything += jobList.getJob(i, j).getTotalCost();
 			}
-			sortArray = sortAscending(sortArray);
+			sortArray = sortDecending(sortArray);
 			for(int k=0; k<Constants.MAX_X; k++){
 				q_jobs.add(sortArray[k]);
 			}
@@ -43,6 +44,8 @@ public class Greedy {
 		long startTime2 = System.currentTimeMillis();
 		showExecution();		
 		
+		//System.out.println("all jobs ended---------------------------------" );
+		
 		
 	}
 	
@@ -54,7 +57,7 @@ public class Greedy {
 			for(int j=0; j<Constants.MAX_X; j++){
 				sortArray[j] = jobList.getJob(i, j);
 			}
-			sortArray = sortAscending(sortArray);
+			sortArray = sortDecending(sortArray);
 			
 			for(int k=0; k<Constants.MAX_X; k++){
 				//new step, check next item and add the next item in front if it has higher cost
@@ -65,18 +68,24 @@ public class Greedy {
 				
 				if(nexty<Constants.MAX_Y && count < 3){
 					Job nextJob = jobList.getJob(nexty, x); 
-					if(!sortArray[k].getVisited()){
+					if(jobList.getJob(y, x).getVisited()==false){
 						//compare, when setting visited, set in the joblist
 						int nextCost = nextJob.getTotalCost();
 						if(nextCost > sortArray[k].getTotalCost()){
 							//add next task into the queue first 
 							q_jobs.add(nextJob);
 							jobList.getJob(nexty, x).setVisited();
+							
 							count++; 
 						}
+						q_jobs.add(sortArray[k]);
+					}
+				}else{
+					if(jobList.getJob(y, x).getVisited()==false){
+						q_jobs.add(sortArray[k]);
 					}
 				}
-				q_jobs.add(sortArray[k]);
+				
 			}
 		}
 		long endtime = System.nanoTime()-startTime;
@@ -87,11 +96,14 @@ public class Greedy {
 		long startTime2 = System.currentTimeMillis();
 		showExecution();
 		
+		
 		System.out.println("-------------------all jobs complete---------------");
+		long endtime2 = System.currentTimeMillis() - startTime2; 
+		System.out.println("time taken until job completion: " + endtime2);
 	}
 	
 	
-	public Job[] sortAscending(Job[] arr){	//add high cost first
+	public Job[] sortDecending(Job[] arr){	//add high cost first
 		//simple bubble sort 
 		for(int i=Constants.MAX_X-1; i>0; i--){
 			for(int j=0; j<i; j++){
@@ -161,6 +173,7 @@ public class Greedy {
 					break;
 				}
 				System.out.println("agv not available, waiting.....");
+				
 				try {
 					Thread.sleep(Constants.SLEEP);
 					totalDelay++;
@@ -174,6 +187,7 @@ public class Greedy {
 		}
 		
 		//join to track children threads end time
+		/*
 		for(int i=0; i<atomicJobList.size(); i++){
 			try {
 				atomicJobList.get(i).getThread().join();
@@ -181,7 +195,8 @@ public class Greedy {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-		}
+		}*/	
+		
 		
 	}
 	
@@ -225,12 +240,14 @@ public class Greedy {
 			if(complete){
 				System.out.println("qc locked, completion on the way");
 				aj.completeTask();
+				
 				try {
-					//System.out.println("wait for qc release");
 					Thread.sleep(Constants.SLEEP);
 					totalDelay++;
 					totalCostEverything++; 
 					System.out.println("qc released");
+					jobNo+= 1;
+					System.out.println("completed jobs: " + jobNo);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -255,7 +272,8 @@ public class Greedy {
 		
 	}
 	
-	//create thread class 
+	//create thread class
+	
 	class AtomicJob implements Runnable{
 		Job j; 
 		private Thread t; 
@@ -281,6 +299,7 @@ public class Greedy {
 			} 
 			//t.interrupt();	//end of the thread
 			// TODO Auto-generated method stub
+			
 		}
 		
 		public void start(){
@@ -338,29 +357,24 @@ public class Greedy {
 				}
 			}
 			synchronized(l){
+				agvList.add(agv);
 				l.lock(this, true);
 			}
+			
+			
 		}
 		
 		public void completeTask(){				
-			j.setComplete();			
+			j.setComplete();
+			System.out.println("agv added to the queue, new queue length: " + agvList.size());
 			jobList.getJob(j.getY(), j.getX()).setComplete();
 			jobList.repaint();
-			agvList.add(agv);
-			System.out.println("agv added to the queue, new queue length: " + agvList.size());
-
 			//occupied = false; 
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			
+			
 			//remove this? 
-			/*
-			if(j.getLastJob()){
-				complete = true; 
-				System.out.println("All tasks completed..........................");
-				
-				System.out.println("total cost = " + totalCostEverything);
-				System.out.println("total delay = " + totalDelay);
-			}*/
+			
 				
 		}
 		

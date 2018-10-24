@@ -45,7 +45,7 @@ public class Simulator {
 		g.startGreedy2();
 		
 		
-		System.out.println("-------------------all jobs complete---------------");
+		//System.out.println("-------------------all jobs complete---------------");
 	}
 	
 	public static void seeJobList(){
@@ -60,7 +60,7 @@ public class Simulator {
 	//don't add buttons yet 
 	private static void viewSimulator(){
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(400, 450));	//window size 400(width) by 400(height)  
+		_frame.setSize(new Dimension(600, 450));	//window size 400(width) by 400(height)  
 		_frame.setResizable(false);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
@@ -120,7 +120,7 @@ public class Simulator {
 	
 	private static void addButtons(){
 		//greedy search
-		JButton btn_greedy_algo = new JButton("Greedy Algorithm");
+		JButton btn_greedy_algo = new JButton("Greedy");
 		btn_greedy_algo.setFont(new Font("Calbri", Font.BOLD, 12));
 		btn_greedy_algo.setFocusPainted(false);
 		//add event 
@@ -128,7 +128,19 @@ public class Simulator {
 		
 		_buttons.add(btn_greedy_algo);
 		
-		//other search to be added later 
+		//greedy search 2
+		JButton btn_greedy_algo_2 = new JButton("Greedy 2");
+		btn_greedy_algo_2.setFont(new Font("Calbri", Font.BOLD, 12));
+		btn_greedy_algo_2.setFocusPainted(false);
+				
+		_buttons.add(btn_greedy_algo_2); 
+		
+		//reset button 
+		JButton btn_reset = new JButton("Reset");
+		btn_reset.setFont(new Font("Calbri", Font.BOLD, 12));
+		btn_reset.setFocusPainted(false);
+		
+		_buttons.add(btn_reset); 
 	}
 
 }

@@ -105,12 +105,20 @@ public class Job {
 		visited = true;
 	}
 	
+	public void setNotvisited(){
+		visited = false; 
+	}
+	
 	public void setAssigned(){
 		assigned = true; 
 	}
 	
 	public void setComplete(){
 		complete = true;
+	}
+	
+	public void setIncomplete(){
+		complete = false; 
 	}
 	
 	public void setTotalCost(){	//previous total cost

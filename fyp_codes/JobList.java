@@ -23,6 +23,15 @@ public class JobList extends JPanel{
 		System.out.println("job list done");
 	}
 	
+	public void reset(){
+		for(int i=0; i<Constants.MAX_Y; i++){
+			for(int j=0; j<Constants.MAX_X; j++){
+				jobs[i][j].setIncomplete();
+				jobs[i][j].setNotvisited();
+			}
+		}
+	}
+	
 	public boolean isLoading(int y, int x){
 		return jobs[y][x].getLoading();
 	}

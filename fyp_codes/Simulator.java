@@ -37,6 +37,19 @@ public class Simulator {
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
 	public static void main(String[] args){
+		//generate multiple job lists according to the number of columns
+		/*
+		int col_no = Constants.TOTAL_X / Constants.MAX_X; 
+		ArrayList<JobList> mulJobList = new ArrayList<>(); 
+		
+		for(int i=0; i<col_no; i++){
+			JobList singleJobList = new JobList();
+			mulJobList.add(singleJobList); 
+			System.out.println("job list " + i + ", show joblist");
+		}
+		System.out.println("before multiple job list==========================================================");
+		*/
+		
 		joblist = new JobList(); 
 		seeJobList(); 
 		
@@ -75,6 +88,15 @@ public class Simulator {
 	}
 	
 	public static void seeJobList(){
+		for(int i=0; i<Constants.MAX_Y; i++){
+			for(int j=0; j<Constants.MAX_X; j++){
+				System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");
+			}
+			System.out.println(" ");
+		}
+	}
+	
+	public static void seeMulJobList(){
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");

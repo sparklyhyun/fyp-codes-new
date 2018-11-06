@@ -6,11 +6,12 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import fyp_codes.Constants.DelayComp;
 
 public class Constants {
-	public static final int MAX_X = 4; 	//bay size per crane
+	public static final int MAX_X = 4; 	//bay size (for 1) ?
 	public static final int MAX_Y = 10;	//bay height?
+	
+	public static final int TOTAL_X = 12; // 2 bays here 
 	
 	public static final int CELL_SIZE = 30; 
 	public static final Color COLOR_LOADING = Color.BLUE;
@@ -20,7 +21,7 @@ public class Constants {
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	
-	public static final int SLEEP = 500; 
+	public static final int SLEEP = 200; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;
@@ -34,8 +35,8 @@ public class Constants {
 	*/ 
 	//does this work like this? 
 	static class DelayComp{
-		public static JLabel lblDelaytime_counter = new JLabel("delay time");
-		public static JLabel lblTotaltime_counter = new JLabel("total time");
+		public static JLabel lblDelaytime_counter = new JLabel("delay time counter");
+		public static JLabel lblTotaltime_counter = new JLabel("total time counter ");
 		
 		
 		

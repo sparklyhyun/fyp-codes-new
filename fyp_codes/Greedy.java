@@ -12,6 +12,8 @@ public class Greedy {
 	Lock l = new Lock(); 
 	private static boolean greedyComplete = false; 
 	private static int jobNo = 0 ; 
+	private static boolean bayComplete = false; 
+	//wait until bay is complete. then move on to the next bay. 
 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
@@ -20,8 +22,8 @@ public class Greedy {
 	}
 	
 	public void startGreedy1(){	//generic greedy algorithm, start from first row, then move onto the next row
-		//cost = just total cost
-		long startTime = System.nanoTime();  //to see the performance
+
+		//long startTime = System.nanoTime();  //to see the performance
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		for(int i=0; i<Constants.MAX_Y; i++){
@@ -35,14 +37,13 @@ public class Greedy {
 			}
 		}
 		
-		//q_jobs.get(q_jobs.size()-1).setLastJob();
 		
-		long endtime = System.nanoTime()-startTime;
-		System.out.println("time taken for scheduling: " + endtime);
+		//long endtime = System.nanoTime()-startTime;
+		//System.out.println("time taken for scheduling: " + endtime);
 		
 		showJobSeq(); 
 		
-		long startTime2 = System.currentTimeMillis();
+		//long startTime2 = System.currentTimeMillis();
 		showExecution();		
 		
 		
@@ -52,9 +53,55 @@ public class Greedy {
 	}
 	
 	public void startGreedy2(){	//1 item lookahead
-		long startTime = System.nanoTime();  //to see the performance
+		//long startTime = System.nanoTime();  //to see the performance
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
+		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		
+		//start = l*max_X
+		//end = (l+1)*max_x
+		
+		for(int l=0; l<mulBays; l++){
+			for(int i=0; i<Constants.MAX_Y; i++){
+				int arr = 0;
+				for(int j=l*Constants.MAX_X; j<(l+1)*Constants.MAX_X; j++){
+					sortArray[arr] = jobList.getJob(i, j);
+					arr++;
+				}
+				sortArray = sortDecending(sortArray);
+				
+				for(int k=0; k<Constants.MAX_X; k++){
+					//new step, check next item and add the next item in front if it has higher cost
+					int y = sortArray[k].getY();
+					int nexty = y+1;
+					int x = sortArray[k].getX();
+					int count = 0; 
+					
+					if(nexty<Constants.MAX_Y && count < 3){
+						Job nextJob = jobList.getJob(nexty, x); 
+						if(jobList.getJob(y, x).getVisited()==false){
+							//compare, when setting visited, set in the joblist
+							int nextCost = nextJob.getTotalCost();
+							if(nextCost > sortArray[k].getTotalCost()){
+								//add next task into the queue first 
+								q_jobs.add(nextJob);
+								jobList.getJob(nexty, x).setVisited();
+								
+								count++; 
+							}
+							q_jobs.add(sortArray[k]);
+						}
+					}else{
+						if(jobList.getJob(y, x).getVisited()==false){
+							q_jobs.add(sortArray[k]);
+						}
+					}
+					
+				}
+			}
+		}
+		
+		/*
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				sortArray[j] = jobList.getJob(i, j);
@@ -89,13 +136,14 @@ public class Greedy {
 				}
 				
 			}
-		}
-		long endtime = System.nanoTime()-startTime;
-		System.out.println("time taken for scheduling: " + endtime);
+		}*/
+		
+		//long endtime = System.nanoTime()-startTime;
+		//System.out.println("time taken for scheduling: " + endtime);
 		
 		showJobSeq(); 
 		
-		long startTime2 = System.currentTimeMillis();
+		//long startTime2 = System.currentTimeMillis();
 		showExecution();
 		
 		while(true){
@@ -114,8 +162,8 @@ public class Greedy {
 		}
 		
 		//System.out.println("-------------------all jobs complete---------------");
-		long endtime2 = System.currentTimeMillis() - startTime2; 
-		System.out.println("time taken until job completion: " + endtime2);
+		//long endtime2 = System.currentTimeMillis() - startTime2; 
+		//System.out.println("time taken until job completion: " + endtime2);
 	}
 	
 	
@@ -223,11 +271,12 @@ public class Greedy {
 					+ ", cost = " + q_jobs.get(i).getTotalCost());
 		}
 	}
+	/*
 	
 	public int idealStart(Job prev, Job curr){	//start from index 2
 		int newIdealStart = prev.getTotalCost(); //ideal start time is when prev just finishes drop off 
 		return 0; 
-	}
+	}*/
 	
 	
 	public boolean getGreedyComplete(){
@@ -246,7 +295,7 @@ public class Greedy {
 	
 	class Lock{
 		private AtomicJob aj; 
-		private boolean completion; 
+		//private boolean completion; 
 		
 		public void lock(AtomicJob aj, boolean complete){
 			this.aj = aj;

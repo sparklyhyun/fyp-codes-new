@@ -6,13 +6,15 @@ import java.awt.*;
 
 //list of jobs to be completed
 public class JobList extends JPanel{
-	public final Job[][] jobs = new Job[Constants.MAX_Y][Constants.MAX_X];
+	//public final Job[][] jobs = new Job[Constants.MAX_Y][Constants.MAX_X];
+	public final Job[][] jobs = new Job[Constants.MAX_Y][Constants.TOTAL_X];
 	//private Agv agv = null; 
 	
 	public JobList(){
 		//int jIndex = 0;
 		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
+			//for(int j=0; j<Constants.MAX_X; j++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
 				//System.out.println("i: " + i + ", j: " + j);
 				jobs[i][j] = new Job(i,j); 
 				//only test loading task for now
@@ -25,7 +27,8 @@ public class JobList extends JPanel{
 	
 	public void reset(){
 		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
+			//for(int j=0; j<Constants.MAX_X; j++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
 				jobs[i][j].setIncomplete();
 				jobs[i][j].setNotvisited();
 			}
@@ -59,9 +62,11 @@ public class JobList extends JPanel{
 	//GUI
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);	//idk why doesnt import??? 
-		GuiCell[][] guiCells = new GuiCell[Constants.MAX_Y][Constants.MAX_X];
+		//GuiCell[][] guiCells = new GuiCell[Constants.MAX_Y][Constants.MAX_X];
+		GuiCell[][] guiCells = new GuiCell[Constants.MAX_Y][Constants.TOTAL_X];
 		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
+			//for(int j=0; j<Constants.MAX_X; j++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
 				guiCells[i][j] = new GuiCell(j*Constants.CELL_SIZE, i*Constants.CELL_SIZE, Constants.CELL_SIZE);
 			}
 		}
@@ -71,7 +76,8 @@ public class JobList extends JPanel{
 		
 		//cell colours 
 		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
+			//for(int j=0; j<Constants.MAX_X; j++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
 				Color cellColor = null; 
 				
 				//for repaint when complete

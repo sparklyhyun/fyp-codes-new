@@ -3,9 +3,13 @@ package fyp_codes;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import fyp_codes.Constants.DelayComp;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;	//see what this does
 import java.awt.event.MouseEvent;	//see what this does
+import java.awt.event.ActionEvent;	//testing timer implenmentation
+import java.awt.event.ActionListener;	//testing timer implementation 
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +22,19 @@ public class Simulator {
 	
 	private static JLabel _label = new JLabel("Simulator"); //set title here 
 	
+	//test out the timer here 
+	private static JLabel lblDelaytime_counter = new JLabel("delay_time");	
+	private static JLabel lblTotaltime_counter = new JLabel("total_time");
+	
 	private static JobList joblist; 
 	private static ArrayList<Agv> agvList = new ArrayList<>();
 	
 	private static int agvNo = 4; 	//number of agv
+	
+	private static int totalTime = 0;
+	private static int totalDelay = 0;
+	
+	//public static DelayComp bothTimers = new DelayComp(); 
 	
 	public static void main(String[] args){
 		joblist = new JobList(); 
@@ -35,14 +48,27 @@ public class Simulator {
 		
 		viewSimulator();
 		
-		Greedy g = new Greedy(joblist, agvList); 
+		Greedy g = new Greedy(joblist, agvList);
+		joblist.setLayout(null);
 		
 		//testing the simulator 
 		//g.testSimulator();
 		
+		//updating the timer test
+		CalcTime totalTimer = new CalcTime("totalTimer"); 
+		totalTimer.start();
+		
 		//test simple greedy
 		//g.startGreedy1();
 		g.startGreedy2();
+		
+		if(g.getGreedyComplete()){
+			System.out.println("---------------------------greedy complete=========");
+			System.out.println("total delay: " + Constants.TOTALDELAY);
+			System.out.println("total time: " + Constants.TOTALTIME);
+			
+		}
+		
 		
 		
 		//System.out.println("-------------------all jobs complete---------------");
@@ -71,11 +97,10 @@ public class Simulator {
 		_frame.setLocation(xPos, yPos);
 		
 		
-		
 		//components in the window 
 		_tiles = new JPanel(new CardLayout());
 		_buttons = new JPanel();
-		
+		 
 		Container contentPane = _frame.getContentPane();
 		
 		//contentPane.setLayout(new BorderLayout());
@@ -92,6 +117,9 @@ public class Simulator {
 		
 		//initialize button layout
 		initButtons();
+		
+		//initialize timers
+		initTimers(); 
 		
 		//view full display of the application
 		_frame.setVisible(true);
@@ -110,6 +138,72 @@ public class Simulator {
 		JPanel cards = new JPanel(card);
 		cards.add(joblist, "TASK_LIST");
 		card.show(cards, "TASK_LIST");
+		*/
+	}
+	
+	private static void initTimers(){
+		
+		
+		
+		JLabel lblTotalTime = new JLabel("Total Time: ");
+		lblTotalTime.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblTotalTime.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblTotalTime.setBounds(303, 370, 84, 15);
+		joblist.add(lblTotalTime);
+		
+		joblist.add(Constants.TIMERS.getTotalCounter());
+		
+		JLabel lblDelayTime = new JLabel("Delay Time: ");
+		lblDelayTime.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblDelayTime.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblDelayTime.setBounds(460, 370, 75, 15);
+		joblist.add(lblDelayTime);
+		
+		joblist.add(Constants.TIMERS.getDelayCounter());
+		
+		//labels added to constant class
+		//JLabel lblTotaltime_counter = new JLabel("total_time");
+		/*
+		lblTotaltime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblTotaltime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblTotaltime_counter.setBounds(363, 370, 67, 15);
+		joblist.add(lblTotaltime_counter);
+		*/
+		
+		//labels added to constant class
+		//JLabel lblDelaytime_counter = new JLabel("delay_time");
+		/*
+		lblDelaytime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblDelaytime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblDelaytime_counter.setBounds(525, 370, 69, 15);
+		joblist.add(lblDelaytime_counter);
+		*/
+		
+		//timer (total time)
+		/*
+		Timer total_timer = new Timer(100, new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				lblTotaltime_counter.setText(Integer.toString(totalTime));
+			    totalTime++;
+			}
+			
+		});
+		
+		//timer (delay time)
+		Timer delay_timer = new Timer(100, new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				lblDelaytime_counter.setText(Integer.toString(totalDelay));
+				totalDelay++; 
+			}
+			
+			
+		});
 		*/
 	}
 	
@@ -142,5 +236,38 @@ public class Simulator {
 		
 		_buttons.add(btn_reset); 
 	}
-
+	
+	
+	//for calculatng total time here omg 
+	static class CalcTime implements Runnable {
+		private Thread t; 
+		private String timerName; 
+		
+		public CalcTime(String name){
+			timerName = name; 
+		}
+		
+		@Override
+		public void run() {
+			while(Constants.allComplete == false){
+				try {
+					Constants.TOTALTIME++; 
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		
+		public void start(){
+			if(t==null){
+				t = new Thread(this, timerName);
+				t.start();
+				
+			}
+		
+		}
+	}
 }
+

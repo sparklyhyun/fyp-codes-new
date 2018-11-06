@@ -19,6 +19,7 @@ public class Job {
 	//private int idealStart = 0; 	//idealStart = prev.idealEnd 
 	private int buffer = 0; 		//buffer = prev.idealEnd - travel, later sort according to buffer 
 	private boolean lastJob = false; 
+	private boolean isWaiting = false; 
 	
 	private Agv agv; 
 
@@ -91,6 +92,10 @@ public class Job {
 		return agv; 
 	}
 	
+	public boolean getIsWaiting(){
+		return isWaiting; 
+	}
+	
 	
 	/*
 	public void setIndex(int i){
@@ -127,6 +132,10 @@ public class Job {
 	
 	public void setLastJob(){
 		lastJob = true; 
+	}
+	
+	public void setIsWaiting(boolean b){
+		isWaiting = b; 
 	}
 	
 	//check again!!! 

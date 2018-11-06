@@ -2,16 +2,17 @@ package fyp_codes;
 
 import java.util.*;
 
+import javax.swing.*;
+
 
 public class Greedy {
 	public static JobList jobList;
 	public static ArrayList<Agv> agvList;	//kind of idle list. 
 	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
 	Lock l = new Lock(); 
-	private static boolean complete = false; 
-	private static int totalDelay = 0;
-	private static int totalCostEverything = 0; 
-	private static int jobNo =0 ; 
+	private static boolean greedyComplete = false; 
+	private static int jobNo = 0 ; 
+
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -26,7 +27,7 @@ public class Greedy {
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				sortArray[j] = jobList.getJob(i, j);
-				totalCostEverything += jobList.getJob(i, j).getTotalCost();
+				Constants.TOTALTIME += jobList.getJob(i, j).getTotalCost();
 			}
 			sortArray = sortDecending(sortArray);
 			for(int k=0; k<Constants.MAX_X; k++){
@@ -98,18 +99,18 @@ public class Greedy {
 		showExecution();
 		
 		while(true){
-			//System.out.println("\t\t\t\t\t\t\t\t\t\t" + jobNo);
-
-			if(jobNo >= 40){
-				System.out.println("-------------------all jobs complete---------------");
-				break;
-			}
 			try {
 				Thread.sleep(Constants.SLEEP);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if(jobNo >= 40){
+				Constants.allComplete = true; 
+				System.out.println("-------------------all jobs complete---------------");
+				break;
+			}
+			
 		}
 		
 		//System.out.println("-------------------all jobs complete---------------");
@@ -142,8 +143,7 @@ public class Greedy {
 			//wait for 1 second 
 			try {
 				Thread.sleep(Constants.SLEEP);
-				totalDelay++;
-				totalCostEverything++; 
+				//Constants.TOTALTIME++; 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -155,14 +155,12 @@ public class Greedy {
 		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		//wait if agv list is empty
 		while(q_jobs.isEmpty()==false){
-			//System.out.println("\t\t\t\t\t is job empty: " + q_jobs.isEmpty());
 			//wait until there is idle agv
 			while(true){
 				if(agvList.isEmpty()==false){
 					try {
 						Thread.sleep(Constants.SLEEP);
-						totalDelay++;
-						totalCostEverything++; 
+						//Constants.TOTALTIME++; 
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -176,15 +174,11 @@ public class Greedy {
 					Job j = q_jobs.get(0);
 					q_jobs.remove(0); 	//remove the first job in the queue 
 					String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-					//System.out.println("job i,j: " + threadName);
 							
 					AtomicJob a = new AtomicJob(j, threadName, idleAgv);
 					atomicJobList.add(a);
 					a.start(); 
 							
-					//agv should be added the queue when the job completes! 
-					//agvList.add(idleAgv);
-					//System.out.println("agv added to the queue, new queue length" + agvList.size());
 							
 					break;
 				}
@@ -192,26 +186,14 @@ public class Greedy {
 				
 				try {
 					Thread.sleep(Constants.SLEEP);
-					totalDelay++;
-					totalCostEverything++; 
+					//Constants.TOTALTIME++; 
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 
 		}
 		
-		//join to track children threads end time
-		/*
-		for(int i=0; i<atomicJobList.size(); i++){
-			try {
-				atomicJobList.get(i).getThread().join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-		}*/	
 		
 		
 	}
@@ -247,6 +229,21 @@ public class Greedy {
 		return 0; 
 	}
 	
+	
+	public boolean getGreedyComplete(){
+		return greedyComplete; 
+	}
+	
+	//update the timers 
+	
+	public void updateDelayTimer(){
+		Constants.TIMERS.updateDelayTimer();
+	}
+	
+	public void updateTotalTimer(){
+		Constants.TIMERS.updateTotalTimer();
+	}
+	
 	class Lock{
 		private AtomicJob aj; 
 		private boolean completion; 
@@ -259,8 +256,12 @@ public class Greedy {
 				
 				try {
 					Thread.sleep(Constants.SLEEP);
-					totalDelay++;
-					totalCostEverything++; 
+					
+					//try out
+					//jobList.getJob(aj.getJob().getY(), aj.getJob().getX()).setIsWaiting(true);
+					//jobList.repaint();
+					
+					//Constants.TOTALTIME++; 
 					System.out.println("qc released");
 					System.out.println("completed jobs: " + jobNo);
 					jobNo+= 1;
@@ -274,11 +275,9 @@ public class Greedy {
 				try {
 					//System.out.println("wait for qc release");
 					Thread.sleep(Constants.SLEEP);
-					totalDelay++;
-					totalCostEverything++; 
+					//Constants.TOTALTIME++; 
 					System.out.println("qc released");
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -288,7 +287,6 @@ public class Greedy {
 		
 	}
 	
-	//create thread class
 	
 	class AtomicJob implements Runnable{
 		Job j; 
@@ -296,30 +294,24 @@ public class Greedy {
 		private String name; 
 		private Agv agv;
 		
-		public AtomicJob(Job j, String name, Agv agv){	//update this, add shared resource 
+		public AtomicJob(Job j, String name, Agv agv){	
 			this.j = j; 
 			this.name = name;
-			//System.out.println("thread name: " + this.name);
 		}
 		
 		@Override
 		public void run() {	
-			//System.out.println("run start");
-			
+
 			traveling(agv);
 			try {
 				t.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-			//t.interrupt();	//end of the thread
-			// TODO Auto-generated method stub
 			
 		}
 		
 		public void start(){
-			//System.out.println("starting thread " + name);
 			if(t==null){
 				t = new Thread(this, name);
 				t.start();
@@ -336,7 +328,6 @@ public class Greedy {
 		}
 		
 		public void traveling(Agv agv){
-			//set job assigned first
 			j.setAssigned();
 		
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
@@ -345,32 +336,52 @@ public class Greedy {
 			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getTotalCost();
-			// wait for total cost
+			System.out.println("sleep for: " + c + " units");
+			
+			/*
 			try {
-				System.out.println("sleep for: " + c + " units");
 				Thread.sleep(Constants.SLEEP * c);
-				totalDelay += c;
-				totalCostEverything += c; 
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}*/
+			
+			while(c > 0){
+				c--;
+				try {
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			
 			
 			//if the previous job (column) not complete, wait
 			if(j.getY()-1 >= 0){
 				Job prev = jobList.getJob(j.getY()-1, j.getX());
+				
+				if(prev.getComplete() == false){
+					System.out.println("previous job unfinished. waiting..............................");
+					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+					jobList.repaint();
+				}
+				
 				while(prev.getComplete() == false){
-					System.out.println("waiting for previous job to finish.....");
-					System.out.println("prev i, j: " + prev.getY() + ", " + prev.getX()); 
 					try {
 						Thread.sleep(Constants.SLEEP);
-						totalDelay++;
-						totalCostEverything++; 
+						
+						updateDelayTimer(); 
+						
+						System.out.println("\t\t\t\t\t\t\t\t\t\t total delay: " + Constants.TOTALDELAY);
+						//Constants.TOTALTIME++; 
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					Constants.TOTALDELAY++;	//For now, adds one more at the end. 
+					
 				}
+
+				
 			}
 			synchronized(l){
 				agvList.add(agv);
@@ -382,16 +393,20 @@ public class Greedy {
 		
 		public void completeTask(){				
 			j.setComplete();
+			
+			if(j.getY()+1 < Constants.MAX_Y){
+				int nexty = j.getY()+1;
+				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
+					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting 
+				}
+			}
+			
 			System.out.println("agv added to the queue, new queue length: " + agvList.size());
 			jobList.getJob(j.getY(), j.getX()).setComplete();
 			jobList.repaint();
-			//occupied = false; 
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			
-			
-			//remove this? 
-			
-				
+
 		}
 		
 	}

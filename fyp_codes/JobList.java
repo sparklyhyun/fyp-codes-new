@@ -48,6 +48,10 @@ public class JobList extends JPanel{
 		return jobs[y][x].getComplete(); 
 	}
 	
+	public boolean isWaiting(int y, int x){
+		return jobs[y][x].getIsWaiting();
+	}
+	
 	public Job getJob(int y, int x){
 		return jobs[y][x]; 
 	}
@@ -73,6 +77,8 @@ public class JobList extends JPanel{
 				//for repaint when complete
 				if(isComplete(i,j)){
 					cellColor = Constants.COLOR_COMPLETE;
+				}else if(isWaiting(i,j)){
+					cellColor = Constants.COLOR_WAITING;
 				}else{
 					if(isLoading(i,j)){
 						if(isAssigned(i,j)){

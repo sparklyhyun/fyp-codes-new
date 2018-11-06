@@ -15,11 +15,8 @@ public class JobList extends JPanel{
 		for(int i=0; i<Constants.MAX_Y; i++){
 			//for(int j=0; j<Constants.MAX_X; j++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				//System.out.println("i: " + i + ", j: " + j);
 				jobs[i][j] = new Job(i,j); 
-				//only test loading task for now
 				jobs[i][j].setLoading();
-				//jobs[i][j].setIndex(jIndex);
 			}
 		}
 		System.out.println("job list done");

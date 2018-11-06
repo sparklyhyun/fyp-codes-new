@@ -75,34 +75,36 @@ public class Simulator {
 		//g.startGreedy1();
 		g.startGreedy2();
 		
-		if(g.getGreedyComplete()){
+		if(Constants.allComplete){
 			System.out.println("---------------------------greedy complete=========");
 			System.out.println("total delay: " + Constants.TOTALDELAY);
 			System.out.println("total time: " + Constants.TOTALTIME);
 			
 		}
 		
-		
-		
-		//System.out.println("-------------------all jobs complete---------------");
+
 	}
 	
 	public static void seeJobList(){
-		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
-				System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");
+		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		for(int k=0; k<mulBays; k++){
+			for(int i=0; i<Constants.MAX_Y; i++){
+				for(int j=k*Constants.MAX_X; j<(k+1)*Constants.MAX_X; j++){
+					System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");
+				}
+				System.out.println(" ");
 			}
-			System.out.println(" ");
+			
 		}
-	}
 	
-	public static void seeMulJobList(){
+		/*
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");
 			}
 			System.out.println(" ");
-		}
+		}*/
+		
 	}
 	
 	//don't add buttons yet 

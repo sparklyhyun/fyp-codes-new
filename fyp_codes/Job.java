@@ -21,23 +21,36 @@ public class Job {
 	private boolean lastJob = false; 
 	private boolean isWaiting = false; 
 	
+	private int beforeTravel = 0;
+	private int afterTravel = 0; 
+	
 	private Agv agv; 
 
 	
-	public Job(int y, int x /*, int index*/){
+	public Job(int y, int x , boolean loading){
 		this.x = x;
 		this.y = y;
-		//this.index = index; 
+		this.loading = loading;
 		initCost();
+		
 	}
 	
 	public void initCost(){
 		Random rand = new Random();
-		int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
-		this.travel = randomCost; 
-		//System.out.println("job i, j: " + y+ ", " +x+ ", cost: " + randomCost);
+		if(loading == true){	//loading task
+			int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
+			this.travel = randomCost; 
+		}else{	//unloading task
+			int randomCost1 = rand.nextInt(5)+1; 	// cost ranges from 1 to 5
+			int randomCost2 = rand.nextInt(5)+1;
+			this.beforeTravel = randomCost1; 
+			this.afterTravel = randomCost2; 
+		}
 		setTotalCost(); 
+		
 	}
+	
+
 	
 	public int getX(){
 		return x;
@@ -97,6 +110,14 @@ public class Job {
 		return isWaiting; 
 	}
 	
+	public int getBeforeTravelCost(){
+		return beforeTravel;
+	}
+	
+	public int getAfterTravelCost(){
+		return afterTravel; 
+	}
+	
 	
 	/*
 	public void setIndex(int i){
@@ -128,7 +149,12 @@ public class Job {
 	}
 	
 	public void setTotalCost(){	//previous total cost
-		tCost = travel + dCost;
+		if(loading == true){
+			tCost = travel + dCost;
+		}else{
+			tCost = beforeTravel + afterTravel; 
+		}
+		
 	}
 	
 	public void setLastJob(){

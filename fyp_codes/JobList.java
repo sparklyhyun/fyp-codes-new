@@ -15,8 +15,7 @@ public class JobList extends JPanel{
 		for(int i=0; i<Constants.MAX_Y; i++){
 			//for(int j=0; j<Constants.MAX_X; j++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				jobs[i][j] = new Job(i,j /*,jIndex*/); 
-				jobs[i][j].setLoading();
+				jobs[i][j] = new Job(i,j, false); //true - loading, falst - unloading 
 				//jIndex++; 
 			}
 		}

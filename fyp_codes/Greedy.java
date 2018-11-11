@@ -60,10 +60,8 @@ public class Greedy {
 		
 		
 		showJobSeq(); 
-		
-		//long startTime2 = System.currentTimeMillis();
-		showExecution();		
-		
+
+		showExecution();				
 		
 		while(true){
 			try {
@@ -82,6 +80,7 @@ public class Greedy {
 		
 		
 	}
+	
 	
 	public void startGreedy2(){	//1 item lookahead
 		//long startTime = System.nanoTime();  //to see the performance
@@ -169,12 +168,9 @@ public class Greedy {
 			}
 		}*/
 		
-		//long endtime = System.nanoTime()-startTime;
-		//System.out.println("time taken for scheduling: " + endtime);
-		
+
 		showJobSeq(); 
 		
-		//long startTime2 = System.currentTimeMillis();
 		showExecution();
 		
 		while(true){
@@ -192,7 +188,7 @@ public class Greedy {
 			
 		}
 		
-			}
+	}
 	
 	
 	public Job[] sortDecending(Job[] arr){	//add high cost first
@@ -209,6 +205,7 @@ public class Greedy {
 		}
 		return arr; 
 	}
+	
 		
 	public void updateSimulator(){
 			
@@ -236,40 +233,6 @@ public class Greedy {
 		
 		//wait if agv list is empty
 		while(q_jobs.isEmpty()==false){
-			//wait until there is idle agv
-			
-			//if jobno created = 40, wait until jobno completed = 40 or 80 or 120 (basically multiply by bayno)
-			//if job completed != 40 or 80, wait until job completed = 40 or 80 before finishing it. 
-			/*
-			if((jobNo_created == 40) || (jobNo_created == 80)){
-				if((jobNo == 40) || (jobNo == 80)){
-					System.out.println("move onto the next bay......................................");
-				}else{
-					if(jobNo_created == 40){
-						while(jobNo < 40){
-							try {
-								System.out.println("wait until jobs completed...............................");
-								Thread.sleep(Constants.SLEEP);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					
-					if(jobNo_created == 80){
-						while(jobNo < 80){
-							try {
-								System.out.println("wait until jobs completed...............................");
-								Thread.sleep(Constants.SLEEP);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					
-				}
-			}
-			*/
 			
 			while(true){
 				if(agvList.isEmpty()==false){
@@ -307,75 +270,9 @@ public class Greedy {
 			}
 
 		}
-
-		
-		/*
-		for(int i=0; i<mulBays; i++){
-			//number of jobs per bay
-			int bayJobNo = Constants.MAX_X * Constants.MAX_Y;
-			for(int k=0; k<bayJobNo ; k++){
-				//wait until baycomplete = true; 
-				while(true){
-					if(jobNo == i*bayJobNo){
-						bayComplete = true; 
-					}
-					if(bayComplete == true){
-						System.out.println("starting bay number " + i + " ===========================================");
-						bayComplete = false; 
-						break;
-					}
-					try {
-						Thread.sleep(Constants.SLEEP);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				
-				//wait until there is idle agv
-				while(true){
-					if(agvList.isEmpty()==false){
-						try {
-							Thread.sleep(Constants.SLEEP);
-							//Constants.TOTALTIME++; 
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-								
-						System.out.println("agvList size: " + agvList.size());
-						Agv idleAgv = agvList.get(0);
-						agvList.remove(0);	//agv not idle anymore 
-								
-						Job j = q_jobs.get(0);
-						q_jobs.remove(0); 	//remove the first job in the queue 
-						String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-								
-						AtomicJob a = new AtomicJob(j, threadName, idleAgv);
-						atomicJobList.add(a);
-						a.start(); 
-		
-						break;
-					}
-					
-					System.out.println("agv not available, waiting.....");
-					
-					try {
-						Thread.sleep(Constants.SLEEP);
-						//Constants.TOTALTIME++; 
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-
-			}
-		}
-		*/
-		
-		
-		
-		
-
 		
 	}
+
 	
 	public void testSimulator(){
 		//put the 1st column into a queue 
@@ -481,13 +378,21 @@ public class Greedy {
 		
 		@Override
 		public void run() {	
-
-			traveling(agv);
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} 
+			if(j.getLoading() == true){
+				travelingLoading(agv);
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} 
+			}else{
+				travelingUnloading(agv); 
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} 
+			}
 			
 		}
 		
@@ -507,7 +412,7 @@ public class Greedy {
 			return t; 
 		}
 		
-		public void traveling(Agv agv){
+		public void travelingLoading(Agv agv){
 			j.setAssigned();
 		
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
@@ -557,71 +462,80 @@ public class Greedy {
 				
 			}
 			
-			//if job completed != 40 or 80, wait until job completed = 40 or 80 before finishing it. 
-			/*
-			int mulBays = Constants.TOTAL_X / Constants.MAX_X;
-			int baySize = Constants.BAYSIZE;
-			ArrayList<Integer> jobCompletedArr = new ArrayList<>(); 
-			
-			//calculate starting index of job per bay
-			for(int i=0; i<mulBays-1; i++){
-				jobCompletedArr.add(baySize + baySize*i);
-			}
-			
-			for(int i=0; i<jobCompletedArr.size(); i++){
-				
-				while(jobNo<jobCompletedArr.get(i)){
-					try {
-						System.out.println("wait until jobs completed...............................");
-						Thread.sleep(Constants.SLEEP);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				System.out.println("move onto the next bay......................................");
-			}
-			*/
-			
-			/*
-			if((jobNo_created == 40) || (jobNo_created == 80)){
-				if((jobNo == 40) || (jobNo == 80)){
-					System.out.println("move onto the next bay......................................");
-				}else{
-					if(jobNo_created == 40){
-						while(jobNo < 40){
-							try {
-								System.out.println("wait until jobs completed...............................");
-								Thread.sleep(Constants.SLEEP);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					
-					if(jobNo_created == 80){
-						while(jobNo < 80){
-							try {
-								System.out.println("wait until jobs completed...............................");
-								Thread.sleep(Constants.SLEEP);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					
-				}
-			}*/
 			
 			waitForBay(); 
-			
 			
 			//complete the job
 			synchronized(l){
 				agvList.add(agv);
 				l.lock(this, true);
 			}
+
+		}
+		
+		public void travelingUnloading(Agv agv){
+			j.setAssigned();
+		
+			System.out.println("job " + j.getY() + ", " + j.getX()+ " assigned agv");
+			
+			jobList.repaint();
+			
+			//need to wait and check if the qc is free//////////////////////////////////////////////////////////////
 			
 			
+
+			//here, delay for traveling. Hold the agv. 
+			int c = j.getBeforeTravelCost();
+			System.out.println("before travelling, sleep for: " + c + " units");
+			
+			while(c > 0){
+				c--;
+				try {
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			
+			//if the previous job (column) not complete, wait
+			if(j.getY()-1 >= 0){
+				Job prev = jobList.getJob(j.getY()-1, j.getX());
+				
+				if(prev.getComplete() == false){
+					System.out.println("previous job unfinished. waiting..............................");
+					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+					jobList.repaint();
+				}
+				
+				while(prev.getComplete() == false){
+					try {
+						Thread.sleep(Constants.SLEEP);
+						
+						updateDelayTimer(); 
+						
+						System.out.println("\t\t\t\t\t\t\t\t\t\t total delay: " + Constants.TOTALDELAY);
+						//Constants.TOTALTIME++; 
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					Constants.TOTALDELAY++;	//For now, adds one more at the end. 
+					
+				}
+
+				
+			}
+			
+			
+			waitForBay(); 
+			
+			//complete the job
+			synchronized(l){
+				agvList.add(agv);
+				l.lock(this, true);
+			}
+
 		}
 		
 		public void waitForBay(){

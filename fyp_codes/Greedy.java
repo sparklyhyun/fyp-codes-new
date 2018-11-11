@@ -398,7 +398,7 @@ public class Greedy {
 
 	public void showJobSeq(){
 		for(int i=0; i<q_jobs.size(); i++){
-			System.out.println("job " + q_jobs.get(i).getIndex() + ", i = " + q_jobs.get(i).getY() + ", j = " + q_jobs.get(i).getX() 
+			System.out.println("job " + i + ", i = " + q_jobs.get(i).getY() + ", j = " + q_jobs.get(i).getX() 
 					+ ", cost = " + q_jobs.get(i).getTotalCost());
 		}
 	}
@@ -612,6 +612,9 @@ public class Greedy {
 				}
 			}*/
 			
+			waitForBay(); 
+			
+			
 			//complete the job
 			synchronized(l){
 				agvList.add(agv);
@@ -621,7 +624,50 @@ public class Greedy {
 			
 		}
 		
+		public void waitForBay(){
+			int mulBays = Constants.TOTAL_X / Constants.MAX_X;
+			int baySize = Constants.BAYSIZE;
+			ArrayList<Integer> jobCompletedArr = new ArrayList<>(); 
+			ArrayList<Integer> maxX = new ArrayList<>(); 
+			
+			//calculate starting index of job per bay
+			for(int i=0; i<mulBays-1; i++){
+				jobCompletedArr.add(baySize + baySize*i);
+				maxX.add(Constants.MAX_X + Constants.MAX_X*i);
+			}
+			
+			for(int i=0; i<jobCompletedArr.size(); i++){
+				if(jobNo_created >= jobCompletedArr.get(i) && j.getX()>maxX.get(i)-1){
+					System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+					//int nexty = j.getY()+1; //only considers next row. need to consider the next bay. job index - 0 to 39, 40 to 80 
+					
+					if(jobNo<=jobCompletedArr.get(i)){
+						System.out.print("\t\t\t\t\t wait job x: " + j.getX());
+						while(jobNo<jobCompletedArr.get(i)){
+							System.out.println("\t\t\t\t\twait until jobs completed...............................");
+							//jobList.getJob(nexty, j.getX()).setIsWaiting(true);
+							jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+							jobList.repaint();
+							try {
+								Thread.sleep(Constants.SLEEP);
+								Constants.TOTALDELAY++;
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						System.out.println("\t\t\t\t\t\tmove onto the next bay......................................");
+					}
+					
+				//jobList.getJob(nexty, j.getX()).setIsWaiting(false);
+				jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+				jobList.repaint();
+			}
+			
+		}
+		}
+		
 		public void completeTask(){				
+			/*
 			int mulBays = Constants.TOTAL_X / Constants.MAX_X;
 			int baySize = Constants.BAYSIZE;
 			ArrayList<Integer> jobCompletedArr = new ArrayList<>(); 
@@ -632,10 +678,10 @@ public class Greedy {
 			}
 			
 			for(int i=0; i<jobCompletedArr.size(); i++){
-	
 				if(jobNo_created == jobCompletedArr.get(i)){
 					//int nexty = j.getY()+1; //only considers next row. need to consider the next bay. job index - 0 to 39, 40 to 80 
 					if(j.getIndex()>jobCompletedArr.get(i)-1){
+						System.out.print("\t\t\t\t\t wait job index: " + j.getIndex());
 						while(jobNo<jobCompletedArr.get(i)){
 							
 							System.out.println("\t\t\t\t\twait until jobs completed...............................");
@@ -659,6 +705,7 @@ public class Greedy {
 				}
 				
 			}
+			*/
 			
 			j.setComplete();
 			

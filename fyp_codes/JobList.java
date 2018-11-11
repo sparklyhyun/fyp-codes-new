@@ -11,13 +11,13 @@ public class JobList extends JPanel{
 	//private Agv agv = null; 
 	
 	public JobList(){
-		int jIndex = 0;
+		//int jIndex = 0;
 		for(int i=0; i<Constants.MAX_Y; i++){
 			//for(int j=0; j<Constants.MAX_X; j++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				jobs[i][j] = new Job(i,j,jIndex); 
+				jobs[i][j] = new Job(i,j /*,jIndex*/); 
 				jobs[i][j].setLoading();
-				jIndex++; 
+				//jIndex++; 
 			}
 		}
 		System.out.println("job list done");

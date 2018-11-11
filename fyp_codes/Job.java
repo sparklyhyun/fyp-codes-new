@@ -5,7 +5,7 @@ import java.util.Random;
 public class Job {
 	private final int x;	//no. of bay (column)
 	private final int y;	//tier 		(row) 
-	private int index; //priority 
+	//private int index; //priority 
 	private boolean	loading = false;	//for unloading task, false. for loading task, true
 	private boolean visited = false; 	//if visited = true, else = false
 	private boolean complete = false; 	//if job complete = true, else = false
@@ -24,10 +24,10 @@ public class Job {
 	private Agv agv; 
 
 	
-	public Job(int y, int x, int index){
+	public Job(int y, int x /*, int index*/){
 		this.x = x;
 		this.y = y;
-		this.index = index; 
+		//this.index = index; 
 		initCost();
 	}
 	
@@ -45,10 +45,6 @@ public class Job {
 	
 	public int getY(){
 		return y;
-	}
-	
-	public int getIndex(){
-		return index; 
 	}
 	
 	/*

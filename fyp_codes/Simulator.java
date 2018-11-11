@@ -49,6 +49,7 @@ public class Simulator {
 		}
 		System.out.println("before multiple job list==========================================================");
 		*/
+		resetTimers();
 		
 		joblist = new JobList(); 
 		seeJobList(); 
@@ -72,8 +73,8 @@ public class Simulator {
 		totalTimer.start();
 		
 		//test simple greedy
-		//g.startGreedy1();
-		g.startGreedy2();
+		g.startGreedy1();
+		//g.startGreedy2();
 		
 		if(Constants.allComplete){
 			System.out.println("---------------------------greedy complete=========");
@@ -83,6 +84,11 @@ public class Simulator {
 		}
 		
 
+	}
+	
+	public static void resetTimers(){
+		Constants.TOTALDELAY = 0;
+		Constants.TOTALTIME = 0;
 	}
 	
 	public static void seeJobList(){

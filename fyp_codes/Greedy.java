@@ -25,10 +25,11 @@ public class Greedy {
 	}
 	
 	public void startGreedy1(){	//generic greedy algorithm, start from first row, then move onto the next row
-
-		//long startTime = System.nanoTime();  //to see the performance
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
+		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		
+		/*
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.MAX_X; j++){
 				sortArray[j] = jobList.getJob(i, j);
@@ -38,11 +39,25 @@ public class Greedy {
 			for(int k=0; k<Constants.MAX_X; k++){
 				q_jobs.add(sortArray[k]);
 			}
+		}*/
+		
+		for(int l=0; l<mulBays; l++){
+			for(int i=0; i<Constants.MAX_Y; i++){
+				int arr = 0;
+				for(int j=l*Constants.MAX_X; j<(l+1)*Constants.MAX_X; j++){
+					sortArray[arr] = jobList.getJob(i, j);
+					arr++;
+				}
+				sortArray = sortDecending(sortArray);
+				
+				for(int k=0; k<Constants.MAX_X; k++){
+					q_jobs.add(sortArray[k]);
+					
+					
+				}
+			}
 		}
 		
-		
-		//long endtime = System.nanoTime()-startTime;
-		//System.out.println("time taken for scheduling: " + endtime);
 		
 		showJobSeq(); 
 		
@@ -50,7 +65,20 @@ public class Greedy {
 		showExecution();		
 		
 		
-		System.out.println("all jobs ended---------------------------------" );
+		while(true){
+			try {
+				Thread.sleep(Constants.SLEEP);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(jobNo >= (Constants.MAX_Y * Constants.TOTAL_X)){
+				Constants.allComplete = true; 
+				System.out.println("-------------------all jobs complete---------------");
+				break;
+			}
+			
+		}
 		
 		
 	}
@@ -164,10 +192,7 @@ public class Greedy {
 			
 		}
 		
-		//System.out.println("-------------------all jobs complete---------------");
-		//long endtime2 = System.currentTimeMillis() - startTime2; 
-		//System.out.println("time taken until job completion: " + endtime2);
-	}
+			}
 	
 	
 	public Job[] sortDecending(Job[] arr){	//add high cost first

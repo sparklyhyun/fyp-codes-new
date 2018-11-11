@@ -29,8 +29,6 @@ public class Simulator {
 	private static JobList joblist; 
 	private static ArrayList<Agv> agvList = new ArrayList<>();
 	
-	private static int agvNo = 4; 	//number of agv
-	
 	private static int totalTime = 0;
 	private static int totalDelay = 0;
 	
@@ -54,7 +52,7 @@ public class Simulator {
 		joblist = new JobList(); 
 		seeJobList(); 
 		
-		for(int i=0; i<agvNo; i++){
+		for(int i=0; i<Constants.AGV; i++){
 			Agv agv = new Agv(i); 
 			agvList.add(agv); 
 		}
@@ -73,8 +71,8 @@ public class Simulator {
 		totalTimer.start();
 		
 		//test simple greedy
-		g.startGreedy1();
-		//g.startGreedy2();
+		//g.startGreedy1();
+		g.startGreedy2();
 		
 		if(Constants.allComplete){
 			System.out.println("---------------------------greedy complete=========");

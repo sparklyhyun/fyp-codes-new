@@ -10,8 +10,11 @@ import javax.swing.*;
 public class Constants {
 	public static final int MAX_X = 4; 	//bay size (for 1) ?
 	public static final int MAX_Y = 10;	//bay height?
+	public static final int BAYSIZE = 40; 
 	
 	public static final int TOTAL_X = 12; // 2 bays here 
+	
+	public static final int AGV = 8; //number of AGV
 	
 	public static final int CELL_SIZE = 30; 
 	public static final Color COLOR_LOADING = Color.BLUE;
@@ -21,7 +24,7 @@ public class Constants {
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	
-	public static final int SLEEP = 200; 
+	public static final int SLEEP = 500; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;

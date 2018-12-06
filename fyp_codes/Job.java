@@ -10,6 +10,8 @@ public class Job {
 	private boolean visited = false; 	//if visited = true, else = false
 	private boolean complete = false; 	//if job complete = true, else = false
 	private boolean assigned = false; 	//if the load on the agv = true 
+	private boolean travelling = false; 
+	
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
 	private final int dCost = 1;	//time takent to drop off 
@@ -41,8 +43,8 @@ public class Job {
 			int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
 			this.travel = randomCost; 
 		}else{	//unloading task
-			int randomCost1 = rand.nextInt(5)+1; 	// cost ranges from 1 to 5
-			int randomCost2 = rand.nextInt(5)+1;
+			int randomCost1 = rand.nextInt(7)+1; 	// cost ranges from 1 to 5
+			int randomCost2 = rand.nextInt(7)+1;
 			this.beforeTravel = randomCost1; 
 			this.afterTravel = randomCost2; 
 		}
@@ -91,6 +93,10 @@ public class Job {
 	
 	public int getIdealEnd(){
 		return idealEnd;
+	}
+	
+	public boolean getTravelling(){
+		return travelling; 
 	}
 	
 	/*
@@ -177,6 +183,11 @@ public class Job {
 	public void setAgv(Agv agv){
 		this.agv = agv; 
 	}
+	
+	public void setTravelling(boolean t){
+		this.travelling = t; 
+	}
+	
 	
 	
 	

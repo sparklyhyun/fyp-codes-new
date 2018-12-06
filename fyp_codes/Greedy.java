@@ -159,7 +159,7 @@ public class Greedy {
 						}
 						q_jobs.add(sortArray[k]);
 					}
-				}else{
+				}else{	
 					if(jobList.getJob(y, x).getVisited()==false){
 						q_jobs.add(sortArray[k]);
 					}
@@ -359,9 +359,8 @@ public class Greedy {
 				}
 			}
 			
-			
 		}
-		
+
 	}
 	
 	
@@ -480,36 +479,17 @@ public class Greedy {
 			
 			jobList.repaint();
 			
-			//need to wait and check if the qc is free//////////////////////////////////////////////////////////////
-			
-			
-
-			//here, delay for traveling. Hold the agv. 
-			int c = j.getBeforeTravelCost();
-			System.out.println("before travelling, sleep for: " + c + " units");
-			
-			while(c > 0){
-				c--;
-				try {
-					Thread.sleep(Constants.SLEEP);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			
-			//if the previous job (column) not complete, wait
+			//if the previous job (column) not unloaded yet, wait
 			if(j.getY()-1 >= 0){
 				Job prev = jobList.getJob(j.getY()-1, j.getX());
 				
-				if(prev.getComplete() == false){
+				if(prev.getTravelling() == false){
 					System.out.println("previous job unfinished. waiting..............................");
 					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
 					jobList.repaint();
 				}
 				
-				while(prev.getComplete() == false){
+				while(prev.getTravelling() == false){
 					try {
 						Thread.sleep(Constants.SLEEP);
 						
@@ -527,14 +507,30 @@ public class Greedy {
 				
 			}
 			
+			j.setTravelling(true);
+
+			//here, delay for traveling. Hold the agv. 
+			int c = j.getBeforeTravelCost();
+			System.out.println("before travelling, sleep for: " + c + " units");
+			
+			while(c > 0){
+				c--;
+				try {
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			
 			waitForBay(); 
 			
+			//job completion can happen at the same time
 			//complete the job
-			synchronized(l){
-				agvList.add(agv);
-				l.lock(this, true);
-			}
+			completeTask();
+			agvList.add(agv);
+			jobNo+= 1;
+			
 
 		}
 		
@@ -552,7 +548,7 @@ public class Greedy {
 			
 			for(int i=0; i<jobCompletedArr.size(); i++){
 				if(jobNo_created >= jobCompletedArr.get(i) && j.getX()>maxX.get(i)-1){
-					System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+					//System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
 					//int nexty = j.getY()+1; //only considers next row. need to consider the next bay. job index - 0 to 39, 40 to 80 
 					
 					if(jobNo<=jobCompletedArr.get(i)){

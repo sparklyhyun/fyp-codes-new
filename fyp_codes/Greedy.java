@@ -16,7 +16,8 @@ public class Greedy {
 	
 	//wait until bay is complete. then move on to the next bay.
 	private static boolean bayComplete = false; 
-	 
+	
+	private static ArrayList<Job> waitingJob = new ArrayList<>();
 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
@@ -249,10 +250,12 @@ public class Greedy {
 							
 					Job j = q_jobs.get(0);
 					q_jobs.remove(0); 	//remove the first job in the queue 
+					
 					String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 							
 					AtomicJob a = new AtomicJob(j, threadName, idleAgv);
 					jobNo_created++; 
+					
 					atomicJobList.add(a);
 					a.start(); 
 							
@@ -342,6 +345,53 @@ public class Greedy {
 					System.out.println("qc released");
 					System.out.println("completed jobs: " + jobNo);
 					jobNo+= 1;
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else{
+				System.out.println("qc locked, asignment on the way");
+				aj.getJob().setAssigned();
+				try {
+					//System.out.println("wait for qc release");
+					Thread.sleep(Constants.SLEEP);
+					//Constants.TOTALTIME++; 
+					System.out.println("qc released");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		
+		public void unloadingLock(AtomicJob aj, boolean unload){
+			//handle both j.setassigned & j.setwaiting(false) 
+			
+			this.aj = aj; 
+			
+			//handle setWaiting 
+			while(waitingJob.isEmpty() == false){
+				Job j = waitingJob.get(0);
+				j.setIsWaiting(false);
+				waitingJob.remove(0); 
+				jobList.repaint();
+				try {
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			//handle setassigned 
+			if(unload){
+				System.out.println("qc locked, completion on the way");
+				aj.unloadComplete();
+				
+				try {
+					Thread.sleep(Constants.SLEEP);
+					System.out.println("qc released");
+					System.out.println("unloaded job: " + jobNo);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -460,8 +510,7 @@ public class Greedy {
 
 				
 			}
-			
-			
+
 			waitForBay(); 
 			
 			//complete the job
@@ -473,6 +522,13 @@ public class Greedy {
 		}
 		
 		public void travelingUnloading(Agv agv){
+			/*
+			synchronized(l){
+				l.unloadingLock(this, true);
+			}*/
+			
+			//set assigned & unset waiting shouldn't happen tgt. what is the problem here? 
+			
 			j.setAssigned();
 		
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " assigned agv");
@@ -486,6 +542,7 @@ public class Greedy {
 				if(prev.getTravelling() == false){
 					System.out.println("previous job unfinished. waiting..............................");
 					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+					waitingJob.add(jobList.getJob(j.getY(), j.getX()));
 					jobList.repaint();
 				}
 				
@@ -494,6 +551,8 @@ public class Greedy {
 						Thread.sleep(Constants.SLEEP);
 						
 						updateDelayTimer(); 
+						
+						j.addUnloadWatiTime();
 						
 						System.out.println("\t\t\t\t\t\t\t\t\t\t total delay: " + Constants.TOTALDELAY);
 						//Constants.TOTALTIME++; 
@@ -507,8 +566,20 @@ public class Greedy {
 				
 			}
 			
+			//before, check if any was waiting. Unload that first 
+			// if more than 1 unloading, unload the one that was waiting longer 
+			//	if multiple waiting, compare j.getUnloadWaitTime(). then unload the waiting one first. 
+			//	then, unload the one that is not waiting. yellow means on the agv. 
+			
+			//search the joblist, find the longest waiting job, then execute it. 
+			/*
+			synchronized(l){
+				l.unloadingLock(this, true);
+			}*/
+			
+			
 			j.setTravelling(true);
-
+			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getBeforeTravelCost();
 			System.out.println("before travelling, sleep for: " + c + " units");
@@ -526,12 +597,9 @@ public class Greedy {
 			waitForBay(); 
 			
 			//job completion can happen at the same time
-			//complete the job
 			completeTask();
 			agvList.add(agv);
 			jobNo+= 1;
-			
-
 		}
 		
 		public void waitForBay(){
@@ -632,6 +700,19 @@ public class Greedy {
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			
 
+		}
+		
+		public void unloadComplete(){
+			j.setTravelling(true);
+			
+			if(j.getY()+1 < Constants.MAX_Y){
+				int nexty = j.getY()+1;
+				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
+					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting 
+				}
+			}
+			System.out.println("job " + j.getY() + ", " + j.getX()+ " just unloaded");
+			jobList.repaint();
 		}
 		
 	}

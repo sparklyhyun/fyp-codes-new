@@ -26,6 +26,8 @@ public class Job {
 	private int beforeTravel = 0;
 	private int afterTravel = 0; 
 	
+	private int unloadWaitTime = 0; 
+	
 	private Agv agv; 
 
 	
@@ -124,6 +126,10 @@ public class Job {
 		return afterTravel; 
 	}
 	
+	public int getUnloadWaitTime(){
+		return unloadWaitTime; 
+	}
+	
 	
 	/*
 	public void setIndex(int i){
@@ -188,6 +194,9 @@ public class Job {
 		this.travelling = t; 
 	}
 	
+	public void addUnloadWatiTime(){
+		this.unloadWaitTime += 1; 
+	}
 	
 	
 	

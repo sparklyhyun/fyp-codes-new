@@ -17,8 +17,17 @@ public class Greedy {
 	//wait until bay is complete. then move on to the next bay.
 	private static boolean bayComplete = false; 
 	
+	//to store the job that is not waiting anymore...
 	private static ArrayList<Job> waitingJob = new ArrayList<>();
+	
+	private static ArrayList<Job> q_waitingAgv = new ArrayList<>(); 
+	
+	//how many were waiting and not waiting anymore
+	private static int finishWaiting = 0; 
+	
+	private static Agv waitingAgv = new Agv(1000); //agv to replace null value 
 
+	private static boolean qcWaiting = false; // false - no need to wait for qc 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -62,7 +71,9 @@ public class Greedy {
 		
 		showJobSeq(); 
 
-		showExecution();				
+		//showExecution();				
+		
+		showExecutionUnloading();
 		
 		while(true){
 			try {
@@ -173,6 +184,7 @@ public class Greedy {
 		showJobSeq(); 
 		
 		showExecution();
+		//showExecutionUnloading();
 		
 		while(true){
 			try {
@@ -247,16 +259,17 @@ public class Greedy {
 					System.out.println("agvList size: " + agvList.size());
 					Agv idleAgv = agvList.get(0);
 					agvList.remove(0);	//agv not idle anymore 
-							
+					
 					Job j = q_jobs.get(0);
-					q_jobs.remove(0); 	//remove the first job in the queue 
+					q_jobs.remove(0); 	//remove the first job in the queue 					
 					
 					String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 							
-					AtomicJob a = new AtomicJob(j, threadName, idleAgv);
+					AtomicJob a = new AtomicJob(j, threadName, idleAgv, false);
 					jobNo_created++; 
 					
 					atomicJobList.add(a);
+					
 					a.start(); 
 							
 					break;
@@ -271,6 +284,157 @@ public class Greedy {
 					e.printStackTrace();
 				}
 			}
+
+		}
+		
+	}
+	
+	public void showExecutionUnloading(){
+		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
+		
+		//for multiple bays
+		int mulBays = Constants.TOTAL_X / Constants.MAX_X;
+		bayComplete = true; //start with true
+		
+		//first item, no need waiting time 
+		try {
+			Thread.sleep(Constants.SLEEP);
+			//Constants.TOTALTIME++; 
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		Job j = q_jobs.get(0);
+		q_jobs.remove(0); 	//remove the first job in the queue 					
+		String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
+		AtomicJob a = new AtomicJob(j, threadName, waitingAgv, qcWaiting);	//if waitingAGv wait for agv  
+		jobNo_created++; 
+		
+		System.out.println("first task, no need to wait for qc");
+		
+		atomicJobList.add(a);
+		
+		a.start();
+		
+		qcWaiting = true; 
+		
+		//wait if agv list is empty
+		while(q_jobs.isEmpty()==false){
+			try {
+				Thread.sleep(Constants.SLEEP);
+				//Constants.TOTALTIME++; 
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			//if agv empty, wait 
+			if(agvList.isEmpty() == true){	
+				qcWaiting = true;
+				//1st one is on the qc, waiting for the agv 
+				j = q_jobs.get(0);
+				q_jobs.remove(0); 	//remove the first job in the queue 					
+				threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
+				a = new AtomicJob(j, threadName, null, qcWaiting);	//if null & qcWaitng == true, wait until agv assigned   
+				jobNo_created++; 
+				
+				System.out.println("waiting task created.............................");
+				
+				atomicJobList.add(a);
+				
+				a.start();
+				
+				while(agvList.isEmpty() == true){
+					System.out.println("agvlist empty, waiting for agv...................................");
+					try {
+						Thread.sleep(Constants.SLEEP);
+						//Constants.TOTALTIME++; 
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				qcWaiting = false;
+				
+				
+			}
+			
+			j = q_jobs.get(0);
+			q_jobs.remove(0); 	//remove the first job in the queue 					
+			threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
+			a = new AtomicJob(j, threadName, null, qcWaiting);	//if null & qcWaitng == true, wait until agv assigned   
+			jobNo_created++; 
+			
+			System.out.println("waiting task created.............................");
+			
+			atomicJobList.add(a);
+			
+			a.start();
+			
+			/*else if(agvList.size() == 1){
+				System.out.println("agvList size:1 " + agvList.size());
+				Agv idleAgv = agvList.get(0);
+				agvList.remove(0);
+				
+				//first one no need to wait 
+				j = q_jobs.get(0);
+				q_jobs.remove(0); 	//remove the first job in the queue 					
+				threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
+				a = new AtomicJob(j, threadName, idleAgv, qcWaiting);
+				jobNo_created++; 
+				
+				atomicJobList.add(a);
+				
+				a.start();
+				
+			}else if(agvList.size() > 1){
+				System.out.println("agvList size:2 " + agvList.size());
+				Agv idleAgv = agvList.get(0);
+				agvList.remove(0);
+				
+				//first one no need to wait, 
+				j = q_jobs.get(0);
+				q_jobs.remove(0); 	//remove the first job in the queue 					
+				threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
+				a = new AtomicJob(j, threadName, idleAgv, qcWaiting);	
+				jobNo_created++;
+				
+				atomicJobList.add(a);
+				a.start();
+				try {
+					Thread.sleep(Constants.SLEEP);
+					//Constants.TOTALTIME++; 
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				while(q_jobs.isEmpty() == false){
+					
+					if(agvList.isEmpty() == true){
+						break;
+					}
+					
+					System.out.println("agvList size:3 " + agvList.size());
+					Agv idleAgv1 = agvList.get(0);
+					agvList.remove(0);
+					
+					//consecutive ones need to wait 
+					Job j2 = q_jobs.get(0);
+					q_jobs.remove(0); 	//remove the first job in the queue 					
+					threadName = Integer.toString(j2.getY()) + Integer.toString(j2.getX()); //set name 
+					AtomicJob a2 = new AtomicJob(j2, threadName, idleAgv1, qcWaiting);	//if not null, set wait 
+					jobNo_created++; 
+					
+					atomicJobList.add(a2);
+					
+					a2.start();
+					try {
+						Thread.sleep(Constants.SLEEP);
+						//Constants.TOTALTIME++; 
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
+			}*/
+			
 
 		}
 		
@@ -302,13 +466,6 @@ public class Greedy {
 					+ ", cost = " + q_jobs.get(i).getTotalCost());
 		}
 	}
-	/*
-	
-	public int idealStart(Job prev, Job curr){	//start from index 2
-		int newIdealStart = prev.getTotalCost(); //ideal start time is when prev just finishes drop off 
-		return 0; 
-	}*/
-	
 	
 	public boolean getGreedyComplete(){
 		return greedyComplete; 
@@ -364,24 +521,47 @@ public class Greedy {
 			
 		}
 		
+		
 		public void unloadingLock(AtomicJob aj, boolean unload){
-			//handle both j.setassigned & j.setwaiting(false) 
-			
+			//put this in show execution 
 			this.aj = aj; 
 			
 			//handle setWaiting 
-			while(waitingJob.isEmpty() == false){
-				Job j = waitingJob.get(0);
-				j.setIsWaiting(false);
-				waitingJob.remove(0); 
-				jobList.repaint();
-				try {
-					Thread.sleep(Constants.SLEEP);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			
+			int i=0;
+			while(i<waitingJob.size()){
+				Job j = waitingJob.get(i);
+				Job prev = jobList.getJob(j.getY()-1, j.getX());
+				if(j.getIsWaiting() == true && prev.getTravelling() == true){
+					j.setIsWaiting(false);
+					j.setTravelling(true);
+					//jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+					//jobList.getJob(j.getY(), j.getX()).setTravelling(true);
+					jobList.repaint();
+					try {
+						Thread.sleep(Constants.SLEEP);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+				i++;
 			}
+			
+			/*
+			i=0; 
+			while(true){
+				if(waitingJob.isEmpty() == true || i>=waitingJob.size()){
+					break;
+				}
+				
+				if(waitingJob.get(i).getIsWaiting() == false){
+					waitingJob.remove(i); 
+				}
+				
+				i++;
+			}
+			*/
 			
 			//handle setassigned 
 			if(unload){
@@ -419,10 +599,12 @@ public class Greedy {
 		private Thread t; 
 		private String name; 
 		private Agv agv;
+		private boolean qcWait;	//true- unloading not first, false- unloading first/ loading. true - need to set delay 1 unit before  
 		
-		public AtomicJob(Job j, String name, Agv agv){	
+		public AtomicJob(Job j, String name, Agv agv, boolean qcWait ){	
 			this.j = j; 
 			this.name = name;
+			this.qcWait = qcWait; 
 		}
 		
 		@Override
@@ -434,7 +616,7 @@ public class Greedy {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} 
-			}else{
+			}else{		
 				travelingUnloading(agv); 
 				try {
 					t.join();
@@ -459,6 +641,14 @@ public class Greedy {
 		
 		public Thread getThread(){
 			return t; 
+		}
+		
+		public void setAgv(Agv agv){
+			this.agv = agv; 
+		}
+		
+		public Agv getAgv(){
+			return agv; 
 		}
 		
 		public void travelingLoading(Agv agv){
@@ -495,9 +685,9 @@ public class Greedy {
 				
 				while(prev.getComplete() == false){
 					try {
-						Thread.sleep(Constants.SLEEP);
 						
-						updateDelayTimer(); 
+						updateDelayTimer();
+						Thread.sleep(Constants.SLEEP);
 						
 						System.out.println("\t\t\t\t\t\t\t\t\t\t total delay: " + Constants.TOTALDELAY);
 						//Constants.TOTALTIME++; 
@@ -522,63 +712,52 @@ public class Greedy {
 		}
 		
 		public void travelingUnloading(Agv agv){
-			/*
-			synchronized(l){
-				l.unloadingLock(this, true);
-			}*/
-			
-			//set assigned & unset waiting shouldn't happen tgt. what is the problem here? 
-			
+
 			j.setAssigned();
-		
-			System.out.println("job " + j.getY() + ", " + j.getX()+ " assigned agv");
-			
-			jobList.repaint();
-			
-			//if the previous job (column) not unloaded yet, wait
-			if(j.getY()-1 >= 0){
-				Job prev = jobList.getJob(j.getY()-1, j.getX());
-				
-				if(prev.getTravelling() == false){
-					System.out.println("previous job unfinished. waiting..............................");
-					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-					waitingJob.add(jobList.getJob(j.getY(), j.getX()));
+
+			//empty agv list, need to wait for agv
+			if(this.agv == null){//waiting for the agv
+				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+				System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
+				//System.out.println("current agv index: " + this.agv.getAgvNum());
+				while(agvList.isEmpty() == true){
 					jobList.repaint();
-				}
-				
-				while(prev.getTravelling() == false){
 					try {
+						updateDelayTimer();
 						Thread.sleep(Constants.SLEEP);
-						
-						updateDelayTimer(); 
-						
-						j.addUnloadWatiTime();
-						
-						System.out.println("\t\t\t\t\t\t\t\t\t\t total delay: " + Constants.TOTALDELAY);
-						//Constants.TOTALTIME++; 
 					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Constants.TOTALDELAY++;	//For now, adds one more at the end. 
-					
 				}
-
 				
+				//agv arrived
+				jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+				Agv idleAgv = agvList.get(0);
+				agvList.remove(0);
+				this.agv = idleAgv; 
+				System.out.println("job " + j.getY() + ", " + j.getX()+ " assigned agv");
+				//System.out.println("current agv index: " + this.agv.getAgvNum());
+		
 			}
 			
-			//before, check if any was waiting. Unload that first 
-			// if more than 1 unloading, unload the one that was waiting longer 
-			//	if multiple waiting, compare j.getUnloadWaitTime(). then unload the waiting one first. 
-			//	then, unload the one that is not waiting. yellow means on the agv. 
+			if(qcWait == true){	//need to wait for qc 
+				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+				System.out.println("job " + j.getY() + ", " + j.getX()+ " waiting qc");
+				jobList.repaint();
+				try {
+					updateDelayTimer();
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			
-			//search the joblist, find the longest waiting job, then execute it. 
-			/*
-			synchronized(l){
-				l.unloadingLock(this, true);
-			}*/
-			
-			
+			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+			jobList.repaint();
 			j.setTravelling(true);
+
 			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getBeforeTravelCost();
@@ -599,6 +778,8 @@ public class Greedy {
 			//job completion can happen at the same time
 			completeTask();
 			agvList.add(agv);
+			System.out.println("agv added back..........................................." );
+			System.out.println("new agv list size: " + agvList.size());
 			jobNo+= 1;
 		}
 		
@@ -645,45 +826,6 @@ public class Greedy {
 		}
 		
 		public void completeTask(){				
-			/*
-			int mulBays = Constants.TOTAL_X / Constants.MAX_X;
-			int baySize = Constants.BAYSIZE;
-			ArrayList<Integer> jobCompletedArr = new ArrayList<>(); 
-			
-			//calculate starting index of job per bay
-			for(int i=0; i<mulBays-1; i++){
-				jobCompletedArr.add(baySize + baySize*i);
-			}
-			
-			for(int i=0; i<jobCompletedArr.size(); i++){
-				if(jobNo_created == jobCompletedArr.get(i)){
-					//int nexty = j.getY()+1; //only considers next row. need to consider the next bay. job index - 0 to 39, 40 to 80 
-					if(j.getIndex()>jobCompletedArr.get(i)-1){
-						System.out.print("\t\t\t\t\t wait job index: " + j.getIndex());
-						while(jobNo<jobCompletedArr.get(i)){
-							
-							System.out.println("\t\t\t\t\twait until jobs completed...............................");
-							//jobList.getJob(nexty, j.getX()).setIsWaiting(true);
-							jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-							jobList.repaint();
-							try {
-								Thread.sleep(Constants.SLEEP);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						System.out.println("\t\t\t\t\t\tmove onto the next bay......................................");
-					}
-					
-					
-					
-					//jobList.getJob(nexty, j.getX()).setIsWaiting(false);
-					jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
-					jobList.repaint();
-				}
-				
-			}
-			*/
 			
 			j.setComplete();
 			

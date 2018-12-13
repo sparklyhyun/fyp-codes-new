@@ -14,7 +14,7 @@ public class Constants {
 	
 	public static final int TOTAL_X = 12; // 2 bays here 
 	
-	public static final int AGV = 12; //number of AGV
+	public static final int AGV = 4; //number of AGV
 	
 	public static final int CELL_SIZE = 30; 
 	public static final Color COLOR_LOADING = Color.BLUE;
@@ -24,7 +24,7 @@ public class Constants {
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	
-	public static final int SLEEP = 800; 
+	public static final int SLEEP = 1000; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;
@@ -38,8 +38,8 @@ public class Constants {
 	*/ 
 	//does this work like this? 
 	static class DelayComp{
-		public static JLabel lblDelaytime_counter = new JLabel("delay time counter");
-		public static JLabel lblTotaltime_counter = new JLabel("total time counter ");
+		public static JLabel lblDelaytime_counter = new JLabel("0");
+		public static JLabel lblTotaltime_counter = new JLabel("0 ");
 		
 		
 		

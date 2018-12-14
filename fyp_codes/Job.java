@@ -45,8 +45,8 @@ public class Job {
 			int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
 			this.travel = randomCost; 
 		}else{	//unloading task
-			int randomCost1 = rand.nextInt(7)+1; 	// cost ranges from 1 to 5
-			int randomCost2 = rand.nextInt(7)+1;
+			int randomCost1 = rand.nextInt(10)+1; 	// cost ranges from 1 to 5
+			int randomCost2 = rand.nextInt(10)+1;
 			this.beforeTravel = randomCost1; 
 			this.afterTravel = randomCost2; 
 		}

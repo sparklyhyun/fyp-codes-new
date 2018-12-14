@@ -305,9 +305,14 @@ public class Greedy {
 		}
 
 		Job j = q_jobs.get(0);
-		q_jobs.remove(0); 	//remove the first job in the queue 					
+		q_jobs.remove(0); 	//remove the first job in the queue 
+		
+		System.out.println("agvList size: " + agvList.size());
+		Agv idleAgv = agvList.get(0);
+		agvList.remove(0);	//agv not idle anymore 
+		
 		String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-		AtomicJob a = new AtomicJob(j, threadName, waitingAgv, qcWaiting);	//if waitingAGv wait for agv  
+		AtomicJob a = new AtomicJob(j, threadName, idleAgv, qcWaiting);	//if waitingAGv wait for agv  
 		jobNo_created++; 
 		
 		System.out.println("first task, no need to wait for qc");
@@ -326,8 +331,11 @@ public class Greedy {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			System.out.println("here.....................................................");
+			
 			//if agv empty, wait 
 			if(agvList.isEmpty() == true){	
+				System.out.println("here.....................................................2");
 				qcWaiting = true;
 				//1st one is on the qc, waiting for the agv 
 				j = q_jobs.get(0);
@@ -357,9 +365,17 @@ public class Greedy {
 			}
 			
 			j = q_jobs.get(0);
-			q_jobs.remove(0); 	//remove the first job in the queue 					
+			q_jobs.remove(0); 	//remove the first job in the queue 	
+			
+			System.out.println("agvList size: " + agvList.size());
+			System.out.println("qc wait" + qcWaiting);
+			idleAgv = agvList.get(0);
+			//if(agvList.isEmpty() == false) System.out.println("agv num: " + idleAgv.getAgvNum());
+			
+			agvList.remove(0);	//agv not idle anymore 
+			
 			threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-			a = new AtomicJob(j, threadName, null, qcWaiting);	//if null & qcWaitng == true, wait until agv assigned   
+			a = new AtomicJob(j, threadName, idleAgv, qcWaiting);	//if null & qcWaitng == true, wait until agv assigned   
 			jobNo_created++; 
 			
 			System.out.println("waiting task created.............................");
@@ -368,6 +384,7 @@ public class Greedy {
 			
 			a.start();
 			
+			qcWaiting = true;
 			/*else if(agvList.size() == 1){
 				System.out.println("agvList size:1 " + agvList.size());
 				Agv idleAgv = agvList.get(0);
@@ -714,13 +731,36 @@ public class Greedy {
 		public void travelingUnloading(Agv agv){
 
 			j.setAssigned();
-
+			
+			//System.out.println("agv: " + this.agv.getAgvNum() + "qcWait: " + qcWait);
+			
 			//empty agv list, need to wait for agv
-			if(this.agv == null){//waiting for the agv
-				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-				System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
-				//System.out.println("current agv index: " + this.agv.getAgvNum());
-				while(agvList.isEmpty() == true){
+			if(qcWait == true){//waiting for the agv
+				if(/*this.agv.getAgvNum() == 1000*/ this.agv != null && agvList.isEmpty() == true){
+					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+					System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
+					//System.out.println("current agv index: " + this.agv.getAgvNum());
+					while(agvList.isEmpty() == true){
+						jobList.repaint();
+						try {
+							updateDelayTimer();
+							Thread.sleep(Constants.SLEEP);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					
+					//agv arrived
+					jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+					Agv idleAgv = agvList.get(0);
+					agvList.remove(0);
+					this.agv = idleAgv; 
+					System.out.println("job " + j.getY() + ", " + j.getX()+ " assigned agv");
+					//System.out.println("current agv index: " + this.agv.getAgvNum());
+				}else{
+					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+					System.out.println("job " + j.getY() + ", " + j.getX()+ " waiting qc");
 					jobList.repaint();
 					try {
 						updateDelayTimer();
@@ -731,17 +771,9 @@ public class Greedy {
 					}
 				}
 				
-				//agv arrived
-				jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
-				Agv idleAgv = agvList.get(0);
-				agvList.remove(0);
-				this.agv = idleAgv; 
-				System.out.println("job " + j.getY() + ", " + j.getX()+ " assigned agv");
-				//System.out.println("current agv index: " + this.agv.getAgvNum());
+				
 		
-			}
-			
-			if(qcWait == true){	//need to wait for qc 
+			}/*else if(qcWait == true){	//need to wait for qc 
 				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
 				System.out.println("job " + j.getY() + ", " + j.getX()+ " waiting qc");
 				jobList.repaint();
@@ -752,7 +784,7 @@ public class Greedy {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
+			}*/
 			
 			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
 			jobList.repaint();

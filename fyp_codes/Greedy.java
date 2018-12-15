@@ -148,6 +148,7 @@ public class Greedy {
 		
 	}
 	
+	/*
 	public void startGreedyUnloading2(){
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
@@ -165,7 +166,8 @@ public class Greedy {
 				
 				//first, put top row into sorting array
 				for(int arr=0; arr<Constants.MAX_X; arr++){
-					sortArray[arr] = jobList.getJob(0, arr);
+					sortArray[arr] = jobList.getJob(0, i);
+					i++;
 				}
 				sortArray = sortDecending(sortArray);
 				
@@ -173,6 +175,7 @@ public class Greedy {
 				q_jobs.add(sortArray[0]);
 				
 				System.out.println("sorted first job....................................");
+				
 				
 				for(int j=0; j<Constants.BAYSIZE-1; j++){
 					//then, check add the job that is below that added job into the queue 
@@ -186,10 +189,21 @@ public class Greedy {
 						sortArray[0] = jobList.getJob(addedJobY+1, addedJobX); 
 					}else{
 						sortArray[0] = emptyJob; 
+					}	
+					
+					if(q_jobs.get(q_jobs.size()-1).getY() ){
+
+						sortDescending2(sortArray);
+						q_jobs.add(sortArray[0]);
+					}else{
+						sortArray = sortDecending(sortArray);
+						q_jobs.add(sortArray[0]);
 					}
-					//sort the queue 
-					sortArray = sortDecending(sortArray);
-					q_jobs.add(sortArray[0]);
+					 
+
+					
+
+					
 				}
 			}
 			
@@ -215,7 +229,7 @@ public class Greedy {
 			}
 			
 		}
-	}
+	}*/
 	
 	public Job[] sortDecending(Job[] arr){	//add high cost first
 		//simple bubble sort 
@@ -230,6 +244,23 @@ public class Greedy {
 			}
 		}
 		return arr; 
+	}
+	
+	public Job[] sortDescending2(Job[] arr){//for unloading
+		for(int i=Constants.MAX_X-1; i>0; i--){
+			for(int j=0; j<i; j++){
+				if(arr[j].getY() > arr[j+1].getY()){
+					Job temp = arr[j];
+					arr[j] = arr[j+1];
+					arr[j+1] = temp; 
+				}
+				
+			}
+		}
+		
+		
+		return arr; 
+		
 	}
 	
 	

@@ -292,10 +292,74 @@ public class Greedy {
 	public void showExecutionUnloading(){
 		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		
+		try {
+			Thread.sleep(Constants.SLEEP);
+			//Constants.TOTALTIME++; 
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		//for multiple bays
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X;
 		bayComplete = true; //start with true
 		
+		while(q_jobs.isEmpty()==false){
+			
+			while(true){
+				if(agvList.isEmpty()==false){
+					/*
+					try {
+						Thread.sleep(Constants.SLEEP);
+						//Constants.TOTALTIME++; 
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}*/
+							
+					System.out.println("agvList size: " + agvList.size());
+					Agv idleAgv = agvList.get(0);
+					agvList.remove(0);	//agv not idle anymore 
+					
+					Job j = q_jobs.get(0);
+					q_jobs.remove(0); 	//remove the first job in the queue 					
+					
+					String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
+							
+					AtomicJob a = new AtomicJob(j, threadName, idleAgv, qcWaiting);
+					jobNo_created++; 
+					
+					atomicJobList.add(a);
+					
+					a.start(); 
+					
+					qcWaiting = true; 
+					
+					try {
+						Thread.sleep(Constants.SLEEP);
+						//Constants.TOTALTIME++; 
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					break;
+				}
+				
+				System.out.println("agv not available, waiting.....");
+				
+				try {
+					Thread.sleep(Constants.SLEEP);
+					//Constants.TOTALTIME++; 
+					Constants.TOTALDELAY++;
+					updateDelayTimer();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				qcWaiting = false; 
+			}
+
+		}
+		
+		/*
 		//first item, no need waiting time 
 		try {
 			Thread.sleep(Constants.SLEEP);
@@ -385,75 +449,10 @@ public class Greedy {
 			a.start();
 			
 			qcWaiting = true;
-			/*else if(agvList.size() == 1){
-				System.out.println("agvList size:1 " + agvList.size());
-				Agv idleAgv = agvList.get(0);
-				agvList.remove(0);
-				
-				//first one no need to wait 
-				j = q_jobs.get(0);
-				q_jobs.remove(0); 	//remove the first job in the queue 					
-				threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-				a = new AtomicJob(j, threadName, idleAgv, qcWaiting);
-				jobNo_created++; 
-				
-				atomicJobList.add(a);
-				
-				a.start();
-				
-			}else if(agvList.size() > 1){
-				System.out.println("agvList size:2 " + agvList.size());
-				Agv idleAgv = agvList.get(0);
-				agvList.remove(0);
-				
-				//first one no need to wait, 
-				j = q_jobs.get(0);
-				q_jobs.remove(0); 	//remove the first job in the queue 					
-				threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-				a = new AtomicJob(j, threadName, idleAgv, qcWaiting);	
-				jobNo_created++;
-				
-				atomicJobList.add(a);
-				a.start();
-				try {
-					Thread.sleep(Constants.SLEEP);
-					//Constants.TOTALTIME++; 
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				
-				while(q_jobs.isEmpty() == false){
-					
-					if(agvList.isEmpty() == true){
-						break;
-					}
-					
-					System.out.println("agvList size:3 " + agvList.size());
-					Agv idleAgv1 = agvList.get(0);
-					agvList.remove(0);
-					
-					//consecutive ones need to wait 
-					Job j2 = q_jobs.get(0);
-					q_jobs.remove(0); 	//remove the first job in the queue 					
-					threadName = Integer.toString(j2.getY()) + Integer.toString(j2.getX()); //set name 
-					AtomicJob a2 = new AtomicJob(j2, threadName, idleAgv1, qcWaiting);	//if not null, set wait 
-					jobNo_created++; 
-					
-					atomicJobList.add(a2);
-					
-					a2.start();
-					try {
-						Thread.sleep(Constants.SLEEP);
-						//Constants.TOTALTIME++; 
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				
-			}*/
+			
 			
 
-		}
+		}*/
 		
 	}
 
@@ -736,56 +735,19 @@ public class Greedy {
 			
 			//empty agv list, need to wait for agv
 			if(qcWait == true){//waiting for the agv
-				if(/*this.agv.getAgvNum() == 1000*/ this.agv != null && agvList.isEmpty() == true){
-					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-					System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
-					//System.out.println("current agv index: " + this.agv.getAgvNum());
-					while(agvList.isEmpty() == true){
-						jobList.repaint();
-						try {
-							updateDelayTimer();
-							Thread.sleep(Constants.SLEEP);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					
-					//agv arrived
-					jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
-					Agv idleAgv = agvList.get(0);
-					agvList.remove(0);
-					this.agv = idleAgv; 
-					System.out.println("job " + j.getY() + ", " + j.getX()+ " assigned agv");
-					//System.out.println("current agv index: " + this.agv.getAgvNum());
-				}else{
-					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-					System.out.println("job " + j.getY() + ", " + j.getX()+ " waiting qc");
-					jobList.repaint();
-					try {
-						updateDelayTimer();
-						Thread.sleep(Constants.SLEEP);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
-				
-		
-			}/*else if(qcWait == true){	//need to wait for qc 
 				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-				System.out.println("job " + j.getY() + ", " + j.getX()+ " waiting qc");
+				System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
 				jobList.repaint();
 				try {
-					updateDelayTimer();
+					Constants.TOTALDELAY++;
+					//updateDelayTimer();
 					Thread.sleep(Constants.SLEEP);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}*/
-			
+			}
+
 			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
 			jobList.repaint();
 			j.setTravelling(true);
@@ -835,6 +797,9 @@ public class Greedy {
 					if(jobNo<=jobCompletedArr.get(i)){
 						System.out.print("\t\t\t\t\t wait job x: " + j.getX());
 						while(jobNo<jobCompletedArr.get(i)){
+							if(j.getLoading()==false){
+								break; 
+							}
 							System.out.println("\t\t\t\t\twait until jobs completed...............................");
 							//jobList.getJob(nexty, j.getX()).setIsWaiting(true);
 							jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);

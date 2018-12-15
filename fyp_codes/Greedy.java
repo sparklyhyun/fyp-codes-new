@@ -39,18 +39,6 @@ public class Greedy {
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
 		
-		/*
-		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
-				sortArray[j] = jobList.getJob(i, j);
-				Constants.TOTALTIME += jobList.getJob(i, j).getTotalCost();
-			}
-			sortArray = sortDecending(sortArray);
-			for(int k=0; k<Constants.MAX_X; k++){
-				q_jobs.add(sortArray[k]);
-			}
-		}*/
-		
 		for(int l=0; l<mulBays; l++){
 			for(int i=0; i<Constants.MAX_Y; i++){
 				int arr = 0;
@@ -162,6 +150,9 @@ public class Greedy {
 		
 	}
 	
+	public void startGreedyUnloading2(){
+		what is ths man 
+	}
 	
 	public Job[] sortDecending(Job[] arr){	//add high cost first
 		//simple bubble sort 
@@ -178,9 +169,7 @@ public class Greedy {
 		return arr; 
 	}
 	
-	public startGreedyUnloading2(){
-		
-	}
+	
 		
 	public void updateSimulator(){
 			
@@ -320,101 +309,7 @@ public class Greedy {
 			}
 
 		}
-		
-		/*
-		//first item, no need waiting time 
-		try {
-			Thread.sleep(Constants.SLEEP);
-			//Constants.TOTALTIME++; 
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 
-		Job j = q_jobs.get(0);
-		q_jobs.remove(0); 	//remove the first job in the queue 
-		
-		System.out.println("agvList size: " + agvList.size());
-		Agv idleAgv = agvList.get(0);
-		agvList.remove(0);	//agv not idle anymore 
-		
-		String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-		AtomicJob a = new AtomicJob(j, threadName, idleAgv, qcWaiting);	//if waitingAGv wait for agv  
-		jobNo_created++; 
-		
-		System.out.println("first task, no need to wait for qc");
-		
-		atomicJobList.add(a);
-		
-		a.start();
-		
-		qcWaiting = true; 
-		
-		//wait if agv list is empty
-		while(q_jobs.isEmpty()==false){
-			try {
-				Thread.sleep(Constants.SLEEP);
-				//Constants.TOTALTIME++; 
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.out.println("here.....................................................");
-			
-			//if agv empty, wait 
-			if(agvList.isEmpty() == true){	
-				System.out.println("here.....................................................2");
-				qcWaiting = true;
-				//1st one is on the qc, waiting for the agv 
-				j = q_jobs.get(0);
-				q_jobs.remove(0); 	//remove the first job in the queue 					
-				threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-				a = new AtomicJob(j, threadName, null, qcWaiting);	//if null & qcWaitng == true, wait until agv assigned   
-				jobNo_created++; 
-				
-				System.out.println("waiting task created.............................");
-				
-				atomicJobList.add(a);
-				
-				a.start();
-				
-				while(agvList.isEmpty() == true){
-					System.out.println("agvlist empty, waiting for agv...................................");
-					try {
-						Thread.sleep(Constants.SLEEP);
-						//Constants.TOTALTIME++; 
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				qcWaiting = false;
-				
-				
-			}
-			
-			j = q_jobs.get(0);
-			q_jobs.remove(0); 	//remove the first job in the queue 	
-			
-			System.out.println("agvList size: " + agvList.size());
-			System.out.println("qc wait" + qcWaiting);
-			idleAgv = agvList.get(0);
-			//if(agvList.isEmpty() == false) System.out.println("agv num: " + idleAgv.getAgvNum());
-			
-			agvList.remove(0);	//agv not idle anymore 
-			
-			threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
-			a = new AtomicJob(j, threadName, idleAgv, qcWaiting);	//if null & qcWaitng == true, wait until agv assigned   
-			jobNo_created++; 
-			
-			System.out.println("waiting task created.............................");
-			
-			atomicJobList.add(a);
-			
-			a.start();
-			
-			qcWaiting = true;
-			
-			
-
-		}*/
 		
 	}
 
@@ -525,21 +420,6 @@ public class Greedy {
 				}
 				i++;
 			}
-			
-			/*
-			i=0; 
-			while(true){
-				if(waitingJob.isEmpty() == true || i>=waitingJob.size()){
-					break;
-				}
-				
-				if(waitingJob.get(i).getIsWaiting() == false){
-					waitingJob.remove(i); 
-				}
-				
-				i++;
-			}
-			*/
 			
 			//handle setassigned 
 			if(unload){

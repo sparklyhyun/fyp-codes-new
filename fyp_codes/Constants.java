@@ -12,6 +12,8 @@ public class Constants {
 	public static final int MAX_Y = 10;	//bay height?
 	public static final int BAYSIZE = 40; 
 	
+	public static final int HALF_Y = MAX_Y/2;	//half is unloading, half is loading 
+	
 	public static final int TOTAL_X = 12; // 2 bays here 
 	
 	public static final int AGV = 12; //number of AGV

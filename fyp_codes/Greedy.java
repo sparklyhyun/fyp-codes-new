@@ -19,15 +19,12 @@ public class Greedy {
 	
 	//to store the job that is not waiting anymore...
 	private static ArrayList<Job> waitingJob = new ArrayList<>();
-	
-	private static ArrayList<Job> q_waitingAgv = new ArrayList<>(); 
-	
-	//how many were waiting and not waiting anymore
-	private static int finishWaiting = 0; 
-	
-	private static Agv waitingAgv = new Agv(1000); //agv to replace null value 
 
 	private static boolean qcWaiting = false; // false - no need to wait for qc 
+	
+	//to store half half 
+	private static ArrayList<Job> q_unloading = new ArrayList<>(); 
+	private static ArrayList<Job> q_loading = new ArrayList<>(); 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
@@ -35,12 +32,13 @@ public class Greedy {
 	}
 	
 	public void startGreedy1(){	//generic greedy algorithm, start from first row, then move onto the next row
+		//used for unloading 
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
 		
 		for(int l=0; l<mulBays; l++){
-			for(int i=0; i<Constants.MAX_Y; i++){
+			for(int i=0; i<Constants.HALF_Y; i++){
 				int arr = 0;
 				for(int j=l*Constants.MAX_X; j<(l+1)*Constants.MAX_X; j++){
 					sortArray[arr] = jobList.getJob(i, j);
@@ -83,6 +81,7 @@ public class Greedy {
 	
 	
 	public void startGreedy2(){	//1 item lookahead
+		//for loading 
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 

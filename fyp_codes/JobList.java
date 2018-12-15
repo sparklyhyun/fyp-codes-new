@@ -11,15 +11,26 @@ public class JobList extends JPanel{
 	//private Agv agv = null; 
 	
 	public JobList(){
-		//int jIndex = 0;
+	
+		/*
 		for(int i=0; i<Constants.MAX_Y; i++){
-			//for(int j=0; j<Constants.MAX_X; j++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
 				System.out.println("job y: " + i + "job x: " + j + " created");
-				//jIndex++; 
+			}
+		}*/
+		
+		for(int j=0; j<Constants.TOTAL_X; j++){
+			for(int i=0; i<5; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=5; i<10; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 		}
+		
 		System.out.println("job list done");
 	}
 	

@@ -71,9 +71,9 @@ public class Simulator {
 		totalTimer.start();
 		
 		//test simple greedy
-		//g.startGreedy1();
+		g.startGreedy1();
 		//g.startGreedy2();
-		g.startGreedyUnloading2();
+		//g.startGreedyUnloading2();
 		
 		if(Constants.allComplete){
 			System.out.println("---------------------------greedy complete=========");

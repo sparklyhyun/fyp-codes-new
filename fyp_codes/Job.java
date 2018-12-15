@@ -169,6 +169,10 @@ public class Job {
 		
 	}
 	
+	public void setTotalCost(int x){
+		tCost = 0; 
+	}
+	
 	public void setLastJob(){
 		lastJob = true; 
 	}

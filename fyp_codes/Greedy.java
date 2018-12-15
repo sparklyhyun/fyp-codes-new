@@ -83,7 +83,6 @@ public class Greedy {
 	
 	
 	public void startGreedy2(){	//1 item lookahead
-		//long startTime = System.nanoTime();  //to see the performance
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
@@ -131,7 +130,6 @@ public class Greedy {
 		showJobSeq(); 
 		
 		showExecution();
-		//showExecutionUnloading();
 		
 		while(true){
 			try {
@@ -151,7 +149,72 @@ public class Greedy {
 	}
 	
 	public void startGreedyUnloading2(){
-		what is ths man 
+		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
+		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		
+		//for sorting purpose
+		Job emptyJob = new Job(100,100,true);
+		emptyJob.setTotalCost(0);
+		
+		int arrX = 0;
+		
+		for(int l=0; l<mulBays; l++){
+			
+			//check 4 items at a time, not necessarily a row 
+			for(int i=l*Constants.MAX_X; i<(l+1)*Constants.MAX_X; i++){
+				
+				//first, put top row into sorting array
+				for(int arr=0; arr<Constants.MAX_X; arr++){
+					sortArray[arr] = jobList.getJob(0, arr);
+				}
+				sortArray = sortDecending(sortArray);
+				
+				//put the first item in the job queue
+				q_jobs.add(sortArray[0]);
+				
+				System.out.println("sorted first job....................................");
+				
+				for(int j=0; j<Constants.BAYSIZE-1; j++){
+					//then, check add the job that is below that added job into the queue 
+					int addedJobY = q_jobs.get(q_jobs.size()-1).getY();
+					int addedJobX = q_jobs.get(q_jobs.size()-1).getX(); 
+					
+					System.out.println("next job y: " + (addedJobY+1) +" .....................");
+					System.out.println((addedJobY+1 < Constants.MAX_Y));
+					
+					if(addedJobY+1 < Constants.MAX_Y){
+						sortArray[0] = jobList.getJob(addedJobY+1, addedJobX); 
+					}else{
+						sortArray[0] = emptyJob; 
+					}
+					//sort the queue 
+					sortArray = sortDecending(sortArray);
+					q_jobs.add(sortArray[0]);
+				}
+			}
+			
+			
+			
+		}
+		
+		showJobSeq(); 
+		
+		showExecutionUnloading();
+		
+		while(true){
+			try {
+				Thread.sleep(Constants.SLEEP);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(jobNo >= (Constants.MAX_Y * Constants.TOTAL_X)){
+				Constants.allComplete = true; 
+				System.out.println("-------------------all jobs complete---------------");
+				break;
+			}
+			
+		}
 	}
 	
 	public Job[] sortDecending(Job[] arr){	//add high cost first

@@ -23,13 +23,101 @@ public class Greedy {
 	private static boolean qcWaiting = false; // false - no need to wait for qc 
 	
 	//to store half half 
-	private static ArrayList<Job> q_unloading = new ArrayList<>(); 
-	private static ArrayList<Job> q_loading = new ArrayList<>(); 
+	//private static ArrayList<Job> q_unloading = new ArrayList<>(); 
+	//private static ArrayList<Job> q_loading = new ArrayList<>(); 
 	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
 		this.agvList = agvL; 
 	}
+	
+	public void startMergedGreedy(){
+		
+		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
+		int numBays = Constants.TOTAL_X / Constants.MAX_X; 
+
+		for(int l=0; l<numBays; l++){
+			//sort 1 bay at a time. update q_jobs accordingly 
+			
+			//sort unloading first
+			sortUnloading(l, sortArray);
+			showExecutionUnloading();
+			
+			//sort loading
+			sortLoading(l, sortArray); 
+			showExecutionLoading();
+			
+			//showExecutionUnloading();	//need to edit wait for bays part 
+			//showExecutionLoading(); 
+			
+			//wait for bay 
+			//unloading can only start when loading is finished. 
+		}
+		
+		
+		
+		
+	}
+	
+	public void sortUnloading(int bayNo, Job[] sortArray){
+		int arr = 0;
+		for(int i=0; i<Constants.HALF_Y; i++){
+			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
+				sortArray[arr] = jobList.getJob(i, j);
+				arr++;
+			}
+			sortArray = sortDescending(sortArray);
+			
+			for(int k=0; k<Constants.MAX_X; k++){
+				q_jobs.add(sortArray[k]);
+			}
+			arr = 0; 
+		}
+	}
+	
+	public void sortLoading(int bayNo, Job[] sortArray){
+		int arr = 0;
+		for(int i=Constants.HALF_Y; i<Constants.MAX_Y; i++){
+			
+			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
+				sortArray[arr] = jobList.getJob(i, j);
+				arr++;
+			}
+			sortArray = sortDescending(sortArray);
+			
+			for(int k=0; k<Constants.MAX_X; k++){
+				//new step, check next item and add the next item in front if it has higher cost
+				int y = sortArray[k].getY();
+				int nexty = y+1;
+				int x = sortArray[k].getX();
+				int count = 0; 
+				
+				if(nexty<Constants.MAX_Y && count < Constants.AGV-1){
+					Job nextJob = jobList.getJob(nexty, x); 
+					if(jobList.getJob(y, x).getVisited()==false){
+						//compare, when setting visited, set in the joblist
+						int nextCost = nextJob.getTotalCost();
+						if(nextCost > sortArray[k].getTotalCost()){
+							//add next task into the queue first 
+							q_jobs.add(nextJob);
+							jobList.getJob(nexty, x).setVisited();
+							
+							count++; 
+						}
+						q_jobs.add(sortArray[k]);
+					}
+				}else{
+					if(jobList.getJob(y, x).getVisited()==false){
+						q_jobs.add(sortArray[k]);
+					}
+				}
+				
+			}
+			arr = 0; 
+		}
+	
+	}
+	
 	
 	public void startGreedy1(){	//generic greedy algorithm, start from first row, then move onto the next row
 		//used for unloading 
@@ -44,7 +132,7 @@ public class Greedy {
 					sortArray[arr] = jobList.getJob(i, j);
 					arr++;
 				}
-				sortArray = sortDecending(sortArray);
+				sortArray = sortDescending(sortArray);
 				
 				for(int k=0; k<Constants.MAX_X; k++){
 					q_jobs.add(sortArray[k]);
@@ -59,6 +147,7 @@ public class Greedy {
 
 		//showExecution();				
 		
+		/*
 		showExecutionUnloading();
 		
 		while(true){
@@ -75,7 +164,7 @@ public class Greedy {
 			}
 			
 		}
-		
+		*/
 		
 	}
 	
@@ -93,7 +182,7 @@ public class Greedy {
 					sortArray[arr] = jobList.getJob(i, j);
 					arr++;
 				}
-				sortArray = sortDecending(sortArray);
+				sortArray = sortDescending(sortArray);
 				
 				for(int k=0; k<Constants.MAX_X; k++){
 					//new step, check next item and add the next item in front if it has higher cost
@@ -230,7 +319,7 @@ public class Greedy {
 		}
 	}*/
 	
-	public Job[] sortDecending(Job[] arr){	//add high cost first
+	public Job[] sortDescending(Job[] arr){	//add high cost first
 		//simple bubble sort 
 		for(int i=Constants.MAX_X-1; i>0; i--){
 			for(int j=0; j<i; j++){

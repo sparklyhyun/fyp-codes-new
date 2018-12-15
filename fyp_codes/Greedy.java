@@ -100,9 +100,6 @@ public class Greedy {
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
 		
-		//start = l*max_X
-		//end = (l+1)*max_x
-		
 		for(int l=0; l<mulBays; l++){
 			for(int i=0; i<Constants.MAX_Y; i++){
 				int arr = 0;
@@ -141,45 +138,7 @@ public class Greedy {
 					
 				}
 			}
-		}
-		
-		/*
-		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
-				sortArray[j] = jobList.getJob(i, j);
-			}
-			sortArray = sortDecending(sortArray);
-			
-			for(int k=0; k<Constants.MAX_X; k++){
-				//new step, check next item and add the next item in front if it has higher cost
-				int y = sortArray[k].getY();
-				int nexty = y+1;
-				int x = sortArray[k].getX();
-				int count = 0; 
-				
-				if(nexty<Constants.MAX_Y && count < 3){
-					Job nextJob = jobList.getJob(nexty, x); 
-					if(jobList.getJob(y, x).getVisited()==false){
-						//compare, when setting visited, set in the joblist
-						int nextCost = nextJob.getTotalCost();
-						if(nextCost > sortArray[k].getTotalCost()){
-							//add next task into the queue first 
-							q_jobs.add(nextJob);
-							jobList.getJob(nexty, x).setVisited();
-							
-							count++; 
-						}
-						q_jobs.add(sortArray[k]);
-					}
-				}else{	
-					if(jobList.getJob(y, x).getVisited()==false){
-						q_jobs.add(sortArray[k]);
-					}
-				}
-				
-			}
-		}*/
-		
+		}		
 
 		showJobSeq(); 
 		
@@ -219,6 +178,9 @@ public class Greedy {
 		return arr; 
 	}
 	
+	public startGreedyUnloading2(){
+		
+	}
 		
 	public void updateSimulator(){
 			

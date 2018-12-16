@@ -484,10 +484,9 @@ public class Greedy {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
+				qcWaiting = false; 
 				break;
 			}
-			qcWaiting = false; 
 			
 			System.out.println("agvList size: " + agvList.size());
 			Agv idleAgv = agvList.get(0);

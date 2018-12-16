@@ -27,6 +27,7 @@ public class Simulator {
 	private static JLabel lblTotaltime_counter = new JLabel("total_time");
 	
 	private static JobList joblist; 
+	private static JobList joblist2; //second joblist for testing!! 
 	private static ArrayList<Agv> agvList = new ArrayList<>();
 	
 	private static int totalTime = 0;
@@ -35,22 +36,13 @@ public class Simulator {
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
 	public static void main(String[] args){
-		//generate multiple job lists according to the number of columns
-		/*
-		int col_no = Constants.TOTAL_X / Constants.MAX_X; 
-		ArrayList<JobList> mulJobList = new ArrayList<>(); 
 		
-		for(int i=0; i<col_no; i++){
-			JobList singleJobList = new JobList();
-			mulJobList.add(singleJobList); 
-			System.out.println("job list " + i + ", show joblist");
-		}
-		System.out.println("before multiple job list==========================================================");
-		*/
 		resetTimers();
 		
 		joblist = new JobList(); 
-		seeJobList(); 
+		seeJobList(joblist); 
+		joblist2 = new JobList();
+		seeJobList(joblist2); 
 		
 		for(int i=0; i<Constants.AGV; i++){
 			Agv agv = new Agv(i); 
@@ -92,12 +84,12 @@ public class Simulator {
 		Constants.TOTALTIME = 0;
 	}
 	
-	public static void seeJobList(){
+	public static void seeJobList(JobList jl){
 		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
 		for(int k=0; k<mulBays; k++){
 			for(int i=0; i<Constants.MAX_Y; i++){
 				for(int j=k*Constants.MAX_X; j<(k+1)*Constants.MAX_X; j++){
-					System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");
+					System.out.print(jl.getJob(i, j).getTotalCost()+ " ");
 				}
 				System.out.println(" ");
 			}

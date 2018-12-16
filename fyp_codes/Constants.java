@@ -15,10 +15,11 @@ public class Constants {
 	public static final int HALF_Y = MAX_Y/2;	//half is unloading, half is loading 
 	
 	public static final int TOTAL_X = 12; // 2 bays here 
+	//public static final int TOTAL_Y = 20; // 2 qc, top and bottom 
 	
 	public static final int AGV = 12; //number of AGV
 	
-	public static final int CELL_SIZE = 30; 
+	public static final int CELL_SIZE = 20; 
 	public static final Color COLOR_LOADING = Color.BLUE;
 	public static final Color COLOR_LOADING_ASSIGNED = Color.CYAN;	//when assigned a vehicle
 	public static final Color COLOR_UNLOADING = Color.GREEN;

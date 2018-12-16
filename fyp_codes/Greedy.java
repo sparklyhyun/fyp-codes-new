@@ -5,7 +5,7 @@ import java.util.*;
 import javax.swing.*;
 
 
-public class Greedy {
+public class Greedy implements Runnable{
 	public static JobList jobList;
 	public static ArrayList<Agv> agvList;	//kind of idle list. 
 	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
@@ -26,6 +26,14 @@ public class Greedy {
 	//private static ArrayList<Job> q_unloading = new ArrayList<>(); 
 	//private static ArrayList<Job> q_loading = new ArrayList<>(); 
 	
+
+	@Override
+	//make it a runnable 
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}	
+	
 	public Greedy(JobList j, ArrayList<Agv> agvL){
 		this.jobList = j; 
 		this.agvList = agvL; 
@@ -34,7 +42,7 @@ public class Greedy {
 	public void startMergedGreedy(){
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
-		int numBays = Constants.TOTAL_X / Constants.MAX_X; 
+		int numBays = Constants.QC_X / Constants.MAX_X; 
 
 		for(int l=0; l<numBays; l++){
 			//sort 1 bay at a time. update q_jobs accordingly 
@@ -130,7 +138,7 @@ public class Greedy {
 		//used for unloading 
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
-		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		int mulBays = Constants.QC_X / Constants.MAX_X; 
 		
 		for(int l=0; l<mulBays; l++){
 			for(int i=0; i<Constants.HALF_Y; i++){
@@ -164,7 +172,7 @@ public class Greedy {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(jobNo >= (Constants.MAX_Y * Constants.TOTAL_X)){
+			if(jobNo >= (Constants.MAX_Y * Constants.QC_X)){
 				Constants.allComplete = true; 
 				System.out.println("-------------------all jobs complete---------------");
 				break;
@@ -180,7 +188,7 @@ public class Greedy {
 		//for loading 
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
-		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		int mulBays = Constants.QC_X / Constants.MAX_X; 
 		
 		for(int l=0; l<mulBays; l++){
 			for(int i=0; i<Constants.MAX_Y; i++){
@@ -233,7 +241,7 @@ public class Greedy {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(jobNo >= (Constants.MAX_Y * Constants.TOTAL_X)){
+			if(jobNo >= (Constants.MAX_Y * Constants.QC_X)){
 				Constants.allComplete = true; 
 				System.out.println("-------------------all jobs complete---------------");
 				break;
@@ -246,7 +254,7 @@ public class Greedy {
 	/*
 	public void startGreedyUnloading2(){
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
-		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		int mulBays = Constants.QC_X / Constants.MAX_X; 
 		
 		//for sorting purpose
 		Job emptyJob = new Job(100,100,true);
@@ -317,7 +325,7 @@ public class Greedy {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(jobNo >= (Constants.MAX_Y * Constants.TOTAL_X)){
+			if(jobNo >= (Constants.MAX_Y * Constants.QC_X)){
 				Constants.allComplete = true; 
 				System.out.println("-------------------all jobs complete---------------");
 				break;
@@ -420,7 +428,7 @@ public class Greedy {
 		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		
 		//for multiple bays
-		int mulBays = Constants.TOTAL_X / Constants.MAX_X;
+		int mulBays = Constants.QC_X / Constants.MAX_X;
 		bayComplete = true; //start with true
 		
 		//wait if agv list is empty
@@ -529,7 +537,7 @@ public class Greedy {
 		}
 		
 		//for multiple bays
-		int mulBays = Constants.TOTAL_X / Constants.MAX_X;
+		int mulBays = Constants.QC_X / Constants.MAX_X;
 		bayComplete = true; //start with true
 		
 		while(q_jobs.isEmpty()==false){
@@ -904,7 +912,7 @@ public class Greedy {
 		}
 		
 		public void waitForBay(){
-			int mulBays = Constants.TOTAL_X / Constants.MAX_X;
+			int mulBays = Constants.QC_X / Constants.MAX_X;
 			int baySize = Constants.BAYSIZE;
 			ArrayList<Integer> jobCompletedArr = new ArrayList<>(); 
 			ArrayList<Integer> maxX = new ArrayList<>(); 
@@ -981,7 +989,8 @@ public class Greedy {
 		}
 		
 	}
-	
+
+
 	
 	
 	

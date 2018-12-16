@@ -6,16 +6,21 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+//total number of qc = 4
+
 
 public class Constants {
 	public static final int MAX_X = 4; 	//bay size (for 1) ?
 	public static final int MAX_Y = 10;	//bay height?
-	public static final int BAYSIZE = 40; 
+	public static final int BAYSIZE = MAX_X * MAX_Y; 
 	
 	public static final int HALF_Y = MAX_Y/2;	//half is unloading, half is loading 
 	
-	public static final int TOTAL_X = 12; // 2 bays here 
-	//public static final int TOTAL_Y = 20; // 2 qc, top and bottom 
+	public static final int QC_X = 12; // 3 bays here 
+	
+	public static final int TOTAL_Y = 20; // 2 qc, top and bottom 
+	public static final int TOTAL_X = 24; // 2 qc, left and right
+	public static final int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 
 	
 	public static final int AGV = 12; //number of AGV
 	

@@ -41,8 +41,6 @@ public class Simulator {
 		
 		joblist = new JobList(); 
 		seeJobList(joblist); 
-		joblist2 = new JobList();
-		seeJobList(joblist2); 
 		
 		for(int i=0; i<Constants.AGV; i++){
 			Agv agv = new Agv(i); 
@@ -54,6 +52,7 @@ public class Simulator {
 		
 		Greedy g = new Greedy(joblist, agvList);
 		joblist.setLayout(null);
+		
 		
 		//testing the simulator 
 		//g.testSimulator();
@@ -68,7 +67,7 @@ public class Simulator {
 		//g.startGreedyUnloading2();
 		
 		g.startMergedGreedy();
-		
+				
 		if(Constants.allComplete){
 			System.out.println("---------------------------greedy complete=========");
 			System.out.println("total delay: " + Constants.TOTALDELAY);
@@ -85,7 +84,7 @@ public class Simulator {
 	}
 	
 	public static void seeJobList(JobList jl){
-		int mulBays = Constants.TOTAL_X / Constants.MAX_X; 
+		int mulBays = Constants.QC_X / Constants.MAX_X; 
 		for(int k=0; k<mulBays; k++){
 			for(int i=0; i<Constants.MAX_Y; i++){
 				for(int j=k*Constants.MAX_X; j<(k+1)*Constants.MAX_X; j++){
@@ -109,8 +108,8 @@ public class Simulator {
 	//don't add buttons yet 
 	private static void viewSimulator(){
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(600, 450));	//window size 400(width) by 400(height)  
-		_frame.setResizable(false);
+		_frame.setSize(new Dimension(600, 400));	//window size 400(width) by 400(height)  
+		_frame.setResizable(true);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
 		
@@ -155,6 +154,8 @@ public class Simulator {
 		CardLayout c = ((CardLayout)_tiles.getLayout());
 		
 		c.show(_tiles, "TASK_LIST");
+		
+		
 		//not sure if correct or not 
 		/*
 		CardLayout card = new CardLayout();

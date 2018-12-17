@@ -22,7 +22,10 @@ public class Constants {
 	public static final int TOTAL_X = 24; // 2 qc, left and right
 	public static final int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 
 	
-	public static final int AGV = 12; //number of AGV
+	public static final int NUM_QC_X = 2;
+	public static final int NUM_QC_Y = 2; 
+	
+	public static final int AGV = 8; //number of AGV
 	
 	public static final int CELL_SIZE = 20; 
 	public static final Color COLOR_LOADING = Color.BLUE;

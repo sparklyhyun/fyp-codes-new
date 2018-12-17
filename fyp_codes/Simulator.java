@@ -50,7 +50,47 @@ public class Simulator {
 		
 		viewSimulator();
 		
-		Greedy g = new Greedy(joblist, agvList);
+		///////////need to make greedy into a runnable
+		///////////need to set range (split the joblist first) 
+		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
+		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		JobList splitJobList;
+		String qcName; 
+		
+		for(int i=0; i<numQcY; i++){
+			System.out.println("i value: " + i);
+			for(int j=0; j<numQcX; j++){
+				System.out.println("j value: " + j);
+				
+				splitJobList = new JobList(i, j, joblist); 
+				
+				qcName = "qc" + i + j; 
+				
+				Greedy g = new Greedy(splitJobList, agvList, qcName);
+				g.start(); 
+				
+				/*
+				for(int k=numQcY*Constants.MAX_Y; k<(numQcY+1)*Constants.MAX_Y; k++){
+					System.out.println("k value: " + k);
+					for(int l=numQcX*Constants.QC_X; l<(numQcX+1)*Constants.QC_X; l++){
+						System.out.println("l value: " + l);
+						splitJobList = new JobList(k, l, joblist); 
+						Greedy g = new Greedy(splitJobList, agvList);
+						g.start(); 
+					}
+				}*/
+				
+				
+			}
+		}
+		
+		
+		
+		
+		
+		
+		////////////////////////////
+		//Greedy g = new Greedy(joblist, agvList);
 		joblist.setLayout(null);
 		
 		
@@ -66,7 +106,7 @@ public class Simulator {
 		//g.startGreedy2();
 		//g.startGreedyUnloading2();
 		
-		g.startMergedGreedy();
+		//g.startMergedGreedy();
 				
 		if(Constants.allComplete){
 			System.out.println("---------------------------greedy complete=========");
@@ -108,7 +148,7 @@ public class Simulator {
 	//don't add buttons yet 
 	private static void viewSimulator(){
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(600, 400));	//window size 400(width) by 400(height)  
+		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
 		_frame.setResizable(true);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
@@ -132,7 +172,7 @@ public class Simulator {
 		contentPane.add(_buttons, BorderLayout.PAGE_END); 
 		((JComponent) contentPane).setBorder(new EmptyBorder(10, 10, 10, 10));
 		
-		_tiles.add(_label);
+		//_tiles.add(_label);
 		
 		//initialize map layout
 		initTasks();

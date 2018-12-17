@@ -43,6 +43,16 @@ public class JobList extends JPanel{
 		System.out.println("job list done");
 	}
 	
+	public JobList(int y, int x, JobList fullList){
+		for(int j=x*Constants.QC_X; j<(x+1)*Constants.QC_X; j++){
+			//System.out.println("x value: " + j);
+			for(int i=y*(Constants.MAX_Y); i<(y+1)*(Constants.MAX_Y); i++){
+				//System.out.println("y value: " + i);
+				jobs[i][j] = fullList.getJob(i, j); 
+			}
+		}
+	}
+	
 	public void reset(){
 		for(int i=0; i<Constants.MAX_Y; i++){
 			//for(int j=0; j<Constants.MAX_X; j++){
@@ -120,6 +130,8 @@ public class JobList extends JPanel{
 					}
 				}
 				g.setColor(cellColor);
+				
+				//modify here to make a space between the qc lol 
 				g.fillRect(guiCells[Constants.TOTAL_Y-i-1][j].x, guiCells[Constants.TOTAL_Y-i-1][j].y, guiCells[Constants.TOTAL_Y-i-1][j].cellSize, guiCells[Constants.TOTAL_Y-i-1][j].cellSize);
 			}
 			
@@ -136,7 +148,7 @@ public class JobList extends JPanel{
 		//change later! 
 		public GuiCell(int borderX, int borderY, int borderSize){
 			this.x = borderX + 2; 			//2 = outline
-			this.y = 300 - borderY - 2; 	//400 = map y (not sure if pixels)
+			this.y = 400 - borderY - 1; 	//400 = map y (not sure if pixels)
 			this.cellSize = borderSize - 4;	//4 = outline *2 
 		}
 		

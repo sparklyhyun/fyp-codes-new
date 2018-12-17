@@ -26,17 +26,29 @@ public class Greedy implements Runnable{
 	//private static ArrayList<Job> q_unloading = new ArrayList<>(); 
 	//private static ArrayList<Job> q_loading = new ArrayList<>(); 
 	
+	//making this runnable 
+	private Thread t; 
+	private String name; 
 
 	@Override
 	//make it a runnable 
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		startMergedGreedy(); 
 	}	
 	
-	public Greedy(JobList j, ArrayList<Agv> agvL){
+	public void start(){
+		if(t==null){
+			t = new Thread(this, name);
+			t.start();
+			
+		}
+	}
+	
+	public Greedy(JobList j, ArrayList<Agv> agvL, String name){
 		this.jobList = j; 
 		this.agvList = agvL; 
+		this.name = name; 
 	}
 	
 	public void startMergedGreedy(){
@@ -68,10 +80,6 @@ public class Greedy implements Runnable{
 		}
 		
 		Constants.allComplete = true; 
-		
-		
-		
-		
 	}
 	
 	public void sortUnloading(int bayNo, Job[] sortArray){
@@ -827,7 +835,7 @@ public class Greedy implements Runnable{
 			if(j.getY()-1 >= 0){
 				Job prev = jobList.getJob(j.getY()-1, j.getX());
 				
-				if(prev.getComplete() == false){
+				if(prev.getLoading() == true && prev.getComplete() == false){
 					System.out.println("previous job unfinished. waiting..............................");
 					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
 					jobList.repaint();

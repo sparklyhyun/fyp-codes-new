@@ -1,5 +1,6 @@
 package fyp_codes;
 
+import java.awt.List;
 import java.util.*;
 
 import javax.swing.*;
@@ -34,6 +35,7 @@ public class Greedy implements Runnable{
 	//make it a runnable 
 	public void run() {
 		// TODO Auto-generated method stub
+		seeSplitJobList(jobList); 
 		startMergedGreedy(); 
 	}	
 	
@@ -653,6 +655,29 @@ public class Greedy implements Runnable{
 	public void updateTotalTimer(){
 		Constants.TIMERS.updateTotalTimer();
 	}
+	
+	//test if the split job list is working
+	public void seeSplitJobList(JobList jl){
+		System.out.println("\ntesting to see if the job list works");
+		Job job;
+		
+		//testing the y and x
+		int y, x; 
+		
+		for(int i=0; i<Constants.MAX_Y; i++){
+			for(int j=0; j<Constants.QC_X; j++){
+				job = jl.getJob(i, j);
+				
+				//testing the y and x (still getting nullpointer exception) 
+				y = job.getY();
+				x = job.getX(); 
+				
+				System.out.print("splitjob retrieved, y: " + y + ", x: " + x);
+			}
+		}
+		
+	}
+	
 	
 	class Lock{
 		private AtomicJob aj; 

@@ -8,6 +8,9 @@ import java.awt.*;
 public class JobList extends JPanel{
 	//public final Job[][] jobs = new Job[Constants.MAX_Y][Constants.MAX_X];
 	public final Job[][] jobs = new Job[Constants.TOTAL_Y][Constants.TOTAL_X];
+	public final Job[][] splitJobs = new Job[Constants.MAX_Y][Constants.NUM_QC_X]; 
+	
+	private boolean splitJobList = false; // see if splitjoblist
 	//private Agv agv = null; 
 	
 	public JobList(){
@@ -20,6 +23,7 @@ public class JobList extends JPanel{
 			}
 		}*/
 		
+		//creating the full job list 
 		for(int j=0; j<Constants.TOTAL_X; j++){
 			for(int i=0; i<5; i++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
@@ -44,46 +48,87 @@ public class JobList extends JPanel{
 	}
 	
 	public JobList(int y, int x, JobList fullList){
+		//for splitjob, hence set true 
+		splitJobList = true; 
+		
+		int k = 0; //Constants.QC_X;
+		int l = 0; //Constants.MAX_Y; 
+		
+		System.out.println("\nspllit list index: " + y + ", " + x);
+		
 		for(int j=x*Constants.QC_X; j<(x+1)*Constants.QC_X; j++){
 			//System.out.println("x value: " + j);
 			for(int i=y*(Constants.MAX_Y); i<(y+1)*(Constants.MAX_Y); i++){
 				//System.out.println("y value: " + i);
-				jobs[i][j] = fullList.getJob(i, j); 
+				jobs[l][k] = fullList.getJob(i, j); 
+				
+				//testing index
+				System.out.println("split job y: " + jobs[l][k].getY() + ", x: " + jobs[l][k].getY() + ", fullList y: " + fullList.getJob(i, j).getY() + ", x: " + fullList.getJob(i, j).getX());
+				
+				l++;
 			}
+			k++; 
+			l = 0; 
 		}
 	}
 	
 	public void reset(){
-		for(int i=0; i<Constants.MAX_Y; i++){
-			//for(int j=0; j<Constants.MAX_X; j++){
-			for(int j=0; j<Constants.QC_X; j++){
-				jobs[i][j].setIncomplete();
-				jobs[i][j].setNotvisited();
+		if(splitJobList == true){
+			for(int i=0; i<Constants.MAX_Y; i++){
+				for(int j=0; j<Constants.QC_X; j++){
+					splitJobs[i][j].setIncomplete();
+					splitJobs[i][j].setNotvisited();
+				}
+			}
+		}else{
+			for(int i=0; i<Constants.TOTAL_Y; i++){
+				for(int j=0; j<Constants.TOTAL_X; j++){
+					jobs[i][j].setIncomplete();
+					jobs[i][j].setNotvisited();
+				}
 			}
 		}
 	}
 	
 	public boolean isLoading(int y, int x){
+		if(splitJobList == true){	
+			return splitJobs[y][x].getLoading();
+		}
 		return jobs[y][x].getLoading();
 	}
 	
 	public boolean isVisited(int y, int x){
+		if(splitJobList == true){
+			return splitJobs[y][x].getVisited();
+		}
 		return jobs[y][x].getVisited();
 	}
 	
 	public boolean isAssigned(int y, int x){
+		if(splitJobList == true){
+			return splitJobs[y][x].getAssigned();
+		}
 		return jobs[y][x].getAssigned();
 	}
 	
 	public boolean isComplete(int y, int x){
+		if(splitJobList == true){
+			return splitJobs[y][x].getComplete();
+		}
 		return jobs[y][x].getComplete(); 
 	}
 	
 	public boolean isWaiting(int y, int x){
+		if(splitJobList == true){
+			return splitJobs[y][x].getIsWaiting();
+		}
 		return jobs[y][x].getIsWaiting();
 	}
 	
 	public Job getJob(int y, int x){
+		if(splitJobList == true){
+			return  splitJobs[y][x]; 
+		}
 		return jobs[y][x]; 
 	}
 	

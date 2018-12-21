@@ -58,9 +58,9 @@ public class Simulator {
 		String qcName; 
 		
 		for(int i=0; i<numQcY; i++){
-			System.out.println("i value: " + i);
+			//System.out.println("i value: " + i);
 			for(int j=0; j<numQcX; j++){
-				System.out.println("j value: " + j);
+				//System.out.println("j value: " + j);
 				
 				splitJobList = new JobList(i, j, joblist); 
 				

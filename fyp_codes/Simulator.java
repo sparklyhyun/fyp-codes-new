@@ -54,7 +54,7 @@ public class Simulator {
 		///////////need to set range (split the joblist first) 
 		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
 		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
-		JobList splitJobList;
+		//JobList splitJobList; //= new JobList();
 		String qcName; 
 		
 		for(int i=0; i<numQcY; i++){
@@ -62,11 +62,16 @@ public class Simulator {
 			for(int j=0; j<numQcX; j++){
 				//System.out.println("j value: " + j);
 				
-				splitJobList = new JobList(i, j, joblist); 
-				
+				JobList splitJobList = new JobList(i, j, joblist); 
+				System.out.printf("Lol\n");
+				System.out.println(splitJobList.getJob(0, 0).getX());
 				qcName = "qc" + i + j; 
 				
 				Greedy g = new Greedy(splitJobList, agvList, qcName);
+				
+				System.out.println("splitting job is done\n");
+				//so the problem is when you start the greedy
+				
 				g.start(); 
 				
 				/*

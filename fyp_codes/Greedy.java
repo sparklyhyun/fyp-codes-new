@@ -7,7 +7,7 @@ import javax.swing.*;
 
 
 public class Greedy implements Runnable{
-	public static JobList jobList;
+	public static JobList jobList;	//joblist not passed properly. why?? 
 	public static ArrayList<Agv> agvList;	//kind of idle list. 
 	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
 	Lock l = new Lock(); 
@@ -35,7 +35,7 @@ public class Greedy implements Runnable{
 	//make it a runnable 
 	public void run() {
 		// TODO Auto-generated method stub
-		seeSplitJobList(jobList); 
+		
 		startMergedGreedy(); 
 	}	
 	
@@ -51,6 +51,11 @@ public class Greedy implements Runnable{
 		this.jobList = j; 
 		this.agvList = agvL; 
 		this.name = name; 
+		
+		System.out.println("greedy name: " + name);
+		System.out.println("see joblist ");
+		//seeSplitJobList(jobList); //done fixed
+		
 	}
 	
 	public void startMergedGreedy(){
@@ -102,6 +107,9 @@ public class Greedy implements Runnable{
 	
 	public void sortLoading(int bayNo, Job[] sortArray){
 		int arr = 0;
+		
+		int splity, splitx; 
+		
 		for(int i=Constants.HALF_Y; i<Constants.MAX_Y; i++){
 			
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
@@ -116,6 +124,9 @@ public class Greedy implements Runnable{
 				int nexty = y+1;
 				int x = sortArray[k].getX();
 				int count = 0; 
+				
+				int currSplitX = sortArray[k].getSplitX();
+				int currSplitY = sortArray[k].getSplitY(); 
 				
 				if(nexty<Constants.MAX_Y && count < Constants.AGV-1){
 					Job nextJob = jobList.getJob(nexty, x); 
@@ -132,7 +143,11 @@ public class Greedy implements Runnable{
 						q_jobs.add(sortArray[k]);
 					}
 				}else{
-					if(jobList.getJob(y, x).getVisited()==false){
+					//System.out.printf("y: %d x: %d\n", y, x);
+					//change y and x to split job
+					if(jobList.getJob(currSplitY, currSplitX).getVisited()==false){
+					//if(jobList.getJob(y, x).getVisited() == false){
+						
 						q_jobs.add(sortArray[k]);
 					}
 				}
@@ -658,23 +673,14 @@ public class Greedy implements Runnable{
 	
 	//test if the split job list is working
 	public void seeSplitJobList(JobList jl){
-		System.out.println("\ntesting to see if the job list works");
-		Job job;
-		
-		//testing the y and x
-		int y, x; 
+		//System.out.println(jl);
 		
 		for(int i=0; i<Constants.MAX_Y; i++){
 			for(int j=0; j<Constants.QC_X; j++){
-				job = jl.getJob(i, j);
-				
-				//testing the y and x (still getting nullpointer exception) 
-				y = job.getY();
-				x = job.getX(); 
-				
-				System.out.print("splitjob retrieved, y: " + y + ", x: " + x);
+				System.out.print("splitjob retrieved, y: " + jl.getJob(i, j).getY() + ", x: " + jl.getJob(i, j).getX());
 			}
 		}
+		
 		
 	}
 	

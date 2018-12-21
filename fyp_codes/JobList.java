@@ -8,7 +8,7 @@ import java.awt.*;
 public class JobList extends JPanel{
 	//public final Job[][] jobs = new Job[Constants.MAX_Y][Constants.MAX_X];
 	public final Job[][] jobs = new Job[Constants.TOTAL_Y][Constants.TOTAL_X];
-	public final Job[][] splitJobs = new Job[Constants.MAX_Y][Constants.NUM_QC_X]; 
+	public final Job[][] splitJobs = new Job[Constants.MAX_Y + 1][Constants.QC_X + 1]; 
 	
 	private boolean splitJobList = false; // see if splitjoblist
 	//private Agv agv = null; 
@@ -49,21 +49,22 @@ public class JobList extends JPanel{
 	
 	public JobList(int y, int x, JobList fullList){
 		//for splitjob, hence set true 
-		splitJobList = true; 
+		this.splitJobList = true; 
 		
 		int k = 0; //Constants.QC_X;
 		int l = 0; //Constants.MAX_Y; 
 		
-		System.out.println("\nspllit list index: " + y + ", " + x);
+		//System.out.println("\nspllit list index: " + y + ", " + x);
 		
 		for(int j=x*Constants.QC_X; j<(x+1)*Constants.QC_X; j++){
 			//System.out.println("x value: " + j);
 			for(int i=y*(Constants.MAX_Y); i<(y+1)*(Constants.MAX_Y); i++){
 				//System.out.println("y value: " + i);
-				jobs[l][k] = fullList.getJob(i, j); 
-				
+				splitJobs[l][k] = fullList.getJob(i, j); 
+				splitJobs[l][k].setSplitX(k);
+				splitJobs[l][k].setSplitY(l);
 				//testing index
-				System.out.println("split job y: " + jobs[l][k].getY() + ", x: " + jobs[l][k].getY() + ", fullList y: " + fullList.getJob(i, j).getY() + ", x: " + fullList.getJob(i, j).getX());
+				//System.out.println("split job y: " + splitJobs[l][k].getY() + ", x: " + splitJobs[l][k].getY() + ", fullList y: " + fullList.getJob(i, j).getY() + ", x: " + fullList.getJob(i, j).getX());
 				
 				l++;
 			}
@@ -129,7 +130,8 @@ public class JobList extends JPanel{
 		if(splitJobList == true){
 			return  splitJobs[y][x]; 
 		}
-		return jobs[y][x]; 
+		return jobs[y][x];
+		
 	}
 	
 	//GUI

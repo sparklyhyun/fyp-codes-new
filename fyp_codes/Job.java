@@ -28,6 +28,9 @@ public class Job {
 	
 	private int unloadWaitTime = 0; 
 	
+	private int splitX = 0;
+	private int splitY = 0; 
+	
 	private Agv agv; 
 
 	
@@ -101,6 +104,21 @@ public class Job {
 		return travelling; 
 	}
 	
+	public int getSplitX(){
+		return splitX;
+	}
+	
+	public int getSplitY(){
+		return splitY; 
+	}
+	
+	public void setSplitX(int x){
+		this.splitX = x;
+	}
+	
+	public void setSplitY(int y){
+		this.splitY = y; 
+	}
 	/*
 	public int getIdealStart(){
 		return idealStart; 

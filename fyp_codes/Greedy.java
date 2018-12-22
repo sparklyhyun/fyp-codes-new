@@ -57,6 +57,13 @@ public class Greedy implements Runnable{
 		this.agvList = agvL; 
 		this.name = name; 
 		
+		//show agvList (works fine)
+		/*
+		for(int i=0; i<agvList.size(); i++){
+			System.out.println("agvList test: " + agvList.get(i).getAgvNum());
+		}
+		*/ 
+		
 		//System.out.println("greedy name: " + name);
 		//System.out.println("see joblist ");
 		//seeSplitJobList(jobList); //done fixed
@@ -98,7 +105,8 @@ public class Greedy implements Runnable{
 		int arr = 0;
 		for(int i=0; i<Constants.HALF_Y; i++){
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
-				sortArray[arr] = jobList.getJob(i, j);
+				//sortArray[arr] = jobList.getJob(i, j);
+				sortArray[arr] = splitJobList.getJob(i, j); 
 				arr++;
 			}
 			sortArray = sortDescending(sortArray);
@@ -118,31 +126,34 @@ public class Greedy implements Runnable{
 		for(int i=Constants.HALF_Y; i<Constants.MAX_Y; i++){
 			
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
-				sortArray[arr] = jobList.getJob(i, j);
+				//sortArray[arr] = jobList.getJob(i, j);
+				sortArray[arr] = splitJobList.getJob(i, j); 
 				arr++;
 			}
 			sortArray = sortDescending(sortArray);
 			
 			for(int k=0; k<Constants.MAX_X; k++){
 				//new step, check next item and add the next item in front if it has higher cost
+				//fullListX and fullListY already obtaned here 
 				int y = sortArray[k].getY();
 				int nexty = y+1;
 				int x = sortArray[k].getX();
 				int count = 0; 
 				
-				int currSplitX = sortArray[k].getSplitX();
-				int currSplitY = sortArray[k].getSplitY(); 
+				int fullListX, fullListY;
 				
 				if(nexty<Constants.MAX_Y && count < Constants.AGV-1){
 					Job nextJob = jobList.getJob(nexty, x); 
+					//Job nextJob = splitJobList.getJob(nexty, x); 
 					if(jobList.getJob(y, x).getVisited()==false){
+					//if(splitJobList.getJob(y, x).getVisited() == false){
 						//compare, when setting visited, set in the joblist
 						int nextCost = nextJob.getTotalCost();
 						if(nextCost > sortArray[k].getTotalCost()){
 							//add next task into the queue first 
 							q_jobs.add(nextJob);
 							jobList.getJob(nexty, x).setVisited();
-							
+
 							count++; 
 						}
 						q_jobs.add(sortArray[k]);
@@ -150,8 +161,9 @@ public class Greedy implements Runnable{
 				}else{
 					//System.out.printf("y: %d x: %d\n", y, x);
 					//change y and x to split job
-					if(jobList.getJob(currSplitY, currSplitX).getVisited()==false){
-					//if(jobList.getJob(y, x).getVisited() == false){
+					
+					if(jobList.getJob(y, x).getVisited() == false){
+					//if(splitJobList.getJob(y, x).getVisited() == false){
 						
 						q_jobs.add(sortArray[k]);
 					}

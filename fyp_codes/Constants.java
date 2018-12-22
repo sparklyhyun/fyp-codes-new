@@ -57,11 +57,11 @@ public class Constants {
 		public DelayComp(){
 			lblTotaltime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
 			lblTotaltime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
-			lblTotaltime_counter.setBounds(363, 370, 67, 15);
+			lblTotaltime_counter.setBounds(360, 370, 70, 15);
 			
 			lblDelaytime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
 			lblDelaytime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
-			lblDelaytime_counter.setBounds(525, 370, 69, 15);
+			lblDelaytime_counter.setBounds(525, 370, 70, 15);
 			
 			Timer timer = new Timer(SLEEP, new ActionListener(){
 

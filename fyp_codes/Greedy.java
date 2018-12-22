@@ -7,7 +7,11 @@ import javax.swing.*;
 
 
 public class Greedy implements Runnable{
-	public static JobList jobList;	//joblist not passed properly. why?? 
+	public static JobList jobList;	
+	
+	//the split list. to change the joblist, get full list x and y from the split list 
+	public static SplitJobList splitJobList; 
+
 	public static ArrayList<Agv> agvList;	//kind of idle list. 
 	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
 	Lock l = new Lock(); 
@@ -47,13 +51,14 @@ public class Greedy implements Runnable{
 		}
 	}
 	
-	public Greedy(JobList j, ArrayList<Agv> agvL, String name){
+	public Greedy(JobList j, SplitJobList sj , ArrayList<Agv> agvL, String name){
 		this.jobList = j; 
+		this.splitJobList = sj; 
 		this.agvList = agvL; 
 		this.name = name; 
 		
-		System.out.println("greedy name: " + name);
-		System.out.println("see joblist ");
+		//System.out.println("greedy name: " + name);
+		//System.out.println("see joblist ");
 		//seeSplitJobList(jobList); //done fixed
 		
 	}
@@ -506,6 +511,8 @@ public class Greedy implements Runnable{
 		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		
 		while(q_jobs.size()>20){
+			System.out.println("agv list empty: " + agvList.isEmpty());
+			
 			while(agvList.isEmpty() == true){
 				System.out.println("agv not available, waiting.....");
 				
@@ -521,6 +528,7 @@ public class Greedy implements Runnable{
 				break;
 			}
 			
+			//now the agv list is not working 
 			System.out.println("agvList size: " + agvList.size());
 			Agv idleAgv = agvList.get(0);
 			agvList.remove(0);	//agv not idle anymore 
@@ -908,8 +916,10 @@ public class Greedy implements Runnable{
 			
 			//empty agv list, need to wait for agv
 			if(qcWait == true){//waiting for the agv
-				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-				System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
+				//jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+				jobList.getJob(j.getSplitY(), j.getSplitX()).setIsWaiting(true);
+				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
+				System.out.println("job " + j.getSplitY() + ", " + j.getSplitX()+ " null agv, waiting for agv");
 				jobList.repaint();
 				try {
 					Constants.TOTALDELAY++;
@@ -921,7 +931,8 @@ public class Greedy implements Runnable{
 				}
 			}
 
-			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+			//jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+			jobList.getJob(j.getSplitY(), j.getSplitX()).setIsWaiting(false);
 			jobList.repaint();
 			j.setTravelling(true);
 
@@ -1007,7 +1018,10 @@ public class Greedy implements Runnable{
 			}
 			
 			System.out.println("agv added to the queue, new queue length: " + agvList.size());
-			jobList.getJob(j.getY(), j.getX()).setComplete();
+			
+			//jobList.getJob(j.getY(), j.getX()).setComplete();
+			jobList.getJob(j.getSplitY(), j.getSplitX()); 
+			
 			jobList.repaint();
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			

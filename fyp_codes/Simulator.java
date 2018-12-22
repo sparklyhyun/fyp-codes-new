@@ -42,12 +42,13 @@ public class Simulator {
 		joblist = new JobList(); 
 		seeJobList(joblist); 
 		
+		/*
 		for(int i=0; i<Constants.AGV; i++){
 			Agv agv = new Agv(i); 
 			agvList.add(agv); 
 		}
 		System.out.println("agv done");
-		
+		*/
 		viewSimulator();
 		
 		///////////need to make greedy into a runnable
@@ -62,15 +63,21 @@ public class Simulator {
 			for(int j=0; j<numQcX; j++){
 				//System.out.println("j value: " + j);
 				
-				JobList splitJobList = new JobList(i, j, joblist); 
-				System.out.printf("Lol\n");
+				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
+				//System.out.printf("Lol\n");
 				System.out.println(splitJobList.getJob(0, 0).getX());
 				qcName = "qc" + i + j; 
 				
-				Greedy g = new Greedy(splitJobList, agvList, qcName);
+				ArrayList<Agv> splitAgvList = new ArrayList<>(); 
+				
+				for(int k=0; k<Constants.AGV; k++){
+					Agv agv = new Agv(k); 
+					splitAgvList.add(agv); 
+				}
+				
+				Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
 				
 				System.out.println("splitting job is done\n");
-				//so the problem is when you start the greedy
 				
 				g.start(); 
 				

@@ -7,25 +7,25 @@ import javax.swing.*;
 
 
 public class Greedy implements Runnable{
-	public static JobList jobList;	
+	private JobList jobList;	
 	
 	//the split list. to change the joblist, get full list x and y from the split list 
-	public static SplitJobList splitJobList; 
+	private SplitJobList splitJobList; 
 
-	public static ArrayList<Agv> agvList;	//kind of idle list. 
-	private static ArrayList<Job> q_jobs = new ArrayList<>(); 
-	Lock l = new Lock(); 
-	private static boolean greedyComplete = false; 
-	private static int jobNo = 0; //for completed jobs 
-	private static int jobNo_created = 0; 
+	private ArrayList<Agv> agvList = new ArrayList<>();	//kind of idle list. 
+	private ArrayList<Job> q_jobs = new ArrayList<>(); 
+	private Lock l = new Lock(); 
+	private boolean greedyComplete = false; 
+	private int jobNo = 0; //for completed jobs 
+	private int jobNo_created = 0; 
 	
 	//wait until bay is complete. then move on to the next bay.
-	private static boolean bayComplete = false; 
+	private boolean bayComplete = false; 
 	
 	//to store the job that is not waiting anymore...
-	private static ArrayList<Job> waitingJob = new ArrayList<>();
+	private ArrayList<Job> waitingJob = new ArrayList<>();
 
-	private static boolean qcWaiting = true; // false - no need to wait for qc 
+	private boolean qcWaiting = true; // false - no need to wait for qc 
 	
 	//to store half half 
 	//private static ArrayList<Job> q_unloading = new ArrayList<>(); 
@@ -34,7 +34,7 @@ public class Greedy implements Runnable{
 	//making this runnable 
 	private Thread t; 
 	private String name; 
-
+	
 	@Override
 	//make it a runnable 
 	public void run() {
@@ -51,10 +51,15 @@ public class Greedy implements Runnable{
 		}
 	}
 	
-	public Greedy(JobList j, SplitJobList sj , ArrayList<Agv> agvL, String name){
+	public Greedy(JobList j, SplitJobList sj , /*ArrayList<Agv> agvL,*/ String name){
 		this.jobList = j; 
 		this.splitJobList = sj; 
-		this.agvList = agvL; 
+
+		for(int k=0; k<Constants.AGV; k++){
+			Agv agv = new Agv(k); 
+			agvList.add(agv); 
+		}
+		
 		this.name = name; 
 		
 		//show agvList (works fine)
@@ -74,6 +79,7 @@ public class Greedy implements Runnable{
 		
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int numBays = Constants.QC_X / Constants.MAX_X; 
+		int numHalf = Constants.MAX_Y / 2; //top 5 unloading, bottom 5 loading 
 
 		for(int l=0; l<numBays; l++){
 			//sort 1 bay at a time. update q_jobs accordingly 
@@ -499,7 +505,7 @@ public class Greedy implements Runnable{
 					
 					atomicJobList.add(a);
 					
-					a.start(); 
+					a.start(); //it feels like i need to re-do everything........
 							
 					break;
 				}
@@ -525,7 +531,7 @@ public class Greedy implements Runnable{
 		while(q_jobs.size()>20){
 			System.out.println("agv list empty: " + agvList.isEmpty());
 			
-			while(agvList.isEmpty() == true){
+			while(agvList.isEmpty()==true){
 				System.out.println("agv not available, waiting.....");
 				
 				try {
@@ -555,6 +561,8 @@ public class Greedy implements Runnable{
 			
 			atomicJobList.add(a);
 			
+			
+			System.out.println("qc thread: " + name + ", job y: " + a.getJob().getY() + ", x: " + a.getJob().getX());
 			a.start(); 
 			
 			qcWaiting = true; 

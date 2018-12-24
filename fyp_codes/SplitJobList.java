@@ -11,18 +11,12 @@ public class SplitJobList {
 		int k = 0; //Constants.QC_X;
 		int l = 0; //Constants.MAX_Y; 
 		
-		//System.out.println("\nspllit list index: " + y + ", " + x);
-		
 		for(int j=x*Constants.QC_X; j<(x+1)*Constants.QC_X; j++){
 			//System.out.println("x value: " + j);
 			for(int i=y*(Constants.MAX_Y); i<(y+1)*(Constants.MAX_Y); i++){
-				//System.out.println("y value: " + i);
 				splitJobs[l][k] = fullList.getJob(i, j); 
 				splitJobs[l][k].setSplitX(k);
 				splitJobs[l][k].setSplitY(l);
-				//testing index
-				//System.out.println("split job y: " + splitJobs[l][k].getY() + ", x: " + splitJobs[l][k].getY() + ", fullList y: " + fullList.getJob(i, j).getY() + ", x: " + fullList.getJob(i, j).getX());
-				
 				l++;
 			}
 			k++; 

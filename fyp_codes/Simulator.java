@@ -58,21 +58,26 @@ public class Simulator {
 		for(int i=0; i<numQcY; i++){
 			for(int j=0; j<numQcX; j++){
 				
+				/*
 				ArrayList<Agv> splitAgvList = new ArrayList<>(); 
 				
 				for(int k=0; k<Constants.AGV; k++){
 					Agv agv = new Agv(k); 
 					splitAgvList.add(agv); 
 				}
+				*/
 				
 				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
+				seeSplitJobList(splitJobList); 
+				
 				//System.out.printf("Lol\n");
 				//System.out.println(splitJobList.getJob(0, 0).getX());
 				qcName = "qc" + i + j; 
 				
 				
 				
-				Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
+				//Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
+				Greedy g = new Greedy(joblist, splitJobList, qcName); 
 				
 				System.out.println("splitting job is done\n");
 				
@@ -133,7 +138,17 @@ public class Simulator {
 	}
 	
 	public static void seeJobList(JobList jl){
-		int mulBays = Constants.QC_X / Constants.MAX_X; 
+		System.out.println("see entire job list");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(jl.getJob(i, j).getTotalCost()+ " ");
+			}
+			System.out.println(" ");
+		}
+		
+		
+		/*
+		int mulBays = Constants.QC_X / Constants.MAX_X;
 		for(int k=0; k<mulBays; k++){
 			for(int i=0; i<Constants.MAX_Y; i++){
 				for(int j=k*Constants.MAX_X; j<(k+1)*Constants.MAX_X; j++){
@@ -142,7 +157,7 @@ public class Simulator {
 				System.out.println(" ");
 			}
 			
-		}
+		}*/
 	
 		/*
 		for(int i=0; i<Constants.MAX_Y; i++){
@@ -152,6 +167,19 @@ public class Simulator {
 			System.out.println(" ");
 		}*/
 		
+	}
+	
+	public static void seeSplitJobList(SplitJobList sjl){
+		int mulBays = Constants.QC_X / Constants.MAX_X; 
+		for(int k=0; k<mulBays; k++){
+			for(int i=0; i<Constants.MAX_Y; i++){
+				for(int j=k*Constants.MAX_X; j<(k+1)*Constants.MAX_X; j++){
+					System.out.print(sjl.getJob(i, j).getTotalCost()+ " ");
+				}
+				System.out.println(" ");
+			}
+			
+		}
 	}
 	
 	//don't add buttons yet 

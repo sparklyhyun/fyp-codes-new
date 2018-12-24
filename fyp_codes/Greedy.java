@@ -105,6 +105,7 @@ public class Greedy implements Runnable{
 		}
 		
 		Constants.allComplete = true; 
+		System.out.println("Thread ended, thread name: " + name + "\n");
 	}
 	
 	public void sortUnloading(int bayNo, Job[] sortArray){
@@ -459,6 +460,8 @@ public class Greedy implements Runnable{
 			jobNo_created++; 
 			
 			atomicJobList.add(a);
+			
+			System.out.println("qc thread: " + name + ", job y: " + a.getJob().getY() + ", x: " + a.getJob().getX());
 			
 			a.start(); 
 			
@@ -870,10 +873,10 @@ public class Greedy implements Runnable{
 		
 		public void travelingLoading(Agv agv){
 			j.setAssigned();
-		
+			jobList.repaint();
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
 			
-			jobList.repaint();
+			
 			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getTotalCost();
@@ -938,9 +941,11 @@ public class Greedy implements Runnable{
 			if(qcWait == true){//waiting for the agv
 				//jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
 				jobList.getJob(j.getSplitY(), j.getSplitX()).setIsWaiting(true);
+				jobList.repaint();
+				
 				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
 				System.out.println("job " + j.getSplitY() + ", " + j.getSplitX()+ " null agv, waiting for agv");
-				jobList.repaint();
+				
 				try {
 					Constants.TOTALDELAY++;
 					//updateDelayTimer();
@@ -953,9 +958,9 @@ public class Greedy implements Runnable{
 
 			//jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
 			jobList.getJob(j.getSplitY(), j.getSplitX()).setIsWaiting(false);
-			jobList.repaint();
+			//jobList.repaint();
 			j.setTravelling(true);
-
+			jobList.repaint();
 			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getBeforeTravelCost();

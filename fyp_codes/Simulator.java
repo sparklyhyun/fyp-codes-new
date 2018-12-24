@@ -33,6 +33,15 @@ public class Simulator {
 	private static int totalTime = 0;
 	private static int totalDelay = 0;
 	
+	private static ArrayList<SplitJobList> splitJobListArr = new ArrayList<>();
+	
+	//test the one with split job list
+	private static JPanel _splitTile1 = null;
+	private static JPanel _splitTile2 = null;
+	private static JPanel _splitTile3 = null;
+	private static JPanel _splitTile4 = null;
+	
+	
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
 	public static void main(String[] args){
@@ -51,8 +60,10 @@ public class Simulator {
 		*/
 		viewSimulator();
 		
-		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
-		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		//int numQcY = Constants.TOTAL_X / Constants.QC_X; 
+		//int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		int numQcX = 1;
+		int numQcY = 1;
 		String qcName; 
 		
 		for(int i=0; i<numQcY; i++){
@@ -69,6 +80,7 @@ public class Simulator {
 				
 				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
 				seeSplitJobList(splitJobList); 
+				splitJobListArr.add(splitJobList); 
 				
 				//System.out.printf("Lol\n");
 				//System.out.println(splitJobList.getJob(0, 0).getX());
@@ -93,6 +105,8 @@ public class Simulator {
 						g.start(); 
 					}
 				}*/
+				
+				
 				
 				
 			}
@@ -197,15 +211,28 @@ public class Simulator {
 		
 		
 		//components in the window 
-		_tiles = new JPanel(new CardLayout());
+		//_tiles = new JPanel(new CardLayout());
 		_buttons = new JPanel();
 		 
+		//test the one with split job list
+		_splitTile1 = new JPanel(new CardLayout());
+		_splitTile2 = new JPanel(new CardLayout());
+		_splitTile3 = new JPanel(new CardLayout());
+		_splitTile4 = new JPanel(new CardLayout());
+		
 		Container contentPane = _frame.getContentPane();
 		
 		//contentPane.setLayout(new BorderLayout());
 		
 		_frame.setLocationRelativeTo(null);
-		contentPane.add(_tiles, BorderLayout.CENTER);
+		//contentPane.add(_tiles, BorderLayout.CENTER);
+		
+		//test the one with splitjoblist
+		contentPane.add(_splitTile1, BorderLayout.CENTER);
+		contentPane.add(_splitTile2, BorderLayout.CENTER);
+		contentPane.add(_splitTile3, BorderLayout.CENTER);
+		contentPane.add(_splitTile4, BorderLayout.CENTER);
+		
 		contentPane.add(_buttons, BorderLayout.PAGE_END); 
 		((JComponent) contentPane).setBorder(new EmptyBorder(10, 10, 10, 10));
 		
@@ -226,11 +253,19 @@ public class Simulator {
 	}
 	
 	private static void initTasks(){
+		/*
 		_tiles.add(joblist, "TASK_LIST");
 		
 		CardLayout c = ((CardLayout)_tiles.getLayout());
 		
 		c.show(_tiles, "TASK_LIST");
+		*/
+		
+		//can I do this?
+		_splitTile1.add(splitJobListArr.get(0), "SPLIT_TASK1");
+		_splitTile2.add(splitJobListArr.get(1), "SPLIT_TASK1");
+		_splitTile3.add(splitJobListArr.get(2), "SPLIT_TASK1");
+		_splitTile4.add(splitJobListArr.get(3), "SPLIT_TASK1");
 		
 		
 		//not sure if correct or not 

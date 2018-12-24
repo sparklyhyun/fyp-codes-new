@@ -41,6 +41,8 @@ public class Simulator {
 	private static JPanel _splitTile3 = null;
 	private static JPanel _splitTile4 = null;
 	
+	private static ArrayList<Greedy> q_greedy = new ArrayList<>(); 
+	
 	
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
@@ -60,10 +62,10 @@ public class Simulator {
 		*/
 		viewSimulator();
 		
-		//int numQcY = Constants.TOTAL_X / Constants.QC_X; 
-		//int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
-		int numQcX = 1;
-		int numQcY = 1;
+		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
+		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		//int numQcX = 1;
+		//int numQcY = 1;
 		String qcName; 
 		
 		for(int i=0; i<numQcY; i++){
@@ -113,14 +115,25 @@ public class Simulator {
 		}
 		
 		
-		
+		initTasks();
 		
 		
 		
 		////////////////////////////
 		//Greedy g = new Greedy(joblist, agvList);
-		joblist.setLayout(null);
 		
+		joblist.setLayout(null);
+		/*
+		for(int i=0; i<splitJobListArr.size(); i++){
+			splitJobListArr.get(i).setLayout(null);
+		}*/
+		
+		//testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		/*
+		for(int i=0; i<q_greedy.size(); i++){
+			q_greedy.get(i).start();
+		}*/
 		
 		//testing the simulator 
 		//g.testSimulator();
@@ -211,28 +224,31 @@ public class Simulator {
 		
 		
 		//components in the window 
-		//_tiles = new JPanel(new CardLayout());
+		_tiles = new JPanel(new CardLayout());
 		_buttons = new JPanel();
 		 
 		//test the one with split job list
+		/*
 		_splitTile1 = new JPanel(new CardLayout());
 		_splitTile2 = new JPanel(new CardLayout());
 		_splitTile3 = new JPanel(new CardLayout());
 		_splitTile4 = new JPanel(new CardLayout());
+		*/
 		
 		Container contentPane = _frame.getContentPane();
 		
 		//contentPane.setLayout(new BorderLayout());
 		
 		_frame.setLocationRelativeTo(null);
-		//contentPane.add(_tiles, BorderLayout.CENTER);
+		contentPane.add(_tiles, BorderLayout.CENTER);
 		
 		//test the one with splitjoblist
+		/*
 		contentPane.add(_splitTile1, BorderLayout.CENTER);
 		contentPane.add(_splitTile2, BorderLayout.CENTER);
 		contentPane.add(_splitTile3, BorderLayout.CENTER);
 		contentPane.add(_splitTile4, BorderLayout.CENTER);
-		
+		*/
 		contentPane.add(_buttons, BorderLayout.PAGE_END); 
 		((JComponent) contentPane).setBorder(new EmptyBorder(10, 10, 10, 10));
 		
@@ -253,20 +269,21 @@ public class Simulator {
 	}
 	
 	private static void initTasks(){
-		/*
+		
 		_tiles.add(joblist, "TASK_LIST");
 		
 		CardLayout c = ((CardLayout)_tiles.getLayout());
 		
 		c.show(_tiles, "TASK_LIST");
-		*/
+		
 		
 		//can I do this?
+		/*
 		_splitTile1.add(splitJobListArr.get(0), "SPLIT_TASK1");
-		_splitTile2.add(splitJobListArr.get(1), "SPLIT_TASK1");
-		_splitTile3.add(splitJobListArr.get(2), "SPLIT_TASK1");
-		_splitTile4.add(splitJobListArr.get(3), "SPLIT_TASK1");
-		
+		_splitTile2.add(splitJobListArr.get(0), "SPLIT_TASK1");
+		_splitTile3.add(splitJobListArr.get(0), "SPLIT_TASK1");
+		_splitTile4.add(splitJobListArr.get(0), "SPLIT_TASK1");
+		*/
 		
 		//not sure if correct or not 
 		/*
@@ -296,6 +313,21 @@ public class Simulator {
 		joblist.add(lblDelayTime);
 		
 		joblist.add(Constants.TIMERS.getDelayCounter());
+		
+		//make sure there is space
+		/*
+		JLabel lblDelaytime_counter_blank = new JLabel("\t\t\t\t");
+		JLabel lblTotaltime_counter_blank = new JLabel("\t\t\t\t");
+		
+		lblTotaltime_counter_blank.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblTotaltime_counter_blank.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblTotaltime_counter_blank.setBounds(360, 370, 70, 15);
+		
+		lblDelaytime_counter_blank.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblDelaytime_counter_blank.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblDelaytime_counter_blank.setBounds(525, 370, 70, 15);
+		*/
+		
 		
 		//labels added to constant class
 		//JLabel lblTotaltime_counter = new JLabel("total_time");

@@ -4,7 +4,7 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 
-public class SplitJobList {
+public class SplitJobList extends JPanel{
 	//just to contain jobs from the full job list 
 	
 	public final Job[][] splitJobs = new Job[Constants.MAX_Y][Constants.QC_X]; 

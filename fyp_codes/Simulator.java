@@ -43,6 +43,8 @@ public class Simulator {
 	
 	private static ArrayList<Greedy> q_greedy = new ArrayList<>(); 
 	
+	private static boolean pause = false; 
+	
 	
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
@@ -92,6 +94,9 @@ public class Simulator {
 				
 				//Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
 				Greedy g = new Greedy(joblist, splitJobList, qcName); 
+				
+				//put greedy in queue
+				q_greedy.add(g); 
 				
 				System.out.println("splitting job is done\n");
 				
@@ -381,26 +386,59 @@ public class Simulator {
 	}
 	
 	private static void addButtons(){
-		//greedy search
-		JButton btn_greedy_algo = new JButton("Greedy");
-		btn_greedy_algo.setFont(new Font("Calbri", Font.BOLD, 12));
-		btn_greedy_algo.setFocusPainted(false);
+		//start button 
+		JButton btn_start = new JButton("Start");
+		btn_start.setFont(new Font("Calbri", Font.BOLD, 12));
+		btn_start.setFocusPainted(false);
+		
 		//add event 
+		btn_start.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0){
+				//start algorithm
+			}
+		});
+	
+		_buttons.add(btn_start);
 		
+		//pause button 
+		JButton btn_pause = new JButton("Pause");
+		btn_pause.setFont(new Font("Calbri", Font.BOLD, 12));
+		btn_pause.setFocusPainted(false);
 		
-		_buttons.add(btn_greedy_algo);
-		
-		//greedy search 2
-		JButton btn_greedy_algo_2 = new JButton("Greedy 2");
-		btn_greedy_algo_2.setFont(new Font("Calbri", Font.BOLD, 12));
-		btn_greedy_algo_2.setFocusPainted(false);
+		//add event 
+		btn_pause.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0){
+				System.out.println("-------------------main paused------------------");
+				//pause algorithm
+				Greedy greedy; 
+				pause = true; 
+				for(int i=0; i<q_greedy.size(); i++){
+					greedy = q_greedy.get(i);
+					greedy.pauseGreedy();;
+				}
 				
-		_buttons.add(btn_greedy_algo_2); 
+				while(pause == true){
+					//nothing happens here 
+				}
+			}
+		});
+				
+		_buttons.add(btn_pause); 
 		
 		//reset button 
 		JButton btn_reset = new JButton("Reset");
 		btn_reset.setFont(new Font("Calbri", Font.BOLD, 12));
 		btn_reset.setFocusPainted(false);
+		
+		//add event 
+		btn_reset.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0){
+				//reset algorithm
+				joblist.reset();
+				resetTimers(); 
+				joblist.repaint();
+			}
+		});
 		
 		_buttons.add(btn_reset); 
 	}

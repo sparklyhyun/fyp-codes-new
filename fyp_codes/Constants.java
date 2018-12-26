@@ -35,7 +35,7 @@ public class Constants {
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	
-	public static final int SLEEP = 500; 
+	public static final int SLEEP = 2000; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;

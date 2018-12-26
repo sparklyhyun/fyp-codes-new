@@ -80,6 +80,7 @@ public class JobList extends JPanel{
 			for(int j=0; j<Constants.TOTAL_X; j++){
 				jobs[i][j].setIncomplete();
 				jobs[i][j].setNotvisited();
+				jobs[i][j].setNotAssigned();
 			}
 		}
 		/*

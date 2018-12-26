@@ -170,6 +170,10 @@ public class Job {
 		assigned = true; 
 	}
 	
+	public void setNotAssigned(){
+		assigned = false; 
+	}
+	
 	public void setComplete(){
 		complete = true;
 	}

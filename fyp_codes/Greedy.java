@@ -27,6 +27,9 @@ public class Greedy implements Runnable{
 
 	private boolean qcWaiting = true; // false - no need to wait for qc 
 	
+	//to pause the execution
+	ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
+	
 	//to store half half 
 	//private static ArrayList<Job> q_unloading = new ArrayList<>(); 
 	//private static ArrayList<Job> q_loading = new ArrayList<>(); 
@@ -434,7 +437,7 @@ public class Greedy implements Runnable{
 	}
 	
 	public void showExecutionLoadingMerged(){
-		ArrayList<AtomicJob> atomicJobList = new ArrayList<>();
+		//ArrayList<AtomicJob> atomicJobList = new ArrayList<>();
 		while(q_jobs.size()>0){
 			while(agvList.isEmpty() == true){
 				System.out.println("agv not available, waiting.....");
@@ -476,7 +479,7 @@ public class Greedy implements Runnable{
 	}
 	
 	public void showExecution(){
-		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
+		//ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		
 		//for multiple bays
 		int mulBays = Constants.QC_X / Constants.MAX_X;
@@ -529,7 +532,7 @@ public class Greedy implements Runnable{
 	
 	public void showExecutionUnloadingMerged(){
 		//the merged one 
-		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
+		//ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		
 		while(q_jobs.size()>20){
 			System.out.println("agv list empty: " + agvList.isEmpty());
@@ -559,8 +562,8 @@ public class Greedy implements Runnable{
 			agvList.remove(0);	//agv not idle anymore 
 			
 			Job j = q_jobs.get(0);
-			q_jobs.remove(0); 	//remove the first job in the queue 					
-			
+			q_jobs.remove(0); 	//remove the first job in the queue 	
+						
 			String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 					
 			AtomicJob a = new AtomicJob(j, threadName, idleAgv, qcWaiting);
@@ -587,7 +590,7 @@ public class Greedy implements Runnable{
 	
 	
 	public void showExecutionUnloading(){
-		ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
+		//ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 		
 		try {
 			Thread.sleep(Constants.SLEEP);
@@ -716,6 +719,17 @@ public class Greedy implements Runnable{
 			}
 		}
 		
+		
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void pauseGreedy(){
+		AtomicJob j; 
+		for(int i=0; i<atomicJobList.size(); i++){
+			j = atomicJobList.get(i);
+			j.paused();
+		}
+		t.suspend();
 		
 	}
 	
@@ -900,7 +914,6 @@ public class Greedy implements Runnable{
 			//if the previous job (column) not complete, wait
 			if(j.getY()-1 >= 0){
 				Job prev = jobList.getJob(j.getY()-1, j.getX());
-				
 				if(prev.getLoading() == true && prev.getComplete() == false){
 					System.out.println("previous job unfinished. waiting..............................");
 					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
@@ -1040,9 +1053,12 @@ public class Greedy implements Runnable{
 			
 			if(j.getY()+1 < Constants.MAX_Y){
 				int nexty = j.getY()+1;
+				System.out.println("----------------next one waiting: " + jobList.getJob(nexty, j.getX()).getIsWaiting());
+				//not even reaching this stage somehow.....
 				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
+					System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
 					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
-					//jobList.repaint();
+					jobList.repaint();
 				}
 			}
 			
@@ -1072,6 +1088,11 @@ public class Greedy implements Runnable{
 			jobList.repaint();
 		}
 		
+		
+		@SuppressWarnings("deprecation")
+		public void paused(){
+			t.suspend();
+		}
 	}
 
 

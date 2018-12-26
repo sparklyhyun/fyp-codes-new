@@ -49,19 +49,19 @@ public class Constants {
 	*/ 
 	//does this work like this? 
 	static class DelayComp{
-		public static JLabel lblDelaytime_counter = new JLabel("delayTime Counter");
-		public static JLabel lblTotaltime_counter = new JLabel("totalTime Counter");
+		public static JLabel lblDelaytime_counter = new JLabel("delayTime_Counter");
+		public static JLabel lblTotaltime_counter = new JLabel("totalTime_Counter");
 		
 		
 		
 		public DelayComp(){
-			lblTotaltime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblTotaltime_counter.setVerticalAlignment(SwingConstants.TOP);
 			lblTotaltime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
-			lblTotaltime_counter.setBounds(360, 370, 70, 15);
+			lblTotaltime_counter.setBounds(360, 370, 70, 30);
 			
-			lblDelaytime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
+			lblDelaytime_counter.setVerticalAlignment(SwingConstants.TOP);
 			lblDelaytime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
-			lblDelaytime_counter.setBounds(525, 370, 70, 15);
+			lblDelaytime_counter.setBounds(525, 370, 70, 30);
 			
 			Timer timer = new Timer(SLEEP, new ActionListener(){
 
@@ -85,11 +85,11 @@ public class Constants {
 		}
 		
 		public void updateDelayTimer(){
-			lblDelaytime_counter.setText(Integer.toString(Constants.TOTALDELAY));
+			lblDelaytime_counter.setText(" "+Integer.toString(Constants.TOTALDELAY)+ "         ");
 		}
 		
 		public void updateTotalTimer(){
-			lblTotaltime_counter.setText(Integer.toString(Constants.TOTALTIME));
+			lblTotaltime_counter.setText(" " +Integer.toString(Constants.TOTALTIME)+ "         ");
 		}
 	}
 	

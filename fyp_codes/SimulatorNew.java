@@ -14,13 +14,22 @@ import java.awt.CardLayout;
 import javax.swing.border.BevelBorder;
 
 import fyp_codes.Simulator.CalcTime;
+import javax.swing.JSplitPane;
 
 public class SimulatorNew {
 
 	private JFrame frame;
 	
 	private static JobList joblist; 
+	
+	//testing
+	private static JobList testList1;
+	private static JobList testList2; 
+	private static JobList testList3;
+	private static JobList testList4; 
+	
 	private static ArrayList<Agv> agvList = new ArrayList<>();
+	private static ArrayList<SplitJobList> splitJobListArr = new ArrayList<>();
 	
 	private static int totalTime = 0;
 	private static int totalDelay = 0;
@@ -29,15 +38,31 @@ public class SimulatorNew {
 		
 		resetTimers();
 		
+		
 		joblist = new JobList(); 
+		
+		//testing
+		testList1 = joblist; 
+		testList2 = joblist; 
+		testList3 = joblist; 
+		testList4 = joblist; 
+		//////
+		
 		joblist.setBorder(null);
 		seeJobList(joblist); 
 		joblist.setLayout(new CardLayout(0, 0));
 		
-		for(int i=0; i<Constants.AGV; i++){
-			Agv agv = new Agv(i); 
-			agvList.add(agv); 
-		}
+		//testing
+		testList1.setBorder(null);
+		testList1.setLayout(new CardLayout(0, 0));
+		testList2.setBorder(null);
+		testList2.setLayout(new CardLayout(0, 0));
+		testList3.setBorder(null);
+		testList3.setLayout(new CardLayout(0, 0));
+		testList4.setBorder(null);
+		testList4.setLayout(new CardLayout(0, 0));
+		/////////
+		
 		System.out.println("agv done");
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -50,8 +75,27 @@ public class SimulatorNew {
 					
 					totalTimer.start();
 					
-					Greedy g = new Greedy(joblist, agvList);
-					g.startMergedGreedy();
+					int numQcY = Constants.TOTAL_X / Constants.QC_X; 
+					int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+					String qcName; 
+					
+					for(int i=0; i<numQcY; i++){
+						for(int j=0; j<numQcX; j++){
+							
+							SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
+							//seeSplitJobList(splitJobList); 
+							splitJobListArr.add(splitJobList); 
+							
+							qcName = "qc" + i + j; 
+							
+							Greedy g = new Greedy(joblist, splitJobList, qcName); 
+							
+							System.out.println("splitting job is done\n");
+							
+							g.start(); 
+							
+						}
+					}
 					
 					
 				} catch (Exception e) {
@@ -121,19 +165,56 @@ public class SimulatorNew {
 		frame.getContentPane().add(middlePanel_tasks, BorderLayout.CENTER);
 		middlePanel_tasks.setLayout(new CardLayout(0, 0));
 		
-		middlePanel_tasks.add(joblist, "TASK_LISTS");
+		
+		//split pane here 
+		
+		JSplitPane splitPane_leftRight = new JSplitPane();
+		splitPane_leftRight.setDividerLocation(300);
+		middlePanel_tasks.add(splitPane_leftRight, "leftRightSplit");
+		
+		JSplitPane splitPane_vertical_left = new JSplitPane();
+		splitPane_vertical_left.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitPane_vertical_left.setDividerLocation(200);
+		splitPane_leftRight.setLeftComponent(splitPane_vertical_left);
+		
+		JPanel panel_3 = new JPanel();
+		splitPane_vertical_left.setRightComponent(panel_3);
+		panel_3.setLayout(new CardLayout(0, 0));
+		
+		JPanel panel_1 = new JPanel();
+		splitPane_vertical_left.setLeftComponent(panel_1);
+		panel_1.setLayout(new CardLayout(0, 0));
+		
+		JSplitPane splitPane_vertical_right = new JSplitPane();
+		splitPane_vertical_right.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitPane_vertical_right.setDividerLocation(200);
+		splitPane_leftRight.setRightComponent(splitPane_vertical_right);
+		
+		JPanel panel_2 = new JPanel();
+		splitPane_vertical_right.setLeftComponent(panel_2);
+		panel_2.setLayout(new CardLayout(0, 0));
+		
+		JPanel panel_4 = new JPanel();
+		splitPane_vertical_right.setRightComponent(panel_4);
+		panel_4.setLayout(new CardLayout(0, 0));
 		
 		//initTasks(middlePanel_tasks); 
+		
+		
+		
+		initTasks(panel_1, testList1); 
+		initTasks(panel_2, testList2); 
+		initTasks(panel_3, testList3); 
+		initTasks(panel_4, testList4); 
+		
+		
 	}
 	
-	private void initTasks(JPanel jpanel){
+	private void initTasks(JPanel jpanel, JobList j){
 		//problem lies hereeeeeeeeeeeeeeeeeeeeeeeeeee
-		
 		jpanel.add(joblist, "TASK_LIST"); 
 		CardLayout c = (CardLayout) (jpanel.getLayout());
-		
 		c.show(jpanel, "TASK_LIST");
-
 	}
 	
 	public static void resetTimers(){

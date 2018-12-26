@@ -551,6 +551,10 @@ public class Greedy implements Runnable{
 			
 			//now the agv list is not working 
 			System.out.println("agvList size: " + agvList.size());
+			if(agvList.isEmpty()== true){
+				continue; 
+			}
+			
 			Agv idleAgv = agvList.get(0);
 			agvList.remove(0);	//agv not idle anymore 
 			
@@ -653,7 +657,7 @@ public class Greedy implements Runnable{
 			System.out.println("waiting for the bay to complete all loading jobs...............");
 			try {
 				Thread.sleep(Constants.SLEEP);
-				Constants.TOTALTIME++; 
+				//Constants.TOTALTIME++; 
 				//Constants.TOTALDELAY++;
 				updateTotalTimer();
 			} catch (InterruptedException e) {
@@ -723,7 +727,7 @@ public class Greedy implements Runnable{
 		public void lock(AtomicJob aj, boolean complete){
 			this.aj = aj;
 			if(complete){
-				System.out.println("qc locked, completion on the way");
+				//System.out.println("qc locked, completion on the way");
 				aj.completeTask();
 				
 				try {
@@ -734,7 +738,7 @@ public class Greedy implements Runnable{
 					//jobList.repaint();
 					
 					//Constants.TOTALTIME++; 
-					System.out.println("qc released");
+					//System.out.println("qc released");
 					System.out.println("completed jobs: " + jobNo);
 					jobNo+= 1;
 				} catch (InterruptedException e) {
@@ -742,7 +746,7 @@ public class Greedy implements Runnable{
 					e.printStackTrace();
 				}
 			}else{
-				System.out.println("qc locked, asignment on the way");
+				//System.out.println("qc locked, asignment on the way");
 				aj.getJob().setAssigned();
 				try {
 					//System.out.println("wait for qc release");
@@ -934,31 +938,30 @@ public class Greedy implements Runnable{
 		public void travelingUnloading(Agv agv){
 
 			j.setAssigned();
-			
+			jobList.repaint();
 			//System.out.println("agv: " + this.agv.getAgvNum() + "qcWait: " + qcWait);
 			
 			//empty agv list, need to wait for agv
 			if(qcWait == true){//waiting for the agv
 				//jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-				jobList.getJob(j.getSplitY(), j.getSplitX()).setIsWaiting(true);
+				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
 				jobList.repaint();
 				
 				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
-				System.out.println("job " + j.getSplitY() + ", " + j.getSplitX()+ " null agv, waiting for agv");
+				System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
 				
 				try {
 					Constants.TOTALDELAY++;
 					//updateDelayTimer();
 					Thread.sleep(Constants.SLEEP);
-				} catch (InterruptedException e) {
+									} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 
 			//jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
-			jobList.getJob(j.getSplitY(), j.getSplitX()).setIsWaiting(false);
-			//jobList.repaint();
+			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
 			j.setTravelling(true);
 			jobList.repaint();
 			
@@ -1038,7 +1041,8 @@ public class Greedy implements Runnable{
 			if(j.getY()+1 < Constants.MAX_Y){
 				int nexty = j.getY()+1;
 				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
-					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting 
+					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
+					//jobList.repaint();
 				}
 			}
 			
@@ -1055,11 +1059,13 @@ public class Greedy implements Runnable{
 		
 		public void unloadComplete(){
 			j.setTravelling(true);
+			jobList.repaint();
 			
 			if(j.getY()+1 < Constants.MAX_Y){
 				int nexty = j.getY()+1;
 				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
 					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting 
+					//jobList.repaint();
 				}
 			}
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " just unloaded");

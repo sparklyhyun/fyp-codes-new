@@ -164,6 +164,36 @@ public class Simulator {
 
 	}
 	
+	public static void startJobs(){
+		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
+		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		String qcName; 
+		
+		for(int i=0; i<numQcY; i++){
+			for(int j=0; j<numQcX; j++){
+				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
+				seeSplitJobList(splitJobList); 
+				splitJobListArr.add(splitJobList); 
+				
+				//System.out.printf("Lol\n");
+				//System.out.println(splitJobList.getJob(0, 0).getX());
+				qcName = "qc" + i + j; 
+
+				//Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
+				Greedy g = new Greedy(joblist, splitJobList, qcName); 
+				
+				//put greedy in queue
+				q_greedy.add(g); 
+				
+				System.out.println("splitting job is done\n");
+				
+				g.start(); 
+				
+				
+			}
+		}
+	}
+	
 	public static void resetTimers(){
 		Constants.TOTALDELAY = 0;
 		Constants.TOTALTIME = 0;
@@ -395,6 +425,8 @@ public class Simulator {
 		btn_start.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
 				//start algorithm
+				startJobs(); 
+				Constants.TIMERS.updateTotalTimer();
 			}
 		});
 	

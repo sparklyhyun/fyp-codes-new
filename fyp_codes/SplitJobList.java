@@ -9,11 +9,16 @@ public class SplitJobList extends JPanel{
 	
 	public final Job[][] splitJobs = new Job[Constants.MAX_Y][Constants.QC_X]; 
 	
+	private int splitListY, splitListX;
+	
 	public SplitJobList(int y, int x, JobList fullList){
 		//for splitjob, hence set true 
 		
 		int k = 0; //Constants.QC_X;
 		int l = 0; //Constants.MAX_Y; 
+		
+		this.splitListX = x;
+		this.splitListY = y;
 		
 		for(int j=x*Constants.QC_X; j<(x+1)*Constants.QC_X; j++){
 			//System.out.println("x value: " + j);
@@ -35,6 +40,14 @@ public class SplitJobList extends JPanel{
 				splitJobs[i][j].setNotvisited();
 			}
 		}
+	}
+	
+	public int getSplitListY(){
+		return splitListY;
+	}
+	
+	public int getSplitListX(){
+		return splitListX; 
 	}
 	
 	public boolean isLoading(int y, int x){

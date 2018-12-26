@@ -464,7 +464,7 @@ public class Greedy implements Runnable{
 			
 			atomicJobList.add(a);
 			
-			System.out.println("qc thread: " + name + ", job y: " + a.getJob().getY() + ", x: " + a.getJob().getX());
+			//System.out.println("qc thread: " + name + ", job y: " + a.getJob().getY() + ", x: " + a.getJob().getX());
 			
 			a.start(); 
 			
@@ -743,7 +743,6 @@ public class Greedy implements Runnable{
 			if(complete){
 				//System.out.println("qc locked, completion on the way");
 				aj.completeTask();
-				
 				try {
 					Thread.sleep(Constants.SLEEP);
 					
@@ -891,10 +890,11 @@ public class Greedy implements Runnable{
 		
 		public void travelingLoading(Agv agv){
 			j.setAssigned();
+			j.setIsWaiting(false);
+			
 			jobList.repaint();
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
-			
-			
+
 			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getTotalCost();
@@ -915,19 +915,15 @@ public class Greedy implements Runnable{
 			if(j.getY()-1 >= 0){
 				Job prev = jobList.getJob(j.getY()-1, j.getX());
 				if(prev.getLoading() == true && prev.getComplete() == false){
-					System.out.println("previous job unfinished. waiting..............................");
+					System.out.println("previous job unfinished. waiting.............................." + (j.getY()-1) + ", " + j.getX());
 					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
 					jobList.repaint();
 				}
 				
 				while(prev.getComplete() == false){
 					try {
-						
 						updateDelayTimer();
 						Thread.sleep(Constants.SLEEP);
-						
-						System.out.println("\t\t\t\t\t\t\t\t\t\t total delay: " + Constants.TOTALDELAY);
-						//Constants.TOTALTIME++; 
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -937,7 +933,12 @@ public class Greedy implements Runnable{
 
 				
 			}
-
+			
+			//do i put it here? (no but it has to be together with complete) 
+			/*
+			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+			jobList.repaint();
+			*/
 			//waitForBay(); 
 			
 			//complete the job
@@ -1051,14 +1052,17 @@ public class Greedy implements Runnable{
 			
 			j.setComplete();
 			
-			if(j.getY()+1 < Constants.MAX_Y){
-				int nexty = j.getY()+1;
-				System.out.println("----------------next one waiting: " + jobList.getJob(nexty, j.getX()).getIsWaiting());
+			int y = splitJobList.getSplitListY();
+			
+			int nexty = j.getY()+1;
+			
+			if(nexty+1 <= (y+1)*Constants.MAX_Y){
+				System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
 				//not even reaching this stage somehow.....
 				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
 					System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
 					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
-					jobList.repaint();
+					//jobList.repaint();
 				}
 			}
 			

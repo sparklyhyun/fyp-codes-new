@@ -43,7 +43,7 @@ public class JobList extends JPanel{
 			}
 		}
 
-		
+		reset(); 
 		System.out.println("job list done");
 	}
 	
@@ -81,6 +81,7 @@ public class JobList extends JPanel{
 				jobs[i][j].setIncomplete();
 				jobs[i][j].setNotvisited();
 				jobs[i][j].setNotAssigned();
+				jobs[i][j].setIsWaiting(false);
 			}
 		}
 		/*

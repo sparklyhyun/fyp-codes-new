@@ -5,6 +5,8 @@ import java.util.*;
 
 import javax.swing.*;
 
+import java.util.concurrent.*;	
+
 
 public class Greedy implements Runnable{
 	private JobList jobList;	
@@ -38,6 +40,9 @@ public class Greedy implements Runnable{
 	private Thread t; 
 	private String name; 
 	
+	//for shared pool of agv (will acquire from simulator) 
+	Semaphore sem; 
+	
 	@Override
 	//make it a runnable 
 	public void run() {
@@ -54,16 +59,23 @@ public class Greedy implements Runnable{
 		}
 	}
 	
-	public Greedy(JobList j, SplitJobList sj , /*ArrayList<Agv> agvL,*/ String name){
+	public Greedy(JobList j, SplitJobList sj , ArrayList<Agv> agvL, String name, Semaphore sem){
 		this.jobList = j; 
 		this.splitJobList = sj; 
+		this.name = name; 
+		this.agvList = agvL;
+		
+		//semaphore for agvs
+		this.sem = sem; 
 
+		//shared agv now 
+		/*
 		for(int k=0; k<Constants.AGV; k++){
 			Agv agv = new Agv(k); 
 			agvList.add(agv); 
 		}
+		*/
 		
-		this.name = name; 
 		
 		//show agvList (works fine)
 		/*
@@ -107,7 +119,7 @@ public class Greedy implements Runnable{
 			
 		}
 		
-		Constants.allComplete = true; 
+		Constants.allComplete++; 
 		System.out.println("Thread ended, thread name: " + name + "\n");
 	}
 	
@@ -293,8 +305,9 @@ public class Greedy implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			if(jobNo >= (Constants.MAX_Y * Constants.QC_X)){
-				Constants.allComplete = true; 
+				Constants.allComplete++; 
 				System.out.println("-------------------all jobs complete---------------");
 				break;
 			}
@@ -451,6 +464,22 @@ public class Greedy implements Runnable{
 			}
 			
 			System.out.println("agvList size: " + agvList.size());
+			
+			
+			//2nd check, if agv really available
+			if(agvList.isEmpty() == true){
+				continue; 
+			}
+			
+			
+			//before assinging agv, acquire sem
+			try {
+				sem.acquire();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			Agv idleAgv = agvList.get(0);
 			agvList.remove(0);	//agv not idle anymore 
 			
@@ -552,10 +581,12 @@ public class Greedy implements Runnable{
 				break;
 			}
 			
-			//now the agv list is not working 
-			System.out.println("agvList size: " + agvList.size());
-			if(agvList.isEmpty()== true){
-				continue; 
+			//acquire sem before assigning
+			try {
+				sem.acquire();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 			
 			Agv idleAgv = agvList.get(0);
@@ -924,6 +955,7 @@ public class Greedy implements Runnable{
 					try {
 						updateDelayTimer();
 						Thread.sleep(Constants.SLEEP);
+						
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -944,6 +976,10 @@ public class Greedy implements Runnable{
 			//complete the job
 			synchronized(l){
 				agvList.add(agv);
+				
+				//only release sem after agv is added back
+				sem.release();
+				
 				l.lock(this, true);
 			}
 
@@ -968,7 +1004,7 @@ public class Greedy implements Runnable{
 					Constants.TOTALDELAY++;
 					//updateDelayTimer();
 					Thread.sleep(Constants.SLEEP);
-									} catch (InterruptedException e) {
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -987,6 +1023,7 @@ public class Greedy implements Runnable{
 				c--;
 				try {
 					Thread.sleep(Constants.SLEEP);
+
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -998,6 +1035,10 @@ public class Greedy implements Runnable{
 			//job completion can happen at the same time
 			completeTask();
 			agvList.add(agv);
+			
+			//release sem only after agv is added back
+			sem.release();
+			
 			System.out.println("agv added back..........................................." );
 			System.out.println("new agv list size: " + agvList.size());
 			jobNo+= 1;
@@ -1051,6 +1092,7 @@ public class Greedy implements Runnable{
 		public void completeTask(){				
 			
 			j.setComplete();
+			jobList.repaint();
 			
 			int y = splitJobList.getSplitListY();
 			
@@ -1062,7 +1104,7 @@ public class Greedy implements Runnable{
 				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
 					System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
 					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
-					//jobList.repaint();
+					jobList.repaint();
 				}
 			}
 			

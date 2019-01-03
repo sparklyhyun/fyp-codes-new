@@ -24,6 +24,7 @@ public class Constants {
 	
 	public static final int NUM_QC_X = 2;
 	public static final int NUM_QC_Y = 2; 
+	public static int NUM_QC = Constants.NUM_QC_X * Constants.NUM_QC_Y;
 	
 	public static final int AGV = 8; //number of AGV
 	
@@ -35,12 +36,12 @@ public class Constants {
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	
-	public static final int SLEEP = 500; 
+	public static final int SLEEP = 200; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;
 	
-	public static boolean allComplete = false; 
+	public static int allComplete = 0; 
 	
 	//can i put timer here? would it work? 
 	/*

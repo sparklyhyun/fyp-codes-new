@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;	//testing timer implementation
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.*;	//use TimeUnit 
+import java.util.concurrent.*;	
 public class Simulator {
 	private static JFrame _frame = null; //display job list
 	private static JPanel _tiles = null; //display individual task
@@ -45,6 +45,9 @@ public class Simulator {
 	
 	private static boolean pause = false; 
 	
+	//for shared pool of agvs 
+	static Semaphore sem; 
+	
 	
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
@@ -55,13 +58,16 @@ public class Simulator {
 		joblist = new JobList(); 
 		seeJobList(joblist); 
 		
-		/*
+		//shared pool of agv now 
 		for(int i=0; i<Constants.AGV; i++){
 			Agv agv = new Agv(i); 
 			agvList.add(agv); 
 		}
 		System.out.println("agv done");
-		*/
+		
+		//creating semaphore for agvs
+		sem = new Semaphore(Constants.AGV); 
+		
 		viewSimulator();
 		
 		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
@@ -93,7 +99,7 @@ public class Simulator {
 				
 				
 				//Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
-				Greedy g = new Greedy(joblist, splitJobList, qcName); 
+				Greedy g = new Greedy(joblist, splitJobList, agvList, qcName, sem); 
 				
 				//put greedy in queue
 				q_greedy.add(g); 
@@ -154,7 +160,7 @@ public class Simulator {
 		
 		//g.startMergedGreedy();
 				
-		if(Constants.allComplete){
+		if(Constants.allComplete >= Constants.NUM_QC){
 			System.out.println("---------------------------greedy complete=========");
 			System.out.println("total delay: " + Constants.TOTALDELAY);
 			System.out.println("total time: " + Constants.TOTALTIME);
@@ -180,7 +186,7 @@ public class Simulator {
 				qcName = "qc" + i + j; 
 
 				//Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
-				Greedy g = new Greedy(joblist, splitJobList, qcName); 
+				Greedy g = new Greedy(joblist, splitJobList, agvList,qcName, sem); 
 				
 				//put greedy in queue
 				q_greedy.add(g); 
@@ -486,8 +492,8 @@ public class Simulator {
 		}
 		
 		@Override
-		public void run() {
-			while(Constants.allComplete == false){
+		public void run() {			
+			while(Constants.allComplete < Constants.NUM_QC){
 				try {
 					Constants.TOTALTIME++; 
 					Thread.sleep(Constants.SLEEP);
@@ -507,5 +513,10 @@ public class Simulator {
 		
 		}
 	}
+	
+	//lock for agv?
+	static class Lock{
+		
+	} 
 }
 

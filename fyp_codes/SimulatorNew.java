@@ -88,11 +88,11 @@ public class SimulatorNew {
 							
 							qcName = "qc" + i + j; 
 							
-							Greedy g = new Greedy(joblist, splitJobList, qcName); 
+							//Greedy g = new Greedy(joblist, splitJobList, qcName); 
 							
 							System.out.println("splitting job is done\n");
 							
-							g.start(); 
+							//g.start(); 
 							
 						}
 					}
@@ -102,7 +102,7 @@ public class SimulatorNew {
 					e.printStackTrace();
 				}
 				
-				if(Constants.allComplete){
+				if(Constants.allComplete <= Constants.NUM_QC){
 					System.out.println("---------------------------greedy complete=========");
 					System.out.println("total delay: " + Constants.TOTALDELAY);
 					System.out.println("total time: " + Constants.TOTALTIME);
@@ -246,7 +246,7 @@ public class SimulatorNew {
 		
 		@Override
 		public void run() {
-			while(Constants.allComplete == false){
+			while(Constants.allComplete < Constants.NUM_QC){
 				try {
 					Constants.TOTALTIME++; 
 					Thread.sleep(Constants.SLEEP);

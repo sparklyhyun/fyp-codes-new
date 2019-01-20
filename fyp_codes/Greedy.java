@@ -1,5 +1,11 @@
 package fyp_codes;
 
+/*
+ * this is the original class used to run 4 qcs at the same time
+ * before dispatcher was created
+ * something like a test environment 
+ * */
+
 import java.awt.List;
 import java.util.*;
 

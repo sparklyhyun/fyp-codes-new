@@ -11,7 +11,9 @@ public class SplitJobList extends JPanel{
 	
 	private int splitListY, splitListX;
 	
-	public SplitJobList(int y, int x, JobList fullList){
+	private String qcName; 
+	
+	public SplitJobList(int y, int x, JobList fullList, String qcName){
 		//for splitjob, hence set true 
 		
 		int k = 0; //Constants.QC_X;
@@ -19,6 +21,7 @@ public class SplitJobList extends JPanel{
 		
 		this.splitListX = x;
 		this.splitListY = y;
+		this.qcName = qcName; 
 		
 		for(int j=x*Constants.QC_X; j<(x+1)*Constants.QC_X; j++){
 			//System.out.println("x value: " + j);
@@ -48,6 +51,10 @@ public class SplitJobList extends JPanel{
 	
 	public int getSplitListX(){
 		return splitListX; 
+	}
+	
+	public String getQcName(){
+		return qcName; 
 	}
 	
 	public boolean isLoading(int y, int x){

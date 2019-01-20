@@ -58,13 +58,14 @@ public class Simulator {
 		joblist = new JobList(); 
 		seeJobList(joblist); 
 		
-		//shared pool of agv now 
+		//shared pool of agv now *************************************** new version, this is not needed
+		/*
 		for(int i=0; i<Constants.AGV; i++){
 			Agv agv = new Agv(i); 
 			agvList.add(agv); 
 		}
 		System.out.println("agv done");
-		
+		*/ 
 		//creating semaphore for agvs ********************************* new version, this is not needed. 
 		//sem = new Semaphore(Constants.AGV); 
 		

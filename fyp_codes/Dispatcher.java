@@ -61,7 +61,15 @@ public class Dispatcher {
 			agvList.add(agv); 
 		}
 		
+		for(int i=0; i<jobCompleted.length; i++){
+			jobCompleted[i] = 0; 
+		}
+		
 		sortJobs(); 
+		
+		dispatchOrder(); 
+		
+		startDispatching(); 
 	}
 	
 	//sort split jobs here
@@ -88,26 +96,42 @@ public class Dispatcher {
 			totalSum+= totalQcCost[i]; 
 		}
 		
+		System.out.println("total sum: " + totalSum);
+		
+		Job j;
+		ArrayList<Job> jarr; 
+		
 		while(totalSum>0){
 			int max = 0; 
 			int maxIndex = 0; 
 			
 			for(int i=0; i<totalQcCost.length; i++){
 				if(totalQcCost[i] > max){
+					System.out.println("total cost: " + totalQcCost[i]); 
 					max = totalQcCost[i];
 					maxIndex = i; 
 				}
 			}
 			
-			jobOrder.add(q_jobsList.get(maxIndex).get(0));
+			//System.out.println("simple greedy, max index = " + maxIndex);
+			//System.out.print("q_jobsList size = " + q_jobsList.size());
+			
+			jarr = q_jobsList.get(maxIndex);
+			
+			System.out.println("jarr.size =  " + jarr.size());
+			
+			j = jarr.get(0); 
+			
+			jobOrder.add(j);
 			q_jobsList.get(maxIndex).remove(0); 
-			totalQcCost[maxIndex] -= max; 
+			totalQcCost[maxIndex] -= j.getTotalCost(); 
+			totalSum -= j.getTotalCost();
+			System.out.println("total sum after removing: " + totalSum);
 		}
 	}
 	
 	public void startDispatching(){
 		while(jobOrder.isEmpty() == false){
-			
 			//agvlist empty
 			while(agvList.isEmpty() == true){
 				System.out.println("agv not available, waiting.....");
@@ -122,8 +146,12 @@ public class Dispatcher {
 			Agv idleAgv = agvList.get(0);
 			agvList.remove(0);	//agv not idle anymore 
 			
-			Job j = q_jobs.get(0);
-			q_jobs.remove(0); 	//remove the first job in the queue 					
+			Job j = jobOrder.get(0);
+			jobOrder.remove(0); 	//remove the first job in the queue 	\
+			
+			
+			//check if need to wait for bay
+			//waitingbay;
 			
 			String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 			
@@ -173,7 +201,7 @@ public class Dispatcher {
 	
 	*/ 
 		
-	
+	/*
 	public void showExecutionLoadingMerged(){
 		//ArrayList<AtomicJob> atomicJobList = new ArrayList<>();
 		while(q_jobs.size()>0){
@@ -198,13 +226,13 @@ public class Dispatcher {
 			
 			
 			//before assinging agv, acquire sem
-			/*
+			
 			try {
 				sem.acquire();
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}*/
+			}
 			
 			Agv idleAgv = agvList.get(0);
 			agvList.remove(0);	//agv not idle anymore 
@@ -232,6 +260,7 @@ public class Dispatcher {
 		}
 		
 	}
+	
 	
 	public void showExecutionUnloadingMerged(){
 		//the merged one 
@@ -284,17 +313,15 @@ public class Dispatcher {
 
 			}
 		}
-		
-	
-	
+	*/ 
 
 	public void waitingBay(){
+		//need to change this to use the complete job array
+		//dd
 		while(jobNo < 40){
 			System.out.println("waiting for the bay to complete all loading jobs...............");
 			try {
 				Thread.sleep(Constants.SLEEP);
-				//Constants.TOTALTIME++; 
-				//Constants.TOTALDELAY++;
 				updateTotalTimer();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -348,8 +375,10 @@ public class Dispatcher {
 				aj.completeTask();
 				try {
 					Thread.sleep(Constants.SLEEP);
-					System.out.println("completed jobs: " + jobNo);
-					jobNo+= 1;
+					//System.out.println("completed jobs: " + jobNo);
+					//jobNo+= 1;
+					jobCompleted[aj.getJob().getQcIndex()] += 1; 
+					System.out.println("complete job" + jobCompleted[aj.getJob().getQcIndex()]);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -616,11 +645,12 @@ public class Dispatcher {
 			System.out.println("agv added to the queue, new queue length: " + agvList.size());
 			
 			//jobList.getJob(j.getY(), j.getX()).setComplete();
-			jobList.getJob(j.getSplitY(), j.getSplitX()); 
+			//jobList.getJob(j.getSplitY(), j.getSplitX()); 
 			
 			jobList.repaint();
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			
+			jobCompleted[j.getQcIndex()] += 1; 
 
 		}
 		

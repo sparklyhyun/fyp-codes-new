@@ -32,6 +32,8 @@ public class Job {
 	private int splitY = 0; 
 	
 	private Agv agv; 
+	
+	private int qcIndex; 
 
 	
 	public Job(int y, int x , boolean loading){
@@ -224,6 +226,13 @@ public class Job {
 		this.unloadWaitTime += 1; 
 	}
 	
+	public void setQcIndex(int i){
+		this.qcIndex = i; 
+	}
+	
+	public int getQcIndex(){
+		return qcIndex; 
+	}
 	
 	
 }

@@ -21,8 +21,7 @@ public class Sort {
 	//the split list. to change the joblist, get full list x and y from the split list 
 	//private SplitJobList splitJobList; 
 
-	private ArrayList<Job> q_jobs = new ArrayList<>();
-	private ArrayList<ArrayList<Job>> q_jobsList = new ArrayList<ArrayList<Job>>(); 
+	public ArrayList<ArrayList<Job>> q_jobsList = new ArrayList<ArrayList<Job>>(); 
 	
 	private boolean greedyComplete = false; 
 	
@@ -101,27 +100,29 @@ public class Sort {
 	
 	public void sortMerged(SplitJobList sjl){
 		
+		ArrayList<Job> q_jobs = new ArrayList<>();
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
 		int numBays = Constants.QC_X / Constants.MAX_X; 
 		int numHalf = Constants.MAX_Y / 2; //top 5 unloading, bottom 5 loading 
 
 		for(int l=0; l<numBays; l++){
+			
+			
 			//sort 1 bay at a time. update q_jobs accordingly 
 			//sort unloading first
-			sortUnloading(l, sortArray, sjl);
+			sortUnloading(l, sortArray, sjl, q_jobs);
 			
 			//sort loading
-			sortLoading(l, sortArray, sjl);
-			
-			//add the q_jobs into the q_jobsList
-			q_jobsList.add(q_jobs); 
-			
-			//empty q_jobs for the next bay 
-			q_jobs.clear();
+			sortLoading(l, sortArray, sjl, q_jobs);
+
 		}
+		//add the q_jobs into the q_jobsList
+		q_jobsList.add(q_jobs); 
+		
+		System.out.println("q_jobs size inside sorted function: " + q_jobsList.size());
 	}
 	
-	public void sortUnloading(int bayNo, Job[] sortArray, SplitJobList sjl){
+	public void sortUnloading(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs){
 		int arr = 0;
 		for(int i=0; i<Constants.HALF_Y; i++){
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
@@ -137,7 +138,7 @@ public class Sort {
 		}
 	}
 	
-	public void sortLoading(int bayNo, Job[] sortArray, SplitJobList sjl){
+	public void sortLoading(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs){
 		int arr = 0;
 		
 		//int splity, splitx; 
@@ -204,12 +205,6 @@ public class Sort {
 		return greedyComplete; 
 	}
 	
-	//get job list 
-	public ArrayList<Job> getSortedJobList(){
-		return q_jobs; 
-	}
-	
-	
 	//test if the split job list is working
 	public void seeSplitJobList(JobList jl){
 		//System.out.println(jl);
@@ -229,6 +224,9 @@ public class Sort {
 	}*/
 	
 	public ArrayList<ArrayList<Job>> getJobListsSorted(){
+		
+		System.out.println("arraylist inside sort length: " + q_jobsList.get(0).size()); 
+		
 		return q_jobsList; 
 	}
 	

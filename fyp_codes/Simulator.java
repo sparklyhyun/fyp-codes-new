@@ -51,6 +51,44 @@ public class Simulator {
 	
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
+	//new one with dispatcher*************************************************************************
+	public static void main(String[] args){
+		resetTimers();
+		
+		joblist = new JobList(); 
+		seeJobList(joblist); 
+		
+		viewSimulator();
+		
+		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
+		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		String qcName; 
+		
+		Dispatcher dispatcher = new Dispatcher(joblist); 
+		
+		
+		initTasks();
+
+		
+		joblist.setLayout(null);
+
+		
+		//updating the timer test
+		CalcTime totalTimer = new CalcTime("totalTimer"); 
+		totalTimer.start();
+		
+				
+		if(Constants.allComplete >= Constants.NUM_QC){
+			System.out.println("---------------------------greedy complete=========");
+			System.out.println("total delay: " + Constants.TOTALDELAY);
+			System.out.println("total time: " + Constants.TOTALTIME);
+			
+		}
+		
+
+	}
+	
+/*
 	public static void main(String[] args){
 		
 		resetTimers();
@@ -59,15 +97,15 @@ public class Simulator {
 		seeJobList(joblist); 
 		
 		//shared pool of agv now *************************************** new version, this is not needed
-		/*
+		
 		for(int i=0; i<Constants.AGV; i++){
 			Agv agv = new Agv(i); 
 			agvList.add(agv); 
 		}
 		System.out.println("agv done");
-		*/ 
+		
 		//creating semaphore for agvs ********************************* new version, this is not needed. 
-		//sem = new Semaphore(Constants.AGV); 
+		sem = new Semaphore(Constants.AGV); 
 		
 		viewSimulator();
 		
@@ -89,14 +127,14 @@ public class Simulator {
 				
 				
 				//put greedy in queue ***************************************** new version, this part not needed
-				/*
+				
 				Greedy g = new Greedy(joblist, splitJobList, agvList, qcName, sem); 
 				q_greedy.add(g); 
 				
 				System.out.println("splitting job is done\n");
 				
 				g.start(); 
-				*/
+				
 				
 				
 			}
@@ -123,7 +161,8 @@ public class Simulator {
 		
 
 	}
-	
+	*/
+	/*
 	public static void startJobs(){
 		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
 		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
@@ -140,18 +179,18 @@ public class Simulator {
 				Greedy g = new Greedy(joblist, splitJobList, agvList,qcName, sem); 
 				
 				//put greedy in queue ************************************* new version, this part needs to be changed
-				/*
+				
 				q_greedy.add(g); 
 				
 				System.out.println("splitting job is done\n");
 				
 				g.start(); 
-				*/
+				
 				
 			}
 		}
 	}
-	
+	*/
 	public static void resetTimers(){
 		Constants.TOTALDELAY = 0;
 		Constants.TOTALTIME = 0;
@@ -383,7 +422,7 @@ public class Simulator {
 		btn_start.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
 				//start algorithm
-				startJobs(); 
+				//startJobs(); 
 				Constants.TIMERS.updateTotalTimer();
 			}
 		});

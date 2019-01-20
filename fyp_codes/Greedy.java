@@ -32,10 +32,6 @@ public class Greedy implements Runnable{
 	//to pause the execution
 	ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 	
-	//to store half half 
-	//private static ArrayList<Job> q_unloading = new ArrayList<>(); 
-	//private static ArrayList<Job> q_loading = new ArrayList<>(); 
-	
 	//making this runnable 
 	private Thread t; 
 	private String name; 

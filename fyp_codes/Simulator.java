@@ -65,61 +65,37 @@ public class Simulator {
 		}
 		System.out.println("agv done");
 		
-		//creating semaphore for agvs
-		sem = new Semaphore(Constants.AGV); 
+		//creating semaphore for agvs ********************************* new version, this is not needed. 
+		//sem = new Semaphore(Constants.AGV); 
 		
 		viewSimulator();
 		
 		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
 		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
-		//int numQcX = 1;
-		//int numQcY = 1;
 		String qcName; 
 		
 		for(int i=0; i<numQcY; i++){
 			for(int j=0; j<numQcX; j++){
 				
-				/*
-				ArrayList<Agv> splitAgvList = new ArrayList<>(); 
-				
-				for(int k=0; k<Constants.AGV; k++){
-					Agv agv = new Agv(k); 
-					splitAgvList.add(agv); 
-				}
-				*/
+
 				
 				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
 				seeSplitJobList(splitJobList); 
 				splitJobListArr.add(splitJobList); 
-				
-				//System.out.printf("Lol\n");
-				//System.out.println(splitJobList.getJob(0, 0).getX());
+
 				qcName = "qc" + i + j; 
 				
-				
-				
-				//Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
+
 				Greedy g = new Greedy(joblist, splitJobList, agvList, qcName, sem); 
 				
-				//put greedy in queue
+				//put greedy in queue ***************************************** new version, this part not needed
+				/*
 				q_greedy.add(g); 
 				
 				System.out.println("splitting job is done\n");
 				
 				g.start(); 
-				
-				/*
-				for(int k=numQcY*Constants.MAX_Y; k<(numQcY+1)*Constants.MAX_Y; k++){
-					System.out.println("k value: " + k);
-					for(int l=numQcX*Constants.QC_X; l<(numQcX+1)*Constants.QC_X; l++){
-						System.out.println("l value: " + l);
-						splitJobList = new JobList(k, l, joblist); 
-						Greedy g = new Greedy(splitJobList, agvList);
-						g.start(); 
-					}
-				}*/
-				
-				
+				*/ 
 				
 				
 			}
@@ -127,38 +103,15 @@ public class Simulator {
 		
 		
 		initTasks();
-		
-		
-		
-		////////////////////////////
-		//Greedy g = new Greedy(joblist, agvList);
+
 		
 		joblist.setLayout(null);
-		/*
-		for(int i=0; i<splitJobListArr.size(); i++){
-			splitJobListArr.get(i).setLayout(null);
-		}*/
-		
-		//testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		
-		/*
-		for(int i=0; i<q_greedy.size(); i++){
-			q_greedy.get(i).start();
-		}*/
-		
-		//testing the simulator 
-		//g.testSimulator();
+
 		
 		//updating the timer test
 		CalcTime totalTimer = new CalcTime("totalTimer"); 
 		totalTimer.start();
 		
-		//test simple greedy
-		//g.startGreedy1();
-		//g.startGreedy2();
-		//g.startGreedyUnloading2();
-		
-		//g.startMergedGreedy();
 				
 		if(Constants.allComplete >= Constants.NUM_QC){
 			System.out.println("---------------------------greedy complete=========");
@@ -181,20 +134,18 @@ public class Simulator {
 				seeSplitJobList(splitJobList); 
 				splitJobListArr.add(splitJobList); 
 				
-				//System.out.printf("Lol\n");
-				//System.out.println(splitJobList.getJob(0, 0).getX());
 				qcName = "qc" + i + j; 
 
-				//Greedy g = new Greedy(joblist, splitJobList, splitAgvList, qcName);
 				Greedy g = new Greedy(joblist, splitJobList, agvList,qcName, sem); 
 				
-				//put greedy in queue
+				//put greedy in queue ************************************* new version, this part needs to be changed
+				/*
 				q_greedy.add(g); 
 				
 				System.out.println("splitting job is done\n");
 				
 				g.start(); 
-				
+				*/ 
 				
 			}
 		}

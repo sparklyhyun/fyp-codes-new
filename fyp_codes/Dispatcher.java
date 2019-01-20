@@ -96,6 +96,11 @@ public class Dispatcher {
 			totalSum+= totalQcCost[i]; 
 		}
 		
+		
+		for(int i=0; i<totalQcCost.length; i++){
+			System.out.println("qc index: " + i + " , cost: " + totalQcCost[i]);
+		}
+		
 		System.out.println("total sum: " + totalSum);
 		
 		Job j;
@@ -113,7 +118,7 @@ public class Dispatcher {
 				}
 			}
 			
-			//System.out.println("simple greedy, max index = " + maxIndex);
+			System.out.println("simple greedy, max index = " + maxIndex);
 			//System.out.print("q_jobsList size = " + q_jobsList.size());
 			
 			jarr = q_jobsList.get(maxIndex);
@@ -623,24 +628,31 @@ public class Dispatcher {
 		}
 		}
 		
-		public void completeTask(){				
+		public void completeTask(){ //this one is for unloading 				
 			
 			j.setComplete();
 			jobList.repaint();
 			
-			int y = splitJobList.getSplitListY();
+			//int y = splitJobList.getSplitListY();
+			int y = j.getSplitY(); 
 			
 			int nexty = j.getY()+1;
 			
+			
+			//figure out what this function is for lollll 
+			
+			//lets remove this and see what happens
+			
+			/*
 			if(nexty+1 <= (y+1)*Constants.MAX_Y){
-				System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
+				//System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
 				//not even reaching this stage somehow.....
 				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
 					System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
 					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
 					jobList.repaint();
 				}
-			}
+			}*/ 
 			
 			System.out.println("agv added to the queue, new queue length: " + agvList.size());
 			

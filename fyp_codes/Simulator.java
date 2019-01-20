@@ -52,6 +52,7 @@ public class Simulator {
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
 	//new one with dispatcher*************************************************************************
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args){
 		resetTimers();
 		
@@ -64,6 +65,9 @@ public class Simulator {
 		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
 		String qcName; 
 		
+		CalcTime totalTimer = new CalcTime("totalTimer"); 
+		totalTimer.start();
+		
 		Dispatcher dispatcher = new Dispatcher(joblist); 
 		
 		
@@ -74,16 +78,16 @@ public class Simulator {
 
 		
 		//updating the timer test
-		CalcTime totalTimer = new CalcTime("totalTimer"); 
-		totalTimer.start();
+		//tenative, stops after all threads are created, not when all ends 
+		totalTimer.t.stop(); 
 		
-				
+		/*	
 		if(Constants.allComplete >= Constants.NUM_QC){
 			System.out.println("---------------------------greedy complete=========");
 			System.out.println("total delay: " + Constants.TOTALDELAY);
 			System.out.println("total time: " + Constants.TOTALTIME);
 			
-		}
+		}*/ 
 		
 
 	}
@@ -503,6 +507,7 @@ public class Simulator {
 			}
 		
 		}
+		
 	}
 	
 	//lock for agv?

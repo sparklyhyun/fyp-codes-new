@@ -58,12 +58,15 @@ public class Sort {
 		for(int i=0; i<numQcY; i++){
 			for(int j=0; j<numQcX; j++){	
 				qcName = "qc" + i + j;
+				System.out.println("qcname: " + qcName);
 				SplitJobList splitJobList = new SplitJobList(i, j, jobList, qcName); 
 				seeSplitJobList(splitJobList); 
 				setTotalQcCost(splitJobList, index); 
 				splitJobListArr.add(splitJobList); 
+				index++; 
+				System.out.println("index for total qc cost: " + index);
 			}
-			index++; 
+			
 		}
 	}
 	

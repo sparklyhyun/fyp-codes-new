@@ -77,7 +77,6 @@ public class Simulator {
 		for(int i=0; i<numQcY; i++){
 			for(int j=0; j<numQcX; j++){
 				
-
 				
 				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
 				seeSplitJobList(splitJobList); 
@@ -86,16 +85,17 @@ public class Simulator {
 				qcName = "qc" + i + j; 
 				
 
-				Greedy g = new Greedy(joblist, splitJobList, agvList, qcName, sem); 
+				
 				
 				//put greedy in queue ***************************************** new version, this part not needed
 				/*
+				Greedy g = new Greedy(joblist, splitJobList, agvList, qcName, sem); 
 				q_greedy.add(g); 
 				
 				System.out.println("splitting job is done\n");
 				
 				g.start(); 
-				*/ 
+				*/
 				
 				
 			}
@@ -145,7 +145,7 @@ public class Simulator {
 				System.out.println("splitting job is done\n");
 				
 				g.start(); 
-				*/ 
+				*/
 				
 			}
 		}

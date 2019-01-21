@@ -85,6 +85,11 @@ public class Simulator {
 				totalTimer.t.stop();
 				break;
 			}
+			try {
+				Thread.sleep(Constants.SLEEP);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
 		try {

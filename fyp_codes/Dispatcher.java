@@ -22,7 +22,9 @@ public class Dispatcher {
 
 	private ArrayList<Agv> agvList = new ArrayList<>();	//kind of idle list. 
 	private ArrayList<Job> q_jobs = new ArrayList<>(); 
-	private Lock l = new Lock(); 
+	//private Lock l = new Lock(); 
+	private Lock[] lockArr = new Lock[Constants.NUM_QC];
+	
 	private boolean greedyComplete = false; 
 	private int jobNo = 0; //for completed jobs 
 	private int jobNo_created = 0; 
@@ -56,7 +58,11 @@ public class Dispatcher {
 	
 	private static int[][] jobsCreated = new int[Constants.NUM_QC][Constants.NUM_BAY];
 	
-	private static int[] bayWait = new int[Constants.NUM_QC]; //number of jobs waiting for the bay 
+	private static ArrayList<ArrayList<Job>> bayWait = new ArrayList<>(); //number of jobs waiting for the bay 
+	
+	//private static int[] bayWait = new int[Constants.NUM_QC]; //to keep track of whether to wait in front or not 
+	
+	private static boolean bayWaitBool = false; 
 	
 	//Semaphore sem; //need 1 for each qc. can I do an array of semaphores??
 	//Semaphore[] sem = new Semaphore[Constants.NUM_QC]; //well looks like I can! 
@@ -73,8 +79,21 @@ public class Dispatcher {
 			sem[i] = new Semaphore(1); //1 semaphore each qc? 
 		}*/ 
 		
+		/*
 		for(int i=0; i<Constants.NUM_QC; i++){
-			bayWait[i] = 0; 
+			Queue<Job> q_job = new LinkedList<>(); 
+			bayWait.add(q_job); 
+		}*/
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			ArrayList<Job> waitJobs = new ArrayList<>();
+			bayWait.add(waitJobs); 
+		}
+		
+		//initialize lock 
+		for(int i=0; i<Constants.NUM_QC; i++){
+			lockArr[i] = new Lock(); 
+			//bayWait[i] = 0; //initializa bayWait
 		}
 		
 		
@@ -182,10 +201,17 @@ public class Dispatcher {
 			
 			//make this more intricate 
 			if(j.getLoading() == false){ //if unloading job 
+				qcWait = true; 
+				
 				//if previous one has the same index 
-				if(prevQcIndex == j.getQcIndex()){
-					qcWait = true; 
+				/*
+				if(bayWait[j.getQcIndex()]>0){
+					bayWait[j.getQcIndex()]++; 
 				}
+				if((bayWait[j.getQcIndex()]>0) && (prevQcIndex == j.getQcIndex())){
+					qcWait = true; 
+				}*/
+				
 			}
 			
 			//set previous qc index to determine whether to put the delay in front or not (for unloading) 
@@ -425,17 +451,10 @@ public class Dispatcher {
 			
 		}
 		
-		public void unloadWaitForBayLock(AtomicJob aj){
+		public void unloadWaitLock(AtomicJob aj){
 			this.aj = aj;
 			//assign waiting false 
-			aj.notWaitingForBay();
-			try {
-				Thread.sleep(Constants.SLEEP);
-				//System.out.println("completed jobs: " + jobNo);
-				//jobNo+= 1;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			aj.notWaiting();
 		}
 	}
 	
@@ -561,6 +580,9 @@ public class Dispatcher {
 			
 			waitForBay(); 
 			
+			int qcIndex = j.getQcIndex();
+			Lock l = lockArr[qcIndex]; 
+			
 			//complete the job
 			synchronized(l){
 				agvList.add(agv);
@@ -585,9 +607,9 @@ public class Dispatcher {
 			//System.out.println("agv: " + this.agv.getAgvNum() + "qcWait: " + qcWait);
 			
 			//empty agv list, need to wait for agv
-			if(qcWait == true){//waiting for the agv
-				//jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-				jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+			if((qcWait == true) || (bayWait[j.getQcIndex()]>0)){//waiting for the agv
+				j.setIsWaiting(true);
+				
 				jobList.repaint();
 				
 				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
@@ -602,9 +624,16 @@ public class Dispatcher {
 					e.printStackTrace();
 				}
 			}
-
-			//jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
-			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+			
+			if(j.getIsWaiting()){
+				int qcIndex = j.getQcIndex(); 
+				Lock l = lockArr[qcIndex]; 
+				synchronized(l){
+					l.unloadWaitLock(this);
+				}
+			}
+			
+			
 			j.setTravelling(true);
 			jobList.repaint();
 			
@@ -644,7 +673,14 @@ public class Dispatcher {
 			//so... is the bay no count greater than 0, wait until 0
 			int qcIndex = j.getQcIndex();
 			int bayIndex = j.getBayIndex(); 
+			
 			if(bayIndex > 0){
+				if(j.getLoading() == false){
+					if(completeJobsBay[qcIndex][bayIndex-1] > 0){
+						bayWait[qcIndex]++; 
+						System.out.println("baywait index: " + qcIndex + ", baywait value: " + bayWait[qcIndex]);
+					}
+				}
 				while(completeJobsBay[qcIndex][bayIndex-1] > 0){
 					//wait
 					j.setIsWaiting(true);
@@ -657,8 +693,11 @@ public class Dispatcher {
 					}
 				}
 				if(j.getLoading() == false){
-					synchronized(l){
-						l.unloadWaitForBayLock(this);
+					if(this.qcWait == false){
+						Lock l = lockArr[qcIndex]; 
+						synchronized(l){
+							l.unloadWaitLock(this);
+						}
 					}
 				}else{
 					j.setIsWaiting(false);
@@ -669,10 +708,20 @@ public class Dispatcher {
 			
 		}
 		
-		public void notWaitingForBay(){
+		public void notWaiting(){
+			//changed here!! to solve the wait-don't wait- wait blinking problem 
 			j.setIsWaiting(false);
 			j.setAssigned();
 			jobList.repaint();
+			try {
+				Thread.sleep(Constants.SLEEP);
+				if(bayWait[j.getQcIndex()]>0){
+					bayWait[j.getQcIndex()]--; 
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		
 		public void completeTask(){ //this one is for unloading 				

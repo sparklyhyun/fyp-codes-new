@@ -201,8 +201,10 @@ public class Dispatcher {
 			
 			//make this more intricate 
 			if(j.getLoading() == false){ //if unloading job 
-				qcWait = true; 
-				
+				if(prevQcIndex == j.getQcIndex()){
+					qcWait = true; 
+				}
+
 				//if previous one has the same index 
 				/*
 				if(bayWait[j.getQcIndex()]>0){
@@ -228,7 +230,7 @@ public class Dispatcher {
 			
 			//add the delay for all other qcs 
 			Constants.TOTALDELAY += incompleteQc-1; 
-			System.out.println("incomplete qc = " + incompleteQc);
+			//System.out.println("incomplete qc = " + incompleteQc);
 			
 			try {
 				Thread.sleep(Constants.SLEEP);
@@ -529,12 +531,12 @@ public class Dispatcher {
 			j.setIsWaiting(false);
 			
 			jobList.repaint();
-			System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
+			//System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
 
 			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getTotalCost();
-			System.out.println("sleep for: " + c + " units");
+			//System.out.println("sleep for: " + c + " units");
 			
 			while(c > 0){
 				c--;
@@ -551,7 +553,7 @@ public class Dispatcher {
 			if(j.getY()-1 >= 0){
 				Job prev = jobList.getJob(j.getY()-1, j.getX());
 				if(prev.getLoading() == true && prev.getComplete() == false){
-					System.out.println("previous job unfinished. waiting.............................." + (j.getY()-1) + ", " + j.getX());
+					//System.out.println("previous job unfinished. waiting.............................." + (j.getY()-1) + ", " + j.getX());
 					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
 					jobList.repaint();
 				}
@@ -586,14 +588,12 @@ public class Dispatcher {
 			//complete the job
 			synchronized(l){
 				agvList.add(agv);
-				
 				//only release sem after agv is added back
 				//sem.release();
-				
 				l.lock(this, true);
 			}
 			
-			System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
+			//System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
 			
 
@@ -607,13 +607,40 @@ public class Dispatcher {
 			//System.out.println("agv: " + this.agv.getAgvNum() + "qcWait: " + qcWait);
 			
 			//empty agv list, need to wait for agv
-			if((qcWait == true) || (bayWait[j.getQcIndex()]>0)){//waiting for the agv
+			//if((qcWait == true) || (bayWait[j.getQcIndex()]>0)){//waiting for the agv
+			
+			//problem here. the waiting part works fine 
+			while(bayWait.get(j.getQcIndex()).isEmpty() == false && bayWait.get(j.getQcIndex()).contains(j) == false){
+				j.setIsWaiting(true);
+				try {
+					Constants.TOTALDELAY++;
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			/*
+			if(bayWait.get(j.getQcIndex()).contains(j)){
+				while(bayWait.get(j.getQcIndex()).indexOf(j) != 0){	
+					j.setIsWaiting(true);
+					try {
+						Constants.TOTALDELAY++;
+						Thread.sleep(Constants.SLEEP);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}*/
+			
+			
+			if(qcWait == true){
 				j.setIsWaiting(true);
 				
 				jobList.repaint();
 				
 				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
-				System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
+				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
 				
 				try {
 					Constants.TOTALDELAY++;
@@ -638,7 +665,7 @@ public class Dispatcher {
 			jobList.repaint();
 			
 			//here, delay for traveling. Hold the agv. 
-			int c = j.getBeforeTravelCost();
+			int c = j.getTotalCost(); 
 			System.out.println("before travelling, sleep for: " + c + " units");
 			
 			while(c > 0){
@@ -655,7 +682,7 @@ public class Dispatcher {
 			//job completion can happen at the same time
 			completeTask();
 			
-			System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
+			//System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
 			
 			agvList.add(agv);
@@ -677,8 +704,12 @@ public class Dispatcher {
 			if(bayIndex > 0){
 				if(j.getLoading() == false){
 					if(completeJobsBay[qcIndex][bayIndex-1] > 0){
-						bayWait[qcIndex]++; 
-						System.out.println("baywait index: " + qcIndex + ", baywait value: " + bayWait[qcIndex]);
+						//bayWait[qcIndex]++; 
+						//System.out.println("baywait index: " + qcIndex + ", baywait value: " + bayWait[qcIndex]);
+						
+						bayWait.get(j.getQcIndex()).add(j); 
+						System.out.println("------------ baywait added job: " + j.getY()+", " + j.getX());
+						System.out.println("------------ bayWait added: "+j.getQcIndex() +" , new length: " + bayWait.get(j.getQcIndex()).size());
 					}
 				}
 				while(completeJobsBay[qcIndex][bayIndex-1] > 0){
@@ -693,7 +724,7 @@ public class Dispatcher {
 					}
 				}
 				if(j.getLoading() == false){
-					if(this.qcWait == false){
+					if(this.qcWait == false && bayWait.get(j.getQcIndex()).size()<1){
 						Lock l = lockArr[qcIndex]; 
 						synchronized(l){
 							l.unloadWaitLock(this);
@@ -713,11 +744,20 @@ public class Dispatcher {
 			j.setIsWaiting(false);
 			j.setAssigned();
 			jobList.repaint();
+			
+			if(bayWait.get(j.getQcIndex()).contains(j)){
+				bayWait.get(j.getQcIndex()).remove(j);
+				System.out.println("------------- baywait complete job: " + j.getY()+", " + j.getX());
+				System.out.println("------------- baywait complete: " + j.getQcIndex()+" , removed, new length: " + bayWait.get(j.getQcIndex()).size());
+			}
+			
 			try {
 				Thread.sleep(Constants.SLEEP);
+				/*
 				if(bayWait[j.getQcIndex()]>0){
 					bayWait[j.getQcIndex()]--; 
-				}
+				}*/ 
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -742,10 +782,10 @@ public class Dispatcher {
 			///problem is here. the index stops at nexty index out of range
 			if(j.getLoading()){
 				if(nexty < (y+1)*Constants.MAX_Y){
-					System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
+					//System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
 					//not even reaching this stage somehow.....
 					if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
-						System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
+						//System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
 						jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
 						jobList.repaint();
 					}
@@ -753,7 +793,7 @@ public class Dispatcher {
 			}
 			
 			
-			System.out.println("agv added to the queue, new queue length: " + agvList.size());
+			//System.out.println("agv added to the queue, new queue length: " + agvList.size());
 			
 			//jobList.getJob(j.getY(), j.getX()).setComplete();
 			//jobList.getJob(j.getSplitY(), j.getSplitX()); 

@@ -44,21 +44,32 @@ public class Job {
 		
 	}
 	
-	public void initCost(){
-		Random rand = new Random();
-		if(loading == true){	//loading task
-			int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
-			this.travel = randomCost; 
-		}else{	//unloading task
-			int randomCost1 = rand.nextInt(10)+1; 	// cost ranges from 1 to 5
-			int randomCost2 = rand.nextInt(10)+1;
-			this.beforeTravel = randomCost1; 
-			this.afterTravel = randomCost2; 
+	public void initCost(int x){	//0 - high cost, 1 - normal cost, 2 - low cost 
+		Random rand = new Random(); 
+		int randomCost = 0; 
+		switch(x){
+		case 0:
+			randomCost = rand.nextInt((20-15)+1) + 15;	// cost ranges from 20 to 30 
+			break;
+		case 1:
+			randomCost = rand.nextInt((15-10)+1)+10; 	// cost ranges from 10 to 15 
+			break;
+		case 2:
+			randomCost = rand.nextInt((10-5)+1)+5; 		// cost ranges from 5 to 10
+			break;
+		default: break;
 		}
-		setTotalCost(); 
 		
+		this.travel = randomCost; 
+		/*
+		Random rand = new Random();
+		int randomCost = rand.nextInt(10)+1; 	// cost ranges from 1 to 10 
+		this.travel = randomCost; 
+		*/
+		setTotalCost(); 
 	}
 	
+
 
 	
 	public int getX(){
@@ -185,11 +196,8 @@ public class Job {
 	}
 	
 	public void setTotalCost(){	//previous total cost
-		if(loading == true){
-			tCost = travel + dCost;
-		}else{
-			tCost = beforeTravel + afterTravel; 
-		}
+		tCost = travel + dCost;
+
 		
 	}
 	

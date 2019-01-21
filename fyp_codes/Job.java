@@ -15,7 +15,7 @@ public class Job {
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
 	private final int dCost = 1;	//time takent to drop off 
-	private int tCost; 				//actual end time 
+	private int tCost = 0; 				//actual end time 
 	
 	private int idealEnd = 0; 		//idealEnd == previous.endtime, or can be later than prev.endtime 
 	//private int idealStart = 0; 	//idealStart = prev.idealEnd 
@@ -41,7 +41,6 @@ public class Job {
 		this.x = x;
 		this.y = y;
 		this.loading = loading;
-		initCost();
 		
 	}
 	
@@ -192,6 +191,10 @@ public class Job {
 			tCost = beforeTravel + afterTravel; 
 		}
 		
+	}
+	
+	public void setTotalCost2(int c){
+		tCost = c; 
 	}
 	
 	public void setTotalCost(int x){

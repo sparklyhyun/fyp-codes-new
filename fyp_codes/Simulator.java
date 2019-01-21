@@ -79,7 +79,27 @@ public class Simulator {
 		
 		//updating the timer test
 		//tenative, stops after all threads are created, not when all ends 
-		totalTimer.t.stop(); 
+		while(true){
+			System.out.println("jobs completed: " + Constants.jobsCompleted);
+			if(Constants.jobsCompleted >= Constants.TOTAL_SIZE){
+				totalTimer.t.stop();
+				break;
+			}
+		}
+
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
+		System.out.println("=========================All completed========================");
+		System.out.println("total time taken: " + Constants.TOTALTIME);
+		System.out.println("total delay: " + Constants.TOTALDELAY);
+		System.out.println("average delay per QC: " + (float)Constants.TOTALDELAY/4.0);
+		
+		 
 		
 		/*	
 		if(Constants.allComplete >= Constants.NUM_QC){

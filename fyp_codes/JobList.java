@@ -7,7 +7,6 @@ import java.awt.*;
 //list of jobs to be completed
 public class JobList extends JPanel{
 	public final Job[][] jobs = new Job[Constants.TOTAL_Y][Constants.TOTAL_X];
-
 	
 	public JobList(){
 	
@@ -21,7 +20,9 @@ public class JobList extends JPanel{
 		
 		//creating the full job list 
 		createFullList(); 
-
+		
+		calcTotalJobNum(); 
+		
 		reset(); 
 		System.out.println("job list done");
 	}
@@ -30,20 +31,34 @@ public class JobList extends JPanel{
 		for(int j=0; j<Constants.TOTAL_X; j++){
 			for(int i=0; i<5; i++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost();
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 			for(int i=5; i<10; i++){
 				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost();
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 			for(int i=10; i<15; i++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost();
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 			for(int i=15; i<20; i++){
 				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost();
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
+		}
+	}
+	
+	public void firstQcLessJobs(){
+		//qc 1
+		for(int i=5; i<Constants.MAX_Y; i++){
+			for(int j=0; j<Constants.NUM_QC_X; j++){
+				
+			}
+			
 		}
 	}
 	
@@ -100,6 +115,19 @@ public class JobList extends JPanel{
 				}
 			}
 		}*/
+	}
+	
+	public void calcTotalJobNum(){
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				if(jobs[i][j].getTotalCost()>0){
+					Constants.TOTAL_JOB_NO++; 
+				}else{
+					jobs[i][j].setComplete();
+				}
+			}
+		}
+		System.out.println("total job no: " + Constants.TOTAL_JOB_NO);
 	}
 	
 	public boolean isLoading(int y, int x){

@@ -27,8 +27,8 @@ public class SplitJobList extends JPanel{
 			//System.out.println("x value: " + j);
 			for(int i=y*(Constants.MAX_Y); i<(y+1)*(Constants.MAX_Y); i++){
 				splitJobs[l][k] = fullList.getJob(i, j); 
-				splitJobs[l][k].setSplitX(k);
-				splitJobs[l][k].setSplitY(l);
+				splitJobs[l][k].setSplitX(splitListX);
+				splitJobs[l][k].setSplitY(splitListY);
 				l++;
 			}
 			k++; 

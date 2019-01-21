@@ -13,6 +13,7 @@ public class Constants {
 	public static final int MAX_X = 4; 	//bay size (for 1) ?
 	public static final int MAX_Y = 10;	//bay height?
 	public static final int BAYSIZE = MAX_X * MAX_Y; 
+	public static int TOTAL_JOB_NO = 0; 
 	
 	public static final int HALF_Y = MAX_Y/2;	//half is unloading, half is loading 
 	
@@ -28,7 +29,7 @@ public class Constants {
 	public static final int NUM_QC_Y = 2; 
 	public static int NUM_QC = Constants.NUM_QC_X * Constants.NUM_QC_Y;
 	
-	public static final int AGV = 8; //number of AGV
+	public static final int AGV = 12; //number of AGV
 	
 	public static final int CELL_SIZE = 20; 
 	public static final Color COLOR_LOADING = Color.BLUE;
@@ -38,12 +39,14 @@ public class Constants {
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	
-	public static final int SLEEP = 500; 
+	public static final int SLEEP = 300; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;
 	
 	public static int allComplete = 0; 
+	
+	public static int jobsCompleted = 0; 
 	
 	//can i put timer here? would it work? 
 	/*

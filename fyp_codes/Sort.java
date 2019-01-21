@@ -55,11 +55,12 @@ public class Sort {
 		jobListSplit();
 		sortSplitJobLists(); 
 		
+		/*
 		for(int i=0; i<Constants.NUM_QC; i++){
 			for(int k=0; k<Constants.NUM_BAY; k++){
 				System.out.println("qc index: " + i + ", bay no: " + k + ", number of jobs added: " + completeJobsBay[i][k]);
 			}
-		}
+		}*/
 		
 	}
 	
@@ -79,7 +80,7 @@ public class Sort {
 				setTotalQcCost(splitJobList, index); 
 				splitJobListArr.add(splitJobList); 
 				index++; 
-				System.out.println("index for total qc cost: " + index);
+				//System.out.println("index for total qc cost: " + index);
 			}
 			
 		}
@@ -137,7 +138,7 @@ public class Sort {
 		//add the q_jobs into the q_jobsList
 		q_jobsList.add(q_jobs); 
 		
-		System.out.println("q_jobs size inside sorted function: " + q_jobsList.size());
+		//System.out.println("q_jobs size inside sorted function: " + q_jobsList.size());
 	}
 	
 	public void sortUnloading(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
@@ -149,7 +150,7 @@ public class Sort {
 				sjl.getJob(i, j).setQcIndex(qcIndex);
 				
 				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
-				System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
+				//System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
 				arr++;
 			}
 			sortArray = sortDescending(sortArray);
@@ -173,7 +174,7 @@ public class Sort {
 				sjl.getJob(i, j).setQcIndex(qcIndex);
 				
 				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
-				System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
+				//System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
 				arr++;
 			}
 			sortArray = sortDescending(sortArray);

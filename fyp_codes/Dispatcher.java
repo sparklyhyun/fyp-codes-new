@@ -8,6 +8,7 @@ package fyp_codes;
 import java.awt.List;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
 import fyp_codes.Greedy.AtomicJob;
 import fyp_codes.Greedy.Lock;
@@ -37,11 +38,7 @@ public class Dispatcher {
 	//to pause the execution
 	ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 	
-	//private static ArrayList<SplitJobList> splitJobListArr = new ArrayList<>();
-	//private static HashMap<String, Integer> totalQcCost = new HashMap<>();
-	
-	private static ArrayList<ArrayList<Job>> q_jobsList = new ArrayList<ArrayList<Job>>(); 
-	//private static HashMap<Integer, Integer> totalQcCost = new HashMap<>(); 
+	private static ArrayList<ArrayList<Job>> q_jobsList = new ArrayList<ArrayList<Job>>();  
 	
 	//arraylist index is the same as the qc index and the total cost index!!!
 	private static int[] totalQcCost = new int[Constants.NUM_QC]; 
@@ -55,12 +52,29 @@ public class Dispatcher {
 	private static int[][] completeJobsBay; 
 	//minus minus until 0, then move to next bay**********************************************
 	
+	private static int incompleteQc = Constants.NUM_QC; 
+	
+	private static int[][] jobsCreated = new int[Constants.NUM_QC][Constants.NUM_BAY];
+	
+	private static int[] bayWait = new int[Constants.NUM_QC]; //number of jobs waiting for the bay 
+	
+	//Semaphore sem; //need 1 for each qc. can I do an array of semaphores??
+	//Semaphore[] sem = new Semaphore[Constants.NUM_QC]; //well looks like I can! 
+	
 	public Dispatcher(JobList j){
 		this.jobList = j; 
 		
 		for(int k=0; k<Constants.AGV; k++){
 			Agv agv = new Agv(k); 
 			agvList.add(agv); 
+		}
+		/*
+		for(int i=0; i<Constants.NUM_QC; i++){
+			sem[i] = new Semaphore(1); //1 semaphore each qc? 
+		}*/ 
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			bayWait[i] = 0; 
 		}
 		
 		
@@ -77,6 +91,11 @@ public class Dispatcher {
 		q_jobsList = sort.getJobListsSorted(); 
 		totalQcCost = sort.getTotalCost(); 
 		completeJobsBay = sort.getCompleteBayList(); 
+		//jobsCreated = sort.getCompleteBayList(); 
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			jobsCreated[i] = Arrays.copyOf(completeJobsBay[i], completeJobsBay[i].length); 
+		}
 	}
 	
 	//now the dispatching algorithms.
@@ -136,6 +155,8 @@ public class Dispatcher {
 	}
 	
 	public void startDispatching(){
+		int prevQcIndex = -1; 
+		
 		while(jobOrder.isEmpty() == false){
 			//agvlist empty
 			while(agvList.isEmpty() == true){
@@ -143,6 +164,7 @@ public class Dispatcher {
 				
 				try {
 					Thread.sleep(Constants.SLEEP);
+					Constants.TOTALDELAY += incompleteQc; 
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -154,18 +176,20 @@ public class Dispatcher {
 			Job j = jobOrder.get(0);
 			jobOrder.remove(0); 	//remove the first job in the queue 	\
 			
-			
-			//check if need to wait for bay
-			//waitingbay;
-			
 			String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 			
 			boolean qcWait = false;
 			
 			//make this more intricate 
-			if(j.getLoading() == false){
-				qcWait = true; 
+			if(j.getLoading() == false){ //if unloading job 
+				//if previous one has the same index 
+				if(prevQcIndex == j.getQcIndex()){
+					qcWait = true; 
+				}
 			}
+			
+			//set previous qc index to determine whether to put the delay in front or not (for unloading) 
+			prevQcIndex = j.getQcIndex(); 
 			
 			AtomicJob a = new AtomicJob(j, threadName, idleAgv, qcWait);
 			jobNo_created++; 
@@ -174,9 +198,14 @@ public class Dispatcher {
 			
 			a.start(); 
 			
+			
+			
+			//add the delay for all other qcs 
+			Constants.TOTALDELAY += incompleteQc-1; 
+			System.out.println("incomplete qc = " + incompleteQc);
+			
 			try {
 				Thread.sleep(Constants.SLEEP);
-				//Constants.TOTALTIME++; 
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -320,11 +349,8 @@ public class Dispatcher {
 
 			}
 		}
-	*/ 
 
 	public void waitingBay(){
-		//need to change this to use the complete job array
-		//dd
 		while(jobNo < 40){
 			System.out.println("waiting for the bay to complete all loading jobs...............");
 			try {
@@ -335,7 +361,7 @@ public class Dispatcher {
 			}
 		}
 	}
-	
+*/
 
 	public void showJobSeq(){
 		for(int i=0; i<q_jobs.size(); i++){
@@ -398,6 +424,19 @@ public class Dispatcher {
 			}
 			
 		}
+		
+		public void unloadWaitForBayLock(AtomicJob aj){
+			this.aj = aj;
+			//assign waiting false 
+			aj.notWaitingForBay();
+			try {
+				Thread.sleep(Constants.SLEEP);
+				//System.out.println("completed jobs: " + jobNo);
+				//jobNo+= 1;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	
@@ -416,6 +455,11 @@ public class Dispatcher {
 		
 		@Override
 		public void run() {	
+			jobsCreated[j.getQcIndex()][j.getBayIndex()]--; 
+			if(jobsCreated[j.getQcIndex()][2]<1){
+				incompleteQc--; 
+			}
+			
 			if(j.getLoading() == true){
 				travelingLoading(agv);
 				try {
@@ -431,6 +475,8 @@ public class Dispatcher {
 					e.printStackTrace();
 				} 
 			}
+			
+			
 			
 		}
 		
@@ -527,6 +573,7 @@ public class Dispatcher {
 			
 			System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
+			
 
 		}
 		
@@ -534,7 +581,7 @@ public class Dispatcher {
 			waitForBay();
 			
 			j.setAssigned();
-			jobList.repaint();
+			//jobList.repaint();
 			//System.out.println("agv: " + this.agv.getAgvNum() + "qcWait: " + qcWait);
 			
 			//empty agv list, need to wait for agv
@@ -609,11 +656,23 @@ public class Dispatcher {
 						e.printStackTrace();
 					}
 				}
-				j.setIsWaiting(false);
-				jobList.repaint();
+				if(j.getLoading() == false){
+					synchronized(l){
+						l.unloadWaitForBayLock(this);
+					}
+				}else{
+					j.setIsWaiting(false);
+					jobList.repaint();
+				}
 			}
 			
 			
+		}
+		
+		public void notWaitingForBay(){
+			j.setIsWaiting(false);
+			j.setAssigned();
+			jobList.repaint();
 		}
 		
 		public void completeTask(){ //this one is for unloading 				
@@ -622,25 +681,28 @@ public class Dispatcher {
 			jobList.repaint();
 			
 			//int y = splitJobList.getSplitListY();
-			int y = j.getSplitY(); 
+			int y = j.getSplitY();
 			
 			int nexty = j.getY()+1;
 			
 			
-			//figure out what this function is for lollll 
+			//System.out.println("max y: " + Constants.MAX_Y);
+			//System.out.println("splity: " + y);
+			//System.out.println("nexty: " + nexty + ", limit: "+(y+1)*Constants.MAX_Y+", condition: " + (nexty < (y+1)*Constants.MAX_Y));
 			
-			//lets remove this and see what happens
-			
-			/*
-			if(nexty+1 <= (y+1)*Constants.MAX_Y){
-				//System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
-				//not even reaching this stage somehow.....
-				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
-					System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
-					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
-					jobList.repaint();
+			///problem is here. the index stops at nexty index out of range
+			if(j.getLoading()){
+				if(nexty < (y+1)*Constants.MAX_Y){
+					System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
+					//not even reaching this stage somehow.....
+					if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
+						System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
+						jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting
+						jobList.repaint();
+					}
 				}
-			}*/ 
+			}
+			
 			
 			System.out.println("agv added to the queue, new queue length: " + agvList.size());
 			
@@ -649,10 +711,10 @@ public class Dispatcher {
 			
 			jobList.repaint();
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
-			
-			
+			Constants.jobsCompleted++; 
 			
 		}
+
 		
 		@SuppressWarnings("deprecation")
 		public void paused(){

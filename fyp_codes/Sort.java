@@ -36,15 +36,30 @@ public class Sort {
 	ArrayList<AtomicJob> atomicJobList = new ArrayList<>(); 
 	
 	private int[] totalCost = new int[Constants.NUM_QC]; 
+	 
+	private int[][] completeJobsBay = new int[Constants.NUM_QC][Constants.NUM_BAY]; 
 	
 	//public Sort(JobList j, SplitJobList sj, String name){
 	public Sort(JobList j){
 		this.jobList = j; 
 		//this.splitJobList = sj; 
 		
+		//initialize the empty array
+		for(int i=0; i<Constants.NUM_QC; i++){
+			for(int m=0; m<Constants.NUM_BAY; m++){
+				completeJobsBay[i][m] = 0; 
+			}
+		}
+		
 		//splitting jobs happen inside here
 		jobListSplit();
 		sortSplitJobLists(); 
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			for(int k=0; k<Constants.NUM_BAY; k++){
+				System.out.println("qc index: " + i + ", bay no: " + k + ", number of jobs added: " + completeJobsBay[i][k]);
+			}
+		}
 		
 	}
 	
@@ -96,12 +111,12 @@ public class Sort {
 	public void sortSplitJobLists(){
 		// the sorting happens here
 		for(int i=0; i<splitJobListArr.size(); i++){
-			sortMerged(splitJobListArr.get(i));
+			sortMerged(splitJobListArr.get(i), i);
 		}
 		
 	}
 	
-	public void sortMerged(SplitJobList sjl){
+	public void sortMerged(SplitJobList sjl, int qcIndex){
 		
 		ArrayList<Job> q_jobs = new ArrayList<>();
 		Job[] sortArray = new Job[Constants.MAX_X];	//for sorting purpose 
@@ -113,10 +128,10 @@ public class Sort {
 			
 			//sort 1 bay at a time. update q_jobs accordingly 
 			//sort unloading first
-			sortUnloading(l, sortArray, sjl, q_jobs);
+			sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
 			
 			//sort loading
-			sortLoading(l, sortArray, sjl, q_jobs);
+			sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
 
 		}
 		//add the q_jobs into the q_jobsList
@@ -125,11 +140,16 @@ public class Sort {
 		System.out.println("q_jobs size inside sorted function: " + q_jobsList.size());
 	}
 	
-	public void sortUnloading(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs){
+	public void sortUnloading(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
 		int arr = 0;
 		for(int i=0; i<Constants.HALF_Y; i++){
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
 				sortArray[arr] = sjl.getJob(i, j); 
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
+				System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
 				arr++;
 			}
 			sortArray = sortDescending(sortArray);
@@ -141,7 +161,7 @@ public class Sort {
 		}
 	}
 	
-	public void sortLoading(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs){
+	public void sortLoading(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
 		int arr = 0;
 		
 		//int splity, splitx; 
@@ -149,6 +169,11 @@ public class Sort {
 		for(int i=Constants.HALF_Y; i<Constants.MAX_Y; i++){
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
 				sortArray[arr] = sjl.getJob(i, j); 
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
+				System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
 				arr++;
 			}
 			sortArray = sortDescending(sortArray);
@@ -239,6 +264,10 @@ public class Sort {
 	
 	public int[] getTotalCost(){
 		return totalCost; 
+	}
+	
+	public int[][] getCompleteBayList(){
+		return completeJobsBay; 
 	}
 	
 }

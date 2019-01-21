@@ -18,6 +18,8 @@ public class Constants {
 	
 	public static final int QC_X = 12; // 3 bays here 
 	
+	public static final int NUM_BAY = 3; 
+	
 	public static final int TOTAL_Y = 20; // 2 qc, top and bottom 
 	public static final int TOTAL_X = 24; // 2 qc, left and right
 	public static final int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 

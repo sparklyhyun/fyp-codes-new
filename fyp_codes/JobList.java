@@ -6,12 +6,8 @@ import java.awt.*;
 
 //list of jobs to be completed
 public class JobList extends JPanel{
-	//public final Job[][] jobs = new Job[Constants.MAX_Y][Constants.MAX_X];
 	public final Job[][] jobs = new Job[Constants.TOTAL_Y][Constants.TOTAL_X];
-	//public final Job[][] splitJobs = new Job[Constants.MAX_Y][Constants.QC_X]; 
-	
-	//private boolean splitJobList = false; // see if splitjoblist
-	//private Agv agv = null; 
+
 	
 	public JobList(){
 	
@@ -24,6 +20,13 @@ public class JobList extends JPanel{
 		}*/
 		
 		//creating the full job list 
+		createFullList(); 
+
+		reset(); 
+		System.out.println("job list done");
+	}
+	
+	public void createFullList(){
 		for(int j=0; j<Constants.TOTAL_X; j++){
 			for(int i=0; i<5; i++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
@@ -42,9 +45,6 @@ public class JobList extends JPanel{
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 		}
-
-		reset(); 
-		System.out.println("job list done");
 	}
 	
 	/*

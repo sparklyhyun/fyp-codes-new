@@ -51,7 +51,9 @@ public class Dispatcher {
 	
 	private String name; 
 	
-	private static int[] jobCompleted = new int[Constants.NUM_QC]; 
+	//private static int[] jobCompleted = new int[Constants.NUM_QC]; 
+	private static int[][] completeJobsBay; 
+	//minus minus until 0, then move to next bay**********************************************
 	
 	public Dispatcher(JobList j){
 		this.jobList = j; 
@@ -61,9 +63,6 @@ public class Dispatcher {
 			agvList.add(agv); 
 		}
 		
-		for(int i=0; i<jobCompleted.length; i++){
-			jobCompleted[i] = 0; 
-		}
 		
 		sortJobs(); 
 		
@@ -77,6 +76,7 @@ public class Dispatcher {
 		Sort sort = new Sort(jobList); 
 		q_jobsList = sort.getJobListsSorted(); 
 		totalQcCost = sort.getTotalCost(); 
+		completeJobsBay = sort.getCompleteBayList(); 
 	}
 	
 	//now the dispatching algorithms.
@@ -161,6 +161,8 @@ public class Dispatcher {
 			String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 			
 			boolean qcWait = false;
+			
+			//make this more intricate 
 			if(j.getLoading() == false){
 				qcWait = true; 
 			}
@@ -382,8 +384,6 @@ public class Dispatcher {
 					Thread.sleep(Constants.SLEEP);
 					//System.out.println("completed jobs: " + jobNo);
 					//jobNo+= 1;
-					jobCompleted[aj.getJob().getQcIndex()] += 1; 
-					System.out.println("complete job" + jobCompleted[aj.getJob().getQcIndex()]);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -459,6 +459,7 @@ public class Dispatcher {
 		}
 		
 		public void travelingLoading(Agv agv){
+			
 			j.setAssigned();
 			j.setIsWaiting(false);
 			
@@ -510,7 +511,9 @@ public class Dispatcher {
 			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
 			jobList.repaint();
 			*/
-			//waitForBay(); 
+			
+			
+			waitForBay(); 
 			
 			//complete the job
 			synchronized(l){
@@ -521,11 +524,15 @@ public class Dispatcher {
 				
 				l.lock(this, true);
 			}
+			
+			System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
+			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
 
 		}
 		
 		public void travelingUnloading(Agv agv){
-
+			waitForBay();
+			
 			j.setAssigned();
 			jobList.repaint();
 			//System.out.println("agv: " + this.agv.getAgvNum() + "qcWait: " + qcWait);
@@ -569,10 +576,12 @@ public class Dispatcher {
 				}
 			}
 			
-			//waitForBay(); 
-			
 			//job completion can happen at the same time
 			completeTask();
+			
+			System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
+			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
+			
 			agvList.add(agv);
 			
 			//release sem only after agv is added back
@@ -583,49 +592,28 @@ public class Dispatcher {
 			jobNo+= 1;
 		}
 		
+		
 		public void waitForBay(){
-			int mulBays = Constants.QC_X / Constants.MAX_X;
-			int baySize = Constants.BAYSIZE;
-			ArrayList<Integer> jobCompletedArr = new ArrayList<>(); 
-			ArrayList<Integer> maxX = new ArrayList<>(); 
-			
-			//calculate starting index of job per bay
-			for(int i=0; i<mulBays-1; i++){
-				jobCompletedArr.add(baySize + baySize*i);
-				maxX.add(Constants.MAX_X + Constants.MAX_X*i);
-			}
-			
-			for(int i=0; i<jobCompletedArr.size(); i++){
-				if(jobNo_created >= jobCompletedArr.get(i) && j.getX()>maxX.get(i)-1){
-					//System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
-					//int nexty = j.getY()+1; //only considers next row. need to consider the next bay. job index - 0 to 39, 40 to 80 
-					
-					if(jobNo<=jobCompletedArr.get(i)){
-						System.out.print("\t\t\t\t\t wait job x: " + j.getX());
-						while(jobNo<jobCompletedArr.get(i)){
-							if(j.getLoading()==false){
-								break; 
-							}
-							System.out.println("\t\t\t\t\twait until jobs completed...............................");
-							//jobList.getJob(nexty, j.getX()).setIsWaiting(true);
-							jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-							jobList.repaint();
-							try {
-								Thread.sleep(Constants.SLEEP);
-								Constants.TOTALDELAY++;
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						System.out.println("\t\t\t\t\t\tmove onto the next bay......................................");
+			//so... is the bay no count greater than 0, wait until 0
+			int qcIndex = j.getQcIndex();
+			int bayIndex = j.getBayIndex(); 
+			if(bayIndex > 0){
+				while(completeJobsBay[qcIndex][bayIndex-1] > 0){
+					//wait
+					j.setIsWaiting(true);
+					jobList.repaint();
+					try {
+						Constants.TOTALDELAY++;;
+						Thread.sleep(Constants.SLEEP);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-					
-				//jobList.getJob(nexty, j.getX()).setIsWaiting(false);
-				jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
+				}
+				j.setIsWaiting(false);
 				jobList.repaint();
 			}
 			
-		}
+			
 		}
 		
 		public void completeTask(){ //this one is for unloading 				
@@ -662,25 +650,9 @@ public class Dispatcher {
 			jobList.repaint();
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			
-			jobCompleted[j.getQcIndex()] += 1; 
-
-		}
-		
-		public void unloadComplete(){
-			j.setTravelling(true);
-			jobList.repaint();
 			
-			if(j.getY()+1 < Constants.MAX_Y){
-				int nexty = j.getY()+1;
-				if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
-					jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting 
-					//jobList.repaint();
-				}
-			}
-			System.out.println("job " + j.getY() + ", " + j.getX()+ " just unloaded");
-			jobList.repaint();
+			
 		}
-		
 		
 		@SuppressWarnings("deprecation")
 		public void paused(){

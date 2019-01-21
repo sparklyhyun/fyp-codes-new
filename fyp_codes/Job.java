@@ -33,7 +33,8 @@ public class Job {
 	
 	private Agv agv; 
 	
-	private int qcIndex; 
+	private int qcIndex;
+	private int bayIndex; 
 
 	
 	public Job(int y, int x , boolean loading){
@@ -232,6 +233,14 @@ public class Job {
 	
 	public int getQcIndex(){
 		return qcIndex; 
+	}
+	
+	public void setBayIndex(int i){
+		this.bayIndex = i; 
+	}
+	
+	public int getBayIndex(){
+		return bayIndex; 
 	}
 	
 	

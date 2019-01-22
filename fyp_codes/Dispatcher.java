@@ -59,10 +59,11 @@ public class Dispatcher {
 	private static int[][] jobsCreated = new int[Constants.NUM_QC][Constants.NUM_BAY];
 	
 	private static ArrayList<ArrayList<Job>> bayWait = new ArrayList<>(); //number of jobs waiting for the bay 
+	private static ArrayList<ArrayList<Agv>> bayWaitAgv = new ArrayList<>(); //store agv assigned to each of the jobs waiting for the bay 
 	
 	//private static int[] bayWait = new int[Constants.NUM_QC]; //to keep track of whether to wait in front or not 
 	
-	private static boolean bayWaitBool = false; 
+	private static boolean[] unloadBayWaitBool = {false, false, false, false}; 
 	
 	//Semaphore sem; //need 1 for each qc. can I do an array of semaphores??
 	//Semaphore[] sem = new Semaphore[Constants.NUM_QC]; //well looks like I can! 
@@ -88,6 +89,11 @@ public class Dispatcher {
 		for(int i=0; i<Constants.NUM_QC; i++){
 			ArrayList<Job> waitJobs = new ArrayList<>();
 			bayWait.add(waitJobs); 
+		}
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			ArrayList<Agv> waitAgv = new ArrayList<>();
+			bayWaitAgv.add(waitAgv); 
 		}
 		
 		//initialize lock 
@@ -180,6 +186,10 @@ public class Dispatcher {
 		boolean emptyAgv = false; 
 		
 		while(jobOrder.isEmpty() == false){
+			//check if any bay is waiting
+			
+			
+			
 			//agvlist empty
 			while(agvList.isEmpty() == true){
 				emptyAgv = true; 
@@ -193,6 +203,7 @@ public class Dispatcher {
 				}
 			}
 			
+			
 			Agv idleAgv = agvList.get(0);
 			agvList.remove(0);	//agv not idle anymore 
 			
@@ -203,6 +214,18 @@ public class Dispatcher {
 			
 			boolean qcWait = false;
 			
+			//check if prev bay incomplete. if incomplete, instead of continuing to run, add to the list. then, set the qc waiting boolean true
+			/*
+			if(completeJobsBay[j.getQcIndex()][j.getBayIndex()-1]>0){
+				bayWait.get(j.getQcIndex()).add(j); 
+				try {
+					Thread.sleep(Constants.SLEEP);
+					Constants.TOTALDELAY += incompleteQc; 
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			*/
 			//make this more intricate 
 			if(j.getLoading() == false){ //if unloading job 
 				if(prevQcIndex == j.getQcIndex() && emptyAgv == false){
@@ -497,6 +520,7 @@ public class Dispatcher {
 		private Agv agv;
 		private boolean qcWait;	//true- unloading not first, false- unloading first/ loading. true - need to set delay 1 unit before  
 		private boolean bayWaited = false; 
+		private int bayWaitedTime = 0; // total waiting time waiting for next bay 
 		
 		public AtomicJob(Job j, String name, Agv agv, boolean qcWait ){	
 			this.j = j; 
@@ -635,7 +659,7 @@ public class Dispatcher {
 		
 		public void travelingUnloading(Agv agv){
 			waitForBay();
-			
+			/*
 			if(j.getIsWaiting() == true){
 				System.out.println("baywait qcInded: " + j.getQcIndex() + ", size: " + bayWait.get(j.getQcIndex()).size());
 				int firstY = bayWait.get(j.getQcIndex()).get(0).getY();
@@ -667,10 +691,11 @@ public class Dispatcher {
 			if(bayWaited){
 				System.out.println("OUT OF THE LOOP JOB "+ j.getY()+", " + j.getX() + ", is it still waiting: " + j.getIsWaiting());
 			}
-			
+			*/
 			
 			j.setAssigned();
-			jobList.repaint();
+			
+			//jobList.repaint();
 			//System.out.println("agv: " + this.agv.getAgvNum() + "qcWait: " + qcWait);
 			
 			//empty agv list, need to wait for agv
@@ -703,7 +728,7 @@ public class Dispatcher {
 			}*/
 			
 			
-			if(qcWait == true){
+			if(qcWait == true && !bayWaited){
 				j.setIsWaiting(true);
 				
 				jobList.repaint();
@@ -719,9 +744,11 @@ public class Dispatcher {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 			}
 			
-			System.out.println("Job: " + j.getY() +", " + j.getX() + " " + (j.getIsWaiting()) + (bayWaited));
+			
+			//System.out.println("Job: " + j.getY() +", " + j.getX() + " " + (j.getIsWaiting()) + (bayWaited));
 			if(j.getIsWaiting() && !bayWaited){
 				int qcIndex = j.getQcIndex(); 
 				Lock l = lockArr[qcIndex]; 
@@ -773,21 +800,26 @@ public class Dispatcher {
 			
 			if(bayIndex > 0){
 				if(j.getLoading() == false){
-					if(completeJobsBay[qcIndex][bayIndex-1] > 0){
+					if(completeJobsBay[qcIndex][bayIndex-1] > 0 /*|| (bayWait.get(qcIndex).size()>1)*/){
 						//bayWait[qcIndex]++; 
 						//System.out.println("baywait index: " + qcIndex + ", baywait value: " + bayWait[qcIndex]);
 						bayWaited = true; 
 						bayWait.get(j.getQcIndex()).add(j); 
 						//System.out.println("------------ baywait added job: " + j.getY()+", " + j.getX());
-						//System.out.println("------------ bayWait added: "+j.getQcIndex() +" , new length: " + bayWait.get(j.getQcIndex()).size());
+						System.out.println("------------ bayWait added: "+j.getQcIndex() +" , new length: " + bayWait.get(j.getQcIndex()).size());
 					}
 				}
-				while(completeJobsBay[qcIndex][bayIndex-1] > 0){
+				while(completeJobsBay[qcIndex][bayIndex-1] >= 0){
+					if(completeJobsBay[qcIndex][bayIndex-1]==0){
+						completeJobsBay[qcIndex][bayIndex-1]--;
+					}
+					
 					//wait
 					j.setIsWaiting(true);
+					bayWaitedTime++;
 					jobList.repaint();
 					try {
-						Constants.TOTALDELAY++;;
+						Constants.TOTALDELAY++;
 						Thread.sleep(Constants.SLEEP);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -796,24 +828,41 @@ public class Dispatcher {
 				if(j.getLoading() == false){
 					//test without this part 
 					
-					/*
-					if(this.qcWait == false && bayWait.get(qcIndex).size()>1){
-						System.out.println("\t\t\t true");
-						
+					
+					if(/*this.qcWait == false &&*/ bayWait.get(qcIndex).size()>0){
 						while(true){
-							System.out.println("qcIndex: "+qcIndex+", job: " + j.getY()+ ", " + j.getX() + " wating...................");
+							System.out.println("arrayList size before: " + bayWait.get(qcIndex).size());
+							//System.out.println("qcIndex: "+qcIndex+", job: " + j.getY()+ ", " + j.getX() + "first item: " +(bayWait.get(qcIndex).get(0) == j) );
+							
+							//System.out.println("first item: " + (bayWait.get(qcIndex).get(0) == j));
 							if(bayWait.get(qcIndex).get(0) == j){
-								System.out.println("seeing if it is first item");
-								notWaiting(); 
+								//System.out.println("seeing if it is first item");
+								
+								Lock l = lockArr[qcIndex]; 
+								synchronized(l){
+									l.unloadWaitLock(this);
+								}	
+								//bayWait.get(qcIndex).remove(0);
+								System.out.println("arrayList size before: " + bayWait.get(qcIndex).size());
+								/*
+								if(bayWait.get(qcIndex).size()>0){
+									bayWait.get(qcIndex).remove(0); 
+									break;
+								}*/
+								/*
 								bayWait.get(qcIndex).remove(0); 
-								break; 
+								break;*/ 
+								
+								break;
 							}
 							try {
 								Thread.sleep(Constants.SLEEP);								
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
-						}*/
+							
+						}
+						
 					
 						/*
 						Lock l = lockArr[qcIndex]; 
@@ -821,7 +870,7 @@ public class Dispatcher {
 							l.unloadWaitLock(this);
 						}*/
 					}
-				else{
+				}else{
 					j.setIsWaiting(false);
 					jobList.repaint();
 				}
@@ -835,21 +884,20 @@ public class Dispatcher {
 			j.setIsWaiting(false);
 			j.setAssigned();
 			jobList.repaint();
+			if(bayWaited){
+				bayWait.get(j.getQcIndex()).remove(0);
+			}
 			
+			/*
 			System.out.println("job: " + j.getY() + ", " + j.getX() + " " + bayWait.get(j.getQcIndex()).contains(j));
 			if(bayWait.get(j.getQcIndex()).contains(j)){
 				bayWait.get(j.getQcIndex()).remove(j);
 				System.out.println("------------- baywait complete job: " + j.getY()+", " + j.getX());
 				System.out.println("------------- baywait complete: " + j.getQcIndex()+" , removed, new length: " + bayWait.get(j.getQcIndex()).size());
-			}
+			}*/
 			
 			try {
 				Thread.sleep(Constants.SLEEP);
-				/*
-				if(bayWait[j.getQcIndex()]>0){
-					bayWait[j.getQcIndex()]--; 
-				}*/ 
-				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

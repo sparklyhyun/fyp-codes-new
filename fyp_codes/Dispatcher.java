@@ -65,6 +65,8 @@ public class Dispatcher {
 	
 	private static boolean[] unloadBayWaitBool = {false, false, false, false}; 
 	
+	public static int prevWaitEnded = -1; 
+	
 	//Semaphore sem; //need 1 for each qc. can I do an array of semaphores??
 	//Semaphore[] sem = new Semaphore[Constants.NUM_QC]; //well looks like I can! 
 	
@@ -181,7 +183,7 @@ public class Dispatcher {
 	
 	public void startDispatching(){
 		int prevQcIndex = -1; 
-		//ArrayList<AtomicJob> prevJob = new ArrayList<>(); 
+		ArrayList<AtomicJob> prevJob = new ArrayList<>(); 
 		//ArrayList<Integer> prevQc = new ArrayList<>(); 
 		boolean emptyAgv = false; 
 		
@@ -215,6 +217,8 @@ public class Dispatcher {
 			
 			boolean qcWait = false;
 			
+			emptyAgv = false;
+			
 			//check if prev bay incomplete. if incomplete, instead of continuing to run, add to the list. then, set the qc waiting boolean true
 			/*
 			if(completeJobsBay[j.getQcIndex()][j.getBayIndex()-1]>0){
@@ -228,19 +232,31 @@ public class Dispatcher {
 			}
 			*/
 			//make this more intricate 
+			
 			if(j.getLoading() == false){ //if unloading job 
 				if(prevQcIndex == j.getQcIndex() && emptyAgv == false){
 					qcWait = true; 
 				}
+				
+				//if waitbay greater than 1, then wait
+				/*
+				if(j.getBayIndex()>0){
+					if(completeJobsBay[j.getQcIndex()][j.getBayIndex()-1] == -1){
+						qcWait = true; 
+						completeJobsBay[j.getQcIndex()][j.getBayIndex()-1]--;
+						
+					}
+				}*/
+				
 			}
 			
-			emptyAgv = false; 
+			 
 			
 			/*
 			if(j.getLoading() == false){ //if unloading job 
 				if(prevJob.size() < 2){	//first few jobs 
 					if(prevJob.isEmpty() == true){
-						
+						break; 
 					}
 					
 				}
@@ -252,17 +268,8 @@ public class Dispatcher {
 					}
 					//qcWait = true; 
 				}
-
-				//if previous one has the same index 
 				
-				if(bayWait[j.getQcIndex()]>0){
-					bayWait[j.getQcIndex()]++; 
-				}
-				if((bayWait[j.getQcIndex()]>0) && (prevQcIndex == j.getQcIndex())){
-					qcWait = true; 
-				}
-				
-			}*/ 
+			}*/
 			
 			//set previous qc index to determine whether to put the delay in front or not (for unloading) 
 			prevQcIndex = j.getQcIndex(); 
@@ -280,6 +287,24 @@ public class Dispatcher {
 			System.out.println("number of jobs created: " + jobNo_created);
 			
 			atomicJobList.add(a);
+			
+			/*
+			if(j.getLoading() == false){
+				if(prevJob.size() >1){
+					if((prevJob.get(0).getJob().getQcIndex() == j.getQcIndex()) || (prevJob.get(1).getJob().getQcIndex() == j.getQcIndex()) ){
+						a.setQcWait(true);
+					}
+					prevJob.remove(0); //remove the first element
+				}else if(prevJob.size() == 1){
+					if(prevJob.get(0).getJob().getQcIndex() == j.getQcIndex()){
+						//need to wait 1 unit
+						a.setQcWait(true);
+					}
+				}
+			}*/
+			
+
+			prevJob.add(a); 
 			
 			a.start(); 
 			
@@ -573,6 +598,10 @@ public class Dispatcher {
 			}
 		}
 		
+		public void setQcWait(boolean b){
+			this.qcWait = b; 
+		}
+		
 		public Job getJob(){
 			return j; 
 		}
@@ -591,6 +620,10 @@ public class Dispatcher {
 		
 		public boolean getQcWait(){
 			return qcWait; 
+		}
+		
+		public boolean getBayWait(){
+			return bayWaited; 
 		}
 		
 		public void travelingLoading(Agv agv){
@@ -669,6 +702,17 @@ public class Dispatcher {
 		
 		public void travelingUnloading(Agv agv){
 			waitForBay();
+			
+			if(prevWaitEnded == j.getQcIndex()){
+				qcWait = true; 
+				try {
+					Constants.TOTALDELAY++;
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				prevWaitEnded = -1; 
+			}
 			/*
 			if(j.getIsWaiting() == true){
 				System.out.println("baywait qcInded: " + j.getQcIndex() + ", size: " + bayWait.get(j.getQcIndex()).size());
@@ -854,7 +898,7 @@ public class Dispatcher {
 									l.unloadWaitLock(this);
 								}	
 								System.out.println("arrayList size before: " + bayWait.get(qcIndex).size());
-
+								prevWaitEnded = j.getQcIndex(); 
 								
 								break;
 							}

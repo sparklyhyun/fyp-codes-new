@@ -39,7 +39,7 @@ public class Constants {
 	public static final Color COLOR_COMPLETE = Color.WHITE; 
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	
-	public static final int SLEEP = 300; 
+	public static final int SLEEP = 100; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;
@@ -47,6 +47,8 @@ public class Constants {
 	public static int allComplete = 0; 
 	
 	public static int jobsCompleted = 0; 
+	
+	
 	
 	//can i put timer here? would it work? 
 	/*

@@ -156,18 +156,18 @@ public class Dispatcher {
 			
 			for(int i=0; i<totalQcCost.length; i++){
 				if(totalQcCost[i] > max){
-					System.out.println("total cost: " + totalQcCost[i]); 
+					//System.out.println("total cost: " + totalQcCost[i]); 
 					max = totalQcCost[i];
 					maxIndex = i; 
 				}
 			}
 			
-			System.out.println("simple greedy, max index = " + maxIndex);
+			//System.out.println("simple greedy, max index = " + maxIndex);
 			//System.out.print("q_jobsList size = " + q_jobsList.size());
 			
 			jarr = q_jobsList.get(maxIndex);
 			
-			System.out.println("jarr.size =  " + jarr.size());
+			//System.out.println("jarr.size =  " + jarr.size());
 			
 			j = jarr.get(0); 
 			
@@ -175,7 +175,7 @@ public class Dispatcher {
 			q_jobsList.get(maxIndex).remove(0); 
 			totalQcCost[maxIndex] -= j.getTotalCost(); 
 			totalSum -= j.getTotalCost();
-			System.out.println("total sum after removing: " + totalSum);
+			//System.out.println("total sum after removing: " + totalSum);
 		}
 	}
 	
@@ -187,9 +187,6 @@ public class Dispatcher {
 		
 		while(jobOrder.isEmpty() == false){
 			//check if any bay is waiting
-			
-			
-			
 			//agvlist empty
 			while(agvList.isEmpty() == true){
 				emptyAgv = true; 
@@ -201,6 +198,10 @@ public class Dispatcher {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+			}
+			
+			if(agvList.isEmpty()){
+				continue; 
 			}
 			
 			
@@ -266,6 +267,8 @@ public class Dispatcher {
 			//set previous qc index to determine whether to put the delay in front or not (for unloading) 
 			prevQcIndex = j.getQcIndex(); 
 			
+			System.out.println("is job created?");
+			
 			AtomicJob a = new AtomicJob(j, threadName, idleAgv, qcWait);
 			
 			//set previous qc index to determine whether to put the delay in front or not (for unloading)
@@ -273,6 +276,8 @@ public class Dispatcher {
 			//prevJob.remove(0); 
 			
 			jobNo_created++; 
+			
+			System.out.println("number of jobs created: " + jobNo_created);
 			
 			atomicJobList.add(a);
 			
@@ -509,6 +514,11 @@ public class Dispatcher {
 			this.aj = aj;
 			//assign waiting false 
 			aj.notWaiting();
+		}
+		
+		public void notWaitingBay(AtomicJob aj){
+			this.aj = aj; 
+			//tentative
 		}
 	}
 	
@@ -800,7 +810,7 @@ public class Dispatcher {
 			
 			if(bayIndex > 0){
 				if(j.getLoading() == false){
-					if(completeJobsBay[qcIndex][bayIndex-1] > 0 /*|| (bayWait.get(qcIndex).size()>1)*/){
+					if(completeJobsBay[qcIndex][bayIndex-1] >= 0){
 						//bayWait[qcIndex]++; 
 						//System.out.println("baywait index: " + qcIndex + ", baywait value: " + bayWait[qcIndex]);
 						bayWaited = true; 
@@ -810,7 +820,8 @@ public class Dispatcher {
 					}
 				}
 				while(completeJobsBay[qcIndex][bayIndex-1] >= 0){
-					if(completeJobsBay[qcIndex][bayIndex-1]==0){
+					
+					if(completeJobsBay[qcIndex][bayIndex-1] < 1){
 						completeJobsBay[qcIndex][bayIndex-1]--;
 					}
 					
@@ -827,34 +838,28 @@ public class Dispatcher {
 				}
 				if(j.getLoading() == false){
 					//test without this part 
-					
-					
-					if(/*this.qcWait == false &&*/ bayWait.get(qcIndex).size()>0){
-						while(true){
-							System.out.println("arrayList size before: " + bayWait.get(qcIndex).size());
+					if(bayWait.get(qcIndex).size()>0){
+						//while(true){
+						while(bayWait.get(qcIndex).size()>0){	
+						//System.out.println("arrayList size before: " + bayWait.get(qcIndex).size());
 							//System.out.println("qcIndex: "+qcIndex+", job: " + j.getY()+ ", " + j.getX() + "first item: " +(bayWait.get(qcIndex).get(0) == j) );
-							
 							//System.out.println("first item: " + (bayWait.get(qcIndex).get(0) == j));
+							//bayNotWaiting(); 
+							
+							
 							if(bayWait.get(qcIndex).get(0) == j){
-								//System.out.println("seeing if it is first item");
 								
 								Lock l = lockArr[qcIndex]; 
 								synchronized(l){
 									l.unloadWaitLock(this);
 								}	
-								//bayWait.get(qcIndex).remove(0);
 								System.out.println("arrayList size before: " + bayWait.get(qcIndex).size());
-								/*
-								if(bayWait.get(qcIndex).size()>0){
-									bayWait.get(qcIndex).remove(0); 
-									break;
-								}*/
-								/*
-								bayWait.get(qcIndex).remove(0); 
-								break;*/ 
+
 								
 								break;
 							}
+							
+							
 							try {
 								Thread.sleep(Constants.SLEEP);								
 							} catch (InterruptedException e) {
@@ -863,12 +868,6 @@ public class Dispatcher {
 							
 						}
 						
-					
-						/*
-						Lock l = lockArr[qcIndex]; 
-						synchronized(l){
-							l.unloadWaitLock(this);
-						}*/
 					}
 				}else{
 					j.setIsWaiting(false);
@@ -952,6 +951,17 @@ public class Dispatcher {
 				job = bayWait.get(qcIndex).get(0);
 				//job.
 				
+			}
+		}
+		
+		public synchronized void bayNotWaiting(){
+			if(bayWait.get(j.getQcIndex()).get(0) == j){
+				
+				Lock l = lockArr[j.getQcIndex()]; 
+				synchronized(l){
+					l.unloadWaitLock(this);
+				}	
+				System.out.println("arrayList size before: " + bayWait.get(j.getQcIndex()).size());
 			}
 		}
 

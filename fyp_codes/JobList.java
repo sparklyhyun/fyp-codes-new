@@ -20,8 +20,10 @@ public class JobList extends JPanel{
 		
 		//creating the full job list 
 		//createFullList(); 
-		//firstQcHigherCost(); 
-		firstQcLowerCost(); 
+		firstQcHigherCost(); 
+		//firstQcLowerCost(); 
+		//firstQcLoading(); 
+		
 		calcTotalJobNum(); 
 		
 		reset(); 
@@ -99,6 +101,41 @@ public class JobList extends JPanel{
 				for(int k=5;k<10; k++ ){
 					jobs[k][i] = new Job(k,i, true);
 					jobs[k][i].initCost(2);
+				}
+			}else{
+				for(int j=0; j<5; j++){
+					jobs[j][i] = new Job(j,i, false); 
+					jobs[j][i].initCost(1);
+				}
+				for(int k=5;k<10; k++ ){
+					jobs[k][i] = new Job(k,i, true);
+					jobs[k][i].initCost(1);
+				}
+			}
+		}
+		
+		for(int i=0; i<Constants.TOTAL_X; i++){
+			for(int j=10; j<15; j++){
+				jobs[j][i] = new Job(j, i, false);
+				jobs[j][i].initCost(1);
+			}
+			for(int j=15; j<20; j++){
+				jobs[j][i] = new Job(j, i, true);
+				jobs[j][i].initCost(1);
+			}
+		}	
+	}
+	
+	public void firstQcLoading(){
+		for(int i=0; i<Constants.TOTAL_X; i++){
+			if(i<Constants.QC_X){ //1st qc 
+				for(int j=0; j<5; j++){
+					jobs[j][i] = new Job(j,i, true); 
+					jobs[j][i].initCost(0);
+				}
+				for(int k=5;k<10; k++ ){
+					jobs[k][i] = new Job(k,i, true);
+					jobs[k][i].initCost(0);
 				}
 			}else{
 				for(int j=0; j<5; j++){

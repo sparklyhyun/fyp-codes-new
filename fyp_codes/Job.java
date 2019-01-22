@@ -49,7 +49,7 @@ public class Job {
 		int randomCost = 0; 
 		switch(x){
 		case 0:
-			randomCost = rand.nextInt((20-15)+1) + 15;	// cost ranges from 20 to 30 
+			randomCost = rand.nextInt((30-20)+1) + 20;	// cost ranges from 15 to 20 
 			break;
 		case 1:
 			randomCost = rand.nextInt((15-10)+1)+10; 	// cost ranges from 10 to 15 

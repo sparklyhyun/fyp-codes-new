@@ -20,9 +20,10 @@ public class JobList extends JPanel{
 		
 		//creating the full job list 
 		//createFullList(); 
-		firstQcHigherCost(); 
+		//firstQcHigherCost(); 
 		//firstQcLowerCost(); 
 		//firstQcLoading(); 
+		allRandomCost(); 
 		
 		calcTotalJobNum(); 
 		
@@ -159,6 +160,31 @@ public class JobList extends JPanel{
 				jobs[j][i].initCost(1);
 			}
 		}	
+	}
+	
+	public void allRandomCost(){
+		for(int j=0; j<Constants.TOTAL_X; j++){
+			for(int i=0; i<5; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost(3);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=5; i<10; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost(3);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=10; i<15; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost(3);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=15; i<20; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost(3);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+		}
 	}
 	
 	/*

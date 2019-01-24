@@ -133,6 +133,7 @@ public class Sort {
 			
 			//sort loading
 			sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
+			//sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
 
 		}
 		//add the q_jobs into the q_jobsList
@@ -166,7 +167,6 @@ public class Sort {
 		int arr = 0;
 		
 		//int splity, splitx; 
-		
 		for(int i=Constants.HALF_Y; i<Constants.MAX_Y; i++){
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
 				sortArray[arr] = sjl.getJob(i, j); 
@@ -213,7 +213,29 @@ public class Sort {
 			arr = 0; 
 		}
 	
-	}	
+	}
+	
+	public void sortLoadingSimple(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
+		int arr = 0; 
+		for(int i=Constants.HALF_Y; i<Constants.MAX_Y; i++){
+			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
+				sortArray[arr] = sjl.getJob(i, j); 
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
+				//System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
+				arr++;
+			}
+			sortArray = sortDescending(sortArray);
+			
+			for(int k=0; k<Constants.MAX_X; k++){
+				q_jobs.add(sortArray[k]);
+			}
+			arr = 0; 
+		}
+		
+	}
 	
 	public Job[] sortDescending(Job[] arr){	//add high cost first
 		//simple bubble sort 

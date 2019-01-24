@@ -131,11 +131,10 @@ public class Dispatcher {
 	 * */
 	
 	public void dispatchOrder(){
-		simpleGreedy(); 
+		simpleGreedyTotalCost(); 
 	}
 	
-	//dispatch order baseline - simple greedy. The highest cost dispatch agv first. 
-	public void simpleGreedy(){
+	public void simpleGreedyTotalCost(){
 		//the total cost of all the qc
 		int totalSum = 0;
 		for(int i=0; i<totalQcCost.length; i++){
@@ -311,7 +310,7 @@ public class Dispatcher {
 			
 			
 			//add the delay for all other qcs 
-			Constants.TOTALDELAY += incompleteQc-1; 
+			//Constants.TOTALDELAY += incompleteQc-1; 
 			//System.out.println("incomplete qc = " + incompleteQc);
 			
 			try {

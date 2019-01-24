@@ -57,6 +57,8 @@ public class Job {
 		case 2:
 			randomCost = rand.nextInt((10-5)+1)+5; 		// cost ranges from 5 to 10
 			break;
+		case 3: 
+			randomCost = rand.nextInt((20-5)+1)+5;		//cost ranges from 5 to 20 
 		default: break;
 		}
 		

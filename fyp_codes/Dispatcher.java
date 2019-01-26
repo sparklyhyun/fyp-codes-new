@@ -186,31 +186,57 @@ public class Dispatcher {
 		//ArrayList<Integer> prevQc = new ArrayList<>(); 
 		boolean emptyAgv = false; 
 		
+		int[] delayCounter = {2,2,2,2}; 
+		
+		int addDelay = 0; 
+		
 		while(jobOrder.isEmpty() == false){
 			//check if any bay is waiting
 			//agvlist empty
+			
 			while(agvList.isEmpty() == true){
 				emptyAgv = true; 
 				System.out.println("agv not available, waiting.....");
-				
+				addDelay = 0; 
 				try {
 					Thread.sleep(Constants.SLEEP);
-					Constants.TOTALDELAY += incompleteQc; 
+					//Constants.TOTALDELAY += incompleteQc; 
+					//delay counter here 
+					for(int i=0; i<4; i++){
+						//update delay 
+						delayCounter[i]++; 
+						if(delayCounter[i]>1){
+							addDelay++; 
+						}
+					}
+					
+					Constants.TOTALDELAY += addDelay++; 
+					
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			
-			if(agvList.isEmpty()){
+			if(agvList.isEmpty()){ //second buffer, because of synchronization issues 
 				continue; 
 			}
+			
+			addDelay = 0; 
 			
 			
 			Agv idleAgv = agvList.get(0);
 			agvList.remove(0);	//agv not idle anymore 
 			
 			Job j = jobOrder.get(0);
-			jobOrder.remove(0); 	//remove the first job in the queue 	\
+			jobOrder.remove(0); 	//remove the first job in the queue 	
+			
+			//update delayCounter 
+			delayCounter[j.getQcIndex()] = 0; 
+			for(int i=0; i<4; i++){
+				if(i != j.getQcIndex()){
+					delayCounter[i]++; 
+				}
+			}
 			
 			String threadName = Integer.toString(j.getY()) + Integer.toString(j.getX()); //set name 
 			
@@ -310,8 +336,14 @@ public class Dispatcher {
 			
 			
 			//add the delay for all other qcs 
-			//Constants.TOTALDELAY += incompleteQc-1; 
-			//System.out.println("incomplete qc = " + incompleteQc);
+			for(int i=0; i<4; i++){
+				if(delayCounter[i] > 1){
+					addDelay++;  
+				}
+			}
+			Constants.TOTALDELAY += addDelay; 
+			
+			
 			
 			try {
 				Thread.sleep(Constants.SLEEP);

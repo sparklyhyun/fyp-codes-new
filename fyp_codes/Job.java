@@ -256,5 +256,10 @@ public class Job {
 		return bayIndex; 
 	}
 	
+	public void setCost(int cost){
+		this.travel = cost; 
+		setTotalCost(); 
+	}
+	
 	
 }

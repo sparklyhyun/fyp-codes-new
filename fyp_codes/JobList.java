@@ -19,16 +19,58 @@ public class JobList extends JPanel{
 		}*/
 		
 		//creating the full job list 
-		//createFullList(); 
-		//firstQcHigherCost(); 
-		//firstQcLowerCost(); 
-		//firstQcLoading(); 
-		allRandomCost(); 
+		createJobLists(); 
+		
+		tests(1); 
 		
 		calcTotalJobNum(); 
 		
 		reset(); 
 		System.out.println("job list done");
+	}
+	
+	public void tests(int x){
+		switch(x){
+		case 1: testCases(Constants.testCaseCost1); break; 
+		case 2: testCases(Constants.testCaseCost2); break;
+		case 3: testCases(Constants.testCaseCost3); break;
+		case 4: testCases(Constants.testCaseCost4); break; 
+		default: testCases(Constants.testCaseCost4); break; 
+		}
+	}
+	
+	public void createJobLists(){
+		//createFullList(); 
+		//firstQcHigherCost(); 
+		//firstQcLowerCost(); 
+		//firstQcLoading(); 
+		allRandomCost(); 
+	}
+	
+	public void testCases(int[][] costs){
+		for(int j=0; j<Constants.TOTAL_X; j++){
+			for(int i=0; i<5; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].setCost(costs[i][j]);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=5; i<10; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].setCost(costs[i][j]);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=10; i<15; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].setCost(costs[i][j]);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=15; i<20; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].setCost(costs[i][j]);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+		}
+		
 	}
 	
 	public void createFullList(){

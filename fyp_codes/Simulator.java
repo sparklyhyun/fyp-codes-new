@@ -229,7 +229,7 @@ public class Simulator {
 		System.out.println("see entire job list");
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(jl.getJob(i, j).getTotalCost()+ " ");
+				System.out.print(jl.getJob(i, j).getTotalCost()+ ", ");
 			}
 			System.out.println(" ");
 		}

@@ -200,37 +200,9 @@ public class Dispatcher {
 		Job temp; 
 		for(int i=0; i<Constants.NUM_QC; i++){
 			for(int j=0; j<i; j++){
-				if(initialJobList.get(i).getTotalCost() )
+				//if(initialJobList.get(i).getTotalCost() )
 			}
 		}
-		
-		
-		// 
-		
-		ArrayList<Job> jarr; 
-		
-		while(totalSum>0){
-			int max = 0; 
-			int maxIndex = 0; 
-			
-			for(int i=0; i<totalQcCost.length; i++){
-				if(totalQcCost[i] > max){
-					//System.out.println("total cost: " + totalQcCost[i]); 
-					max = totalQcCost[i];
-					maxIndex = i; 
-				}
-			}
-			
-			jarr = q_jobsList.get(maxIndex);
-			
-			j = jarr.get(0); 
-			
-			jobOrder.add(j);
-			q_jobsList.get(maxIndex).remove(0); 
-			totalQcCost[maxIndex] -= j.getTotalCost(); 
-			totalSum -= j.getTotalCost();
-
-		} 
 	}
 	
 	

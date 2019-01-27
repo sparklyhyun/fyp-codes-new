@@ -141,7 +141,6 @@ public class Dispatcher {
 			totalSum+= totalQcCost[i]; 
 		}
 		
-		
 		for(int i=0; i<totalQcCost.length; i++){
 			System.out.println("qc index: " + i + " , cost: " + totalQcCost[i]);
 		}
@@ -178,7 +177,65 @@ public class Dispatcher {
 			totalSum -= j.getTotalCost();
 			//System.out.println("total sum after removing: " + totalSum);
 		}
+		
+		//see all jobs in order
+		/*
+		for(int i=0; i<Constants.TOTAL_SIZE; i++){
+			System.out.println("job order: " + jobOrder.get(i).getTotalCost());
+		}*/
 	}
+	
+	public void tabuSearch(){
+		ArrayList<Job> initialJobList = new ArrayList<>(); 
+		ArrayList<Job> neighbourJobList = new ArrayList<>(); 
+		//need to find the initial solution (simple greedy method) --> need to change, sort 4 at a time 
+		for(int i=0; i<Constants.NUM_QC; i++){
+			if(q_jobsList.get(i).isEmpty() == false){
+				initialJobList.add(q_jobsList.get(i).get(0)); 
+			}
+		}
+		
+		//sort the initial list
+		ArrayList<Job> sortedList = new ArrayList<>(); 
+		Job temp; 
+		for(int i=0; i<Constants.NUM_QC; i++){
+			for(int j=0; j<i; j++){
+				if(initialJobList.get(i).getTotalCost() )
+			}
+		}
+		
+		
+		// 
+		
+		ArrayList<Job> jarr; 
+		
+		while(totalSum>0){
+			int max = 0; 
+			int maxIndex = 0; 
+			
+			for(int i=0; i<totalQcCost.length; i++){
+				if(totalQcCost[i] > max){
+					//System.out.println("total cost: " + totalQcCost[i]); 
+					max = totalQcCost[i];
+					maxIndex = i; 
+				}
+			}
+			
+			jarr = q_jobsList.get(maxIndex);
+			
+			j = jarr.get(0); 
+			
+			jobOrder.add(j);
+			q_jobsList.get(maxIndex).remove(0); 
+			totalQcCost[maxIndex] -= j.getTotalCost(); 
+			totalSum -= j.getTotalCost();
+
+		} 
+	}
+	
+	
+	
+	
 	
 	public void startDispatching(){
 		int prevQcIndex = -1; 
@@ -299,7 +356,7 @@ public class Dispatcher {
 			//set previous qc index to determine whether to put the delay in front or not (for unloading) 
 			prevQcIndex = j.getQcIndex(); 
 			
-			System.out.println("is job created?");
+			//System.out.println("is job created?");
 			
 			AtomicJob a = new AtomicJob(j, threadName, idleAgv, qcWait);
 			
@@ -309,7 +366,7 @@ public class Dispatcher {
 			
 			jobNo_created++; 
 			
-			System.out.println("number of jobs created: " + jobNo_created);
+			//System.out.println("number of jobs created: " + jobNo_created);
 			
 			atomicJobList.add(a);
 			

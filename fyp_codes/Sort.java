@@ -132,8 +132,8 @@ public class Sort {
 			sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
 			
 			//sort loading
-			sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
-			//sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
+			//sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
+			sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
 
 		}
 		//add the q_jobs into the q_jobsList

@@ -21,7 +21,7 @@ public class JobList extends JPanel{
 		//creating the full job list 
 		//createJobLists(); 
 		
-		tests(4); 
+		tests(2); 
 		
 		calcTotalJobNum(); 
 		
@@ -71,6 +71,18 @@ public class JobList extends JPanel{
 			}
 		}
 		
+		//printJobs(jobs); 
+
+	}
+	
+	public void printJobs(Job[][] lists){
+		System.out.println("print test cases");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(lists[i][j].getTotalCost()+ " ");
+			}
+			System.out.println(" ");
+		}
 	}
 	
 	public void createFullList(){

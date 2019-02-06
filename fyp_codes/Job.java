@@ -137,6 +137,93 @@ public class Job {
 		
 	}
 	
+	public void initCost2(int x){
+		Random rand = new Random(); 
+		int ycx = rand.nextInt(4); 		// index from 0 to 3
+		
+		//using test cases. how? 
+		//if x = 1, test case 1 (1st qc more dist) 
+		//if x = 2, test case 2 (1st qc less dist)
+		//if x = 3, test case 3 (all random cost) 
+		//if x = 0, test case 0 (all qc end point is right in front) 
+		
+		//cost calculation is the same 
+		if(loading){
+			//loading, start from yc, end at qc
+			startPos[0] = 1; 
+			endPos[0] = 0; 
+			
+			//end at qc 
+			if(y < Constants.MAX_Y ){
+				if(x < Constants.QC_X){
+					endPos[1] = Constants.craneCoord[0]; 
+				}else{
+					endPos[1] = Constants.craneCoord[1]; 
+				}
+			}else{
+				if(x < Constants.QC_X){
+					endPos[1] = Constants.craneCoord[2]; 
+				}else{
+					endPos[1] = Constants.craneCoord[3]; 
+				}
+			}
+			
+			switch(x){
+			case 0:
+				//end pt right below 
+				startPos[1] = endPos[1]; 
+				break;
+			case 1:
+				//end pt more dist (for qc 1 only) 
+				startPos[1] = Constants.craneCoord[3]; 
+				break; 
+			case 2:
+				//end pt random
+				startPos[1] = Constants.craneCoord[ycx]; 
+			default: break; 
+			}
+			
+		}else{
+			//unloading, start from qc, end at yc 
+			startPos[0] = 0;
+			endPos[0] = 1; 
+			
+			if(y < Constants.MAX_Y ){
+				if(x < Constants.QC_X){
+					startPos[1] = Constants.craneCoord[0]; 
+				}else{
+					startPos[1] = Constants.craneCoord[1]; 
+				}
+			}else{
+				if(x < Constants.QC_X){
+					startPos[1] = Constants.craneCoord[2]; 
+				}else{
+					startPos[1] = Constants.craneCoord[3]; 
+				}
+			}
+			
+			switch(x){
+			case 0:
+				//end pt right below
+				endPos[1] = startPos[1]; 
+				break;
+			case 1:
+				//end pt more dist (for qc1 only)
+				endPos[1] = Constants.craneCoord[3]; 
+				break;
+			case 2:
+				//end pt random
+				endPos[1] = Constants.craneCoord[ycx]; 
+				break; 
+			default: break; 
+			}
+		}
+	}
+	
+	public void initStartEndPt(){
+		
+	}
+	
 	public void calcTotalCost(){
 		
 	}

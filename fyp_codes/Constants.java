@@ -228,4 +228,13 @@ public class Constants {
 			{18, 23, 18, 18, 23, 13, 13, 13, 18, 18, 13, 23, 13, 23, 18, 23, 18, 23, 13, 13, 18, 23, 13, 28},  
 			{18, 13, 18, 13, 18, 13, 18, 18, 18, 18, 18, 13, 13, 13, 13, 23, 28, 28, 23, 13, 28, 18, 13, 18},  
 	}; 
+	
+	/*
+	public static final int[][] testCaseCostNew2; 
+	public static final int[][] testCaseCostNew3; 
+	public static final int[][] testCaseCostNew4; 
+	*/ 
+	
+	
+	
 }

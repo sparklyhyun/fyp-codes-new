@@ -14,7 +14,7 @@ public class Job {
 	
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
-	private final int dCost = 1;	//time takent to drop off 
+	private int dCost = 2;	//time takent to drop off / pick up 
 	private int tCost = 0; 				//actual end time 
 	
 	private int idealEnd = 0; 		//idealEnd == previous.endtime, or can be later than prev.endtime 
@@ -36,6 +36,10 @@ public class Job {
 	private int qcIndex;
 	private int bayIndex; 
 
+	private int[] startPos = new int[2]; 	//y, x , y=0, x = 2, 7, 12, 17 (depends on location) 	//start pick up point 
+	private int[] endPos = new int[2]; 	//y, x , y=1, x = 2, 7, 12, 17 (random) 	//end point
+	private boolean agvWait = false; 
+	
 	
 	public Job(int y, int x , boolean loading){
 		this.x = x;
@@ -69,6 +73,72 @@ public class Job {
 		this.travel = randomCost; 
 		*/
 		setTotalCost(); 
+	}
+	
+	public void initCost2 (){
+		//the one with the new coordinates!
+		Random rand = new Random(); 
+		//int qcx = rand.nextInt(4); 		// index from 0 to 3
+		int ycx = rand.nextInt(4); 		// index from 0 to 3
+		
+		//start/end depends on loading or unloading 
+		if(loading){
+			//loading jobs start from yc. assign random for now 
+			startPos[0] = 1; 
+			startPos[1] = Constants.craneCoord[ycx]; 
+			
+			//end at qc 
+			endPos[0] = 0; 
+			if(y < Constants.MAX_Y ){
+				if(x < Constants.QC_X){
+					endPos[1] = Constants.craneCoord[0]; 
+				}else{
+					endPos[1] = Constants.craneCoord[1]; 
+				}
+			}else{
+				if(x < Constants.QC_X){
+					endPos[1] = Constants.craneCoord[2]; 
+				}else{
+					endPos[1] = Constants.craneCoord[3]; 
+				}
+			}
+			
+			
+		}else{
+			//unloading jobs start from qc
+			startPos[0] = 0; 
+			if(y < Constants.MAX_Y ){
+				if(x < Constants.QC_X){
+					startPos[1] = Constants.craneCoord[0]; 
+				}else{
+					startPos[1] = Constants.craneCoord[1]; 
+				}
+			}else{
+				if(x < Constants.QC_X){
+					startPos[1] = Constants.craneCoord[2]; 
+				}else{
+					startPos[1] = Constants.craneCoord[3]; 
+				}
+			}
+			
+			//end at yc 
+			endPos[0] = 1; 
+			endPos[1] = Constants.craneCoord[ycx]; 
+		}
+		
+		
+		//calculate cost (assume all will travel anti clockwise) 
+		int diff = Math.abs(endPos[1] - startPos[1]); 
+		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2 + dCost; 
+		System.out.println("job: " + this.y + ", " +this.x + " pick up: " + startPos[0] + ", " + startPos[1]
+				+ ", drop off: " + endPos[0] + ", " + endPos[1]+ " cost: " + tCost);
+		
+		//use test cases 
+		
+	}
+	
+	public void calcTotalCost(){
+		
 	}
 	
 
@@ -169,6 +239,14 @@ public class Job {
 		this.index = i;
 	}*/
 	
+	public int[] getStartPos(){
+		return startPos; 
+	}
+	
+	public int[] getEndPos(){
+		return endPos; 
+	}
+	
 	public void setLoading(){
 		loading = true; 
 	}
@@ -200,7 +278,6 @@ public class Job {
 	public void setTotalCost(){	//previous total cost
 		tCost = travel + dCost;
 
-		
 	}
 	
 	public void setTotalCost2(int c){
@@ -261,5 +338,12 @@ public class Job {
 		setTotalCost(); 
 	}
 	
+	public boolean getAgvWait(){
+		return agvWait; 
+	}
+	
+	public void setAgvWait(boolean b){
+		this.agvWait = b; 
+	}
 	
 }

@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;	//testing timer implementation
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.*;	
+import java.util.HashMap; 
+
 public class Simulator {
 	private static JFrame _frame = null; //display job list
 	private static JPanel _tiles = null; //display individual task
@@ -47,7 +49,7 @@ public class Simulator {
 	
 	//for shared pool of agvs 
 	static Semaphore sem; 
-	
+
 	
 	//public static DelayComp bothTimers = new DelayComp(); 
 	
@@ -220,6 +222,7 @@ public class Simulator {
 		}
 	}
 	*/
+	
 	public static void resetTimers(){
 		Constants.TOTALDELAY = 0;
 		Constants.TOTALTIME = 0;

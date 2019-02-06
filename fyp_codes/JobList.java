@@ -19,9 +19,11 @@ public class JobList extends JPanel{
 		}*/
 		
 		//creating the full job list 
-		//createJobLists(); 
+		createJobLists(); 
 		
-		tests(2); 
+		//tests(4); 
+		
+		
 		
 		calcTotalJobNum(); 
 		
@@ -44,8 +46,14 @@ public class JobList extends JPanel{
 		//firstQcHigherCost(); 
 		//firstQcLowerCost(); 
 		//firstQcLoading(); 
-		allRandomCost(); 
+		//allRandomCost(); 
+		
+		//updated ones with new coordinates (try with random one first) 
+		createFullList(); 
+		
+		
 	}
+
 	
 	public void testCases(int[][] costs){
 		for(int j=0; j<Constants.TOTAL_X; j++){
@@ -86,6 +94,7 @@ public class JobList extends JPanel{
 	}
 	
 	public void createFullList(){
+		/*
 		for(int j=0; j<Constants.TOTAL_X; j++){
 			for(int i=0; i<5; i++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
@@ -105,6 +114,29 @@ public class JobList extends JPanel{
 			for(int i=15; i<20; i++){
 				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
 				jobs[i][j].initCost(1);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+		}*/
+		
+		for(int j=0; j<Constants.TOTAL_X; j++){
+			for(int i=0; i<5; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost2();
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=5; i<10; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost2();
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=10; i<15; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost2();
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=15; i<20; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost2();
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 		}
@@ -351,6 +383,10 @@ public class JobList extends JPanel{
 		
 	}
 	
+	public boolean isAgvWait(int y, int x){
+		return jobs[y][x].getAgvWait(); 
+	}
+	
 	//GUI
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);	//idk why doesnt import??? 
@@ -377,16 +413,27 @@ public class JobList extends JPanel{
 					cellColor = Constants.COLOR_COMPLETE;
 				}else if(isWaiting(i,j)){
 					cellColor = Constants.COLOR_WAITING;
-				}else{
+				}else if(isAgvWait(i,j)){
+					cellColor = Constants.COLOR_WAITAGV; 
+				}
+				
+				else{
 					if(isLoading(i,j)){
-						if(isAssigned(i,j)){
+						if(isAssigned(i,j) && isWaiting(i,j)){
+							cellColor = Constants.COLOR_WAITAGV; 
+						}
+						else if(isAssigned(i,j) && !isWaiting(i,j)){
 							cellColor = Constants.COLOR_LOADING_ASSIGNED;
-						}else{
+						}
+						else{
 							cellColor = Constants.COLOR_LOADING;
 						}
 					}else if(!isLoading(i,j)){
-						if(isAssigned(i,j)){
-							cellColor = Constants.COLOR_UNLOADING_ASSIGNED;
+						if(isAssigned(i,j) && isWaiting(i,j)){
+							cellColor = Constants.COLOR_WAITAGV; 
+						}
+						else if(isAssigned(i,j) && !isWaiting(i,j)){
+							cellColor = Constants.COLOR_UNLOADING_ASSIGNED;	
 						}
 						else{
 							cellColor = Constants.COLOR_UNLOADING;

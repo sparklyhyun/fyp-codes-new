@@ -75,7 +75,7 @@ public class Dispatcher {
 		this.jobList = j; 
 		
 		for(int k=0; k<Constants.AGV; k++){
-			Agv agv = new Agv(k); 
+			Agv agv = new Agv(k); //need to initialize agv location. is it random?? yeah lets say its random first. 
 			agvList.add(agv); 
 		}
 		/*
@@ -403,7 +403,7 @@ public class Dispatcher {
 			addDelay = 0; 
 			
 			
-			Agv idleAgv = agvList.get(0);
+			Agv idleAgv = agvList.get(0); //need to change this part 
 			agvList.remove(0);	//agv not idle anymore 
 			
 			Job j = jobOrder.get(0);
@@ -771,6 +771,9 @@ public class Dispatcher {
 			this.j = j; 
 			this.name = name;
 			this.qcWait = qcWait; 
+			this.agv = agv; 
+			
+			this.agv.setAgvWaitTime(j);
 		}
 		
 		@Override
@@ -779,6 +782,10 @@ public class Dispatcher {
 			if(jobsCreated[j.getQcIndex()][2]<1){
 				incompleteQc--; 
 			}
+			
+			//before start to travel, need to wait for agv to reach.
+			agvWait(); 
+			jobList.repaint();
 			
 			if(j.getLoading() == true){
 				travelingLoading(agv);
@@ -834,6 +841,29 @@ public class Dispatcher {
 		
 		public boolean getBayWait(){
 			return bayWaited; 
+		}
+		
+		public void agvWait(){
+			//agv is assigned, just waiting for it to reach the respective qc 
+			int delay = agv.getAgvWaitTime(); 
+			j.setAgvWait(true);
+			jobList.repaint();
+			
+			System.out.println("AGV assigned, waiting for the agv, agvWait: " + delay);
+			while(delay >0){
+				delay--;
+				try {
+					Thread.sleep(Constants.SLEEP);
+					//do i need to add additional delay here?? waiting time?? ********************************************
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			//no longer waiting for agv 
+			j.setAgvWait(false);
+			
 		}
 		
 		public void travelingLoading(Agv agv){
@@ -898,12 +928,15 @@ public class Dispatcher {
 			
 			//complete the job
 			synchronized(l){
-				agvList.add(agv);
 				//only release sem after agv is added back
 				//sem.release();
 				l.lock(this, true);
 			}
 			
+			
+			agv.setAgvLocation(j.getEndPos());
+			
+			agvList.add(agv);
 			//System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
 			
@@ -982,6 +1015,8 @@ public class Dispatcher {
 			
 			//System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
+			
+			agv.setAgvLocation(j.getEndPos());
 			
 			agvList.add(agv);
 			

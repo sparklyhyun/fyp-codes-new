@@ -6,6 +6,7 @@ public class Agv {
 	private int agvNum;
 	private boolean idle = true; 	//if true, agv idle. else, false. Initial state = idle 
 	private ArrayList<Job> taskList = new ArrayList<>(); //see if i need this later 
+	private boolean atQc = false; 	// true if agv is at the same qc as the next job 
 	
 	private int[] currCoord = new int[2]; 
 	private int agvWaitTime; 
@@ -53,10 +54,19 @@ public class Agv {
 
 		int diff = Math.abs(currCoord[1] - jobPos[1]); 
 		if(currCoord[0] == 0){	//if agv at QC
-			agvWaitTime = diff; 
+			if(currCoord[1] == jobPos[1]){
+				//agv at the same qc as the job
+				//need to wait for qc to pick up the container 
+				agvWaitTime = 0; 
+				atQc = true; 
+			}else{
+				agvWaitTime = diff; 
+			}
 		}else{
 			agvWaitTime = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2; 
 		}
+		
+		
 		
 	}
 	
@@ -70,5 +80,8 @@ public class Agv {
 		return currCoord; 
 	}
 
+	public boolean getAtQc(){
+		return atQc; 
+	}
 	
 }

@@ -237,6 +237,46 @@ public class Sort {
 		
 	}
 	
+	public void sortUnloadingTop(int bayNo, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
+		int arr = 0;
+		
+		//first put all the column into arrayList 
+		ArrayList<ArrayList<Job>> colJobs = new ArrayList<>(); 
+		for(int j = bayNo*Constants.MAX_X ; j<(bayNo-1)*Constants.MAX_X; j++){	//col
+			ArrayList<Job> columnJob = new ArrayList<>();
+			for(int i=0; i<Constants.HALF_Y; i++){
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				columnJob.add(sjl.getJob(i, j)); 
+			}
+			colJobs.add(columnJob);
+		}
+		
+		//then, sort according to top 
+		//Job[] sortArray = sortDescendingTop(colJobs); //do i need this? or can i just have void. I think i can just have void 
+		sortDescendingTop(colJobs); 
+		
+		
+		//copied here 
+		for(int i=0; i<Constants.HALF_Y; i++){
+			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
+				sortArray[arr] = sjl.getJob(i, j); 
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
+				//System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
+				arr++;
+			}
+			sortArray = sortDescending(sortArray);
+			
+			for(int k=0; k<Constants.MAX_X; k++){
+				q_jobs.add(sortArray[k]);
+			}
+			arr = 0; 
+		}
+	}
+	
 	public Job[] sortDescending(Job[] arr){	//add high cost first
 		//simple bubble sort 
 		for(int i=Constants.MAX_X-1; i>0; i--){
@@ -251,6 +291,18 @@ public class Sort {
 		}
 		return arr; 
 	}	
+	
+	public void sortDescendingTop(ArrayList<ArrayList<Job>> arrList){
+		Job[] sortedList = new Job[Constants.HALF_Y * Constants.MAX_X];
+		
+		//tier by tier, (same method as dispatching) 
+		Job maxJob; 
+		int maxCost = 0; 
+		for(int i=0; i<Constants.MAX_X; i++){
+			sdafasdf
+		}
+		
+	}
 	
 	public boolean getGreedyComplete(){
 		return greedyComplete; 

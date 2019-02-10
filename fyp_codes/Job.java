@@ -128,8 +128,8 @@ public class Job {
 		
 		
 		//calculate cost (assume all will travel anti clockwise) 
-		int diff = Math.abs(endPos[1] - startPos[1]); 
-		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2 + dCost; 
+		calcTotalCost(); 
+		
 		/*
 		System.out.println("job: " + this.y + ", " +this.x + " pick up: " + startPos[0] + ", " + startPos[1]
 				+ ", drop off: " + endPos[0] + ", " + endPos[1]+ " cost: " + tCost);
@@ -221,8 +221,7 @@ public class Job {
 			}
 		}
 		
-		int diff = Math.abs(endPos[1] - startPos[1]); 
-		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2 + dCost; 
+		calcTotalCost(); 
 		
 		/*
 		System.out.println("job: " + this.y + ", " +this.x + " pick up: " + startPos[0] + ", " + startPos[1]
@@ -236,7 +235,8 @@ public class Job {
 	}
 	
 	public void calcTotalCost(){
-		
+		int diff = Math.abs(endPos[1] - startPos[1]); 
+		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2 + dCost; 
 	}
 	
 
@@ -345,6 +345,15 @@ public class Job {
 		return endPos; 
 	}
 
+	public void setStartPos(int y, int x){
+		startPos[0] = y; 
+		startPos[1] = x; 
+	}
+	
+	public void setEndPos(int y, int x){
+		endPos[0] = y;
+		endPos[1] = x; 
+	}
 	
 	public void setLoading(){
 		loading = true; 

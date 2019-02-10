@@ -59,7 +59,9 @@ public class Simulator {
 		resetTimers();
 		
 		joblist = new JobList(); 
-		seeJobList(joblist); 
+		joblist.printStartEndPt();
+		
+		//seeJobList(joblist); 
 		
 		viewSimulator();
 		

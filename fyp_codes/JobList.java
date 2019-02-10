@@ -49,8 +49,9 @@ public class JobList extends JPanel{
 		//allRandomCost(); 
 		
 		//updated ones with new coordinates (try with random one first) 
-		createFullList(); 
-		
+		//createFullList(); 
+		//firstQcHigherCost();
+		firstQcLowerCost(); 
 		
 	}
 
@@ -121,22 +122,22 @@ public class JobList extends JPanel{
 		for(int j=0; j<Constants.TOTAL_X; j++){
 			for(int i=0; i<5; i++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
-				jobs[i][j].initCost2();
+				jobs[i][j].initCost2(2);
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 			for(int i=5; i<10; i++){
 				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
-				jobs[i][j].initCost2();
+				jobs[i][j].initCost2(2);
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 			for(int i=10; i<15; i++){
 				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
-				jobs[i][j].initCost2();
+				jobs[i][j].initCost2(2);
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 			for(int i=15; i<20; i++){
 				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
-				jobs[i][j].initCost2();
+				jobs[i][j].initCost2(2);
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 		}
@@ -144,6 +145,7 @@ public class JobList extends JPanel{
 	
 	public void firstQcHigherCost(){
 		//qc 1
+		/*
 		for(int i=0; i<Constants.TOTAL_X; i++){
 			if(i<Constants.QC_X){ //1st qc 
 				for(int j=0; j<5; j++){
@@ -175,10 +177,47 @@ public class JobList extends JPanel{
 				jobs[j][i] = new Job(j, i, true);
 				jobs[j][i].initCost(1);
 			}
-		}	
+		}
+		*/
+		
+		for(int i=0; i<Constants.TOTAL_X; i++){
+			if(i<Constants.QC_X){ //1st qc 
+				for(int j=0; j<5; j++){
+					jobs[j][i] = new Job(j,i, false); 
+					jobs[j][i].initCost2(1);
+				}
+				for(int k=5;k<10; k++ ){
+					jobs[k][i] = new Job(k,i, true);
+					jobs[k][i].initCost2(1);
+				}
+			}else{
+				for(int j=0; j<5; j++){
+					jobs[j][i] = new Job(j,i, false); 
+					jobs[j][i].initCost2(0);
+				}
+				for(int k=5;k<10; k++ ){
+					jobs[k][i] = new Job(k,i, true);
+					jobs[k][i].initCost2(0);
+				}
+			}
+		}
+		
+		for(int i=0; i<Constants.TOTAL_X; i++){
+			for(int j=10; j<15; j++){
+				jobs[j][i] = new Job(j, i, false);
+				jobs[j][i].initCost2(0);
+			}
+			for(int j=15; j<20; j++){
+				jobs[j][i] = new Job(j, i, true);
+				jobs[j][i].initCost2(0);
+			}
+		}
+		
+
 	}
 	
 	public void firstQcLowerCost(){
+		/*
 		for(int i=0; i<Constants.TOTAL_X; i++){
 			if(i<Constants.QC_X){ //1st qc 
 				for(int j=0; j<5; j++){
@@ -210,7 +249,41 @@ public class JobList extends JPanel{
 				jobs[j][i] = new Job(j, i, true);
 				jobs[j][i].initCost(1);
 			}
-		}	
+		}*/
+		
+		for(int i=0; i<Constants.TOTAL_X; i++){
+			if(i<Constants.QC_X){ //1st qc 
+				for(int j=0; j<5; j++){
+					jobs[j][i] = new Job(j,i, false); 
+					jobs[j][i].initCost2(0);
+				}
+				for(int k=5;k<10; k++ ){
+					jobs[k][i] = new Job(k,i, true);
+					jobs[k][i].initCost2(0);
+				}
+			}else{
+				for(int j=0; j<5; j++){
+					jobs[j][i] = new Job(j,i, false); 
+					jobs[j][i].initCost2(2);
+				}
+				for(int k=5;k<10; k++ ){
+					jobs[k][i] = new Job(k,i, true);
+					jobs[k][i].initCost2(2);
+				}
+			}
+		}
+		
+		for(int i=0; i<Constants.TOTAL_X; i++){
+			for(int j=10; j<15; j++){
+				jobs[j][i] = new Job(j, i, false);
+				jobs[j][i].initCost2(2);
+			}
+			for(int j=15; j<20; j++){
+				jobs[j][i] = new Job(j, i, true);
+				jobs[j][i].initCost2(2);
+			}
+		}
+		
 	}
 	
 	public void firstQcLoading(){
@@ -339,6 +412,41 @@ public class JobList extends JPanel{
 			}
 		}
 		System.out.println("total job no: " + Constants.TOTAL_JOB_NO);
+	}
+	
+	public void printStartEndPt(){
+		System.out.println("start position 0");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(jobs[i][j].getStartPos()[0] + ",");
+			}
+			System.out.println(" "); 
+		}
+		
+		System.out.println("start posision 1");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(jobs[i][j].getStartPos()[1] + ",");
+			}
+			System.out.println(" "); 
+		}
+		
+		
+		System.out.println("end position 0");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(jobs[i][j].getEndPos()[0] + ",");
+			}
+			System.out.println(" "); 
+		}
+		
+		System.out.println("end position 1");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(jobs[i][j].getEndPos()[1] + ",");
+			}
+			System.out.println(" "); 
+		}
 	}
 	
 	public boolean isLoading(int y, int x){

@@ -12,7 +12,11 @@ public class Agv {
 	
 	public Agv(int i){
 		this.agvNum = i; 
-		initAgvLocation(); 
+		//initAgvLocation(); 
+		
+		//agvs start from the same location 
+		currCoord[0] = 0;
+		currCoord[1] = 0; 
 	}
 	
 	public void initAgvLocation(){
@@ -60,6 +64,10 @@ public class Agv {
 		this.currCoord = loc;
 		//agv end point is always at the yc. need to be updated all the time 
 		
+	}
+	
+	public int[] getAgvLocation(){
+		return currCoord; 
 	}
 
 	

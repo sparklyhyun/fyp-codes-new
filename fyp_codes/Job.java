@@ -130,9 +130,10 @@ public class Job {
 		//calculate cost (assume all will travel anti clockwise) 
 		int diff = Math.abs(endPos[1] - startPos[1]); 
 		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2 + dCost; 
+		/*
 		System.out.println("job: " + this.y + ", " +this.x + " pick up: " + startPos[0] + ", " + startPos[1]
 				+ ", drop off: " + endPos[0] + ", " + endPos[1]+ " cost: " + tCost);
-		
+		*/ 
 		//use test cases 
 		
 	}
@@ -155,13 +156,13 @@ public class Job {
 			
 			//end at qc 
 			if(y < Constants.MAX_Y ){
-				if(x < Constants.QC_X){
+				if(this.x < Constants.QC_X){
 					endPos[1] = Constants.craneCoord[0]; 
 				}else{
 					endPos[1] = Constants.craneCoord[1]; 
 				}
 			}else{
-				if(x < Constants.QC_X){
+				if(this.x < Constants.QC_X){
 					endPos[1] = Constants.craneCoord[2]; 
 				}else{
 					endPos[1] = Constants.craneCoord[3]; 
@@ -180,6 +181,7 @@ public class Job {
 			case 2:
 				//end pt random
 				startPos[1] = Constants.craneCoord[ycx]; 
+				break; 
 			default: break; 
 			}
 			
@@ -189,13 +191,13 @@ public class Job {
 			endPos[0] = 1; 
 			
 			if(y < Constants.MAX_Y ){
-				if(x < Constants.QC_X){
+				if(this.x < Constants.QC_X){
 					startPos[1] = Constants.craneCoord[0]; 
 				}else{
 					startPos[1] = Constants.craneCoord[1]; 
 				}
 			}else{
-				if(x < Constants.QC_X){
+				if(this.x < Constants.QC_X){
 					startPos[1] = Constants.craneCoord[2]; 
 				}else{
 					startPos[1] = Constants.craneCoord[3]; 
@@ -218,6 +220,15 @@ public class Job {
 			default: break; 
 			}
 		}
+		
+		int diff = Math.abs(endPos[1] - startPos[1]); 
+		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2 + dCost; 
+		
+		/*
+		System.out.println("job: " + this.y + ", " +this.x + " pick up: " + startPos[0] + ", " + startPos[1]
+				+ ", drop off: " + endPos[0] + ", " + endPos[1]+ " cost: " + tCost);
+				
+		*/ 
 	}
 	
 	public void initStartEndPt(){
@@ -333,6 +344,7 @@ public class Job {
 	public int[] getEndPos(){
 		return endPos; 
 	}
+
 	
 	public void setLoading(){
 		loading = true; 

@@ -379,8 +379,6 @@ public class Dispatcher {
 				addDelay = 0; 
 				try {
 					Thread.sleep(Constants.SLEEP);
-					//Constants.TOTALDELAY += incompleteQc; 
-					//delay counter here 
 					for(int i=0; i<4; i++){
 						//update delay 
 						delayCounter[i]++; 
@@ -405,6 +403,12 @@ public class Dispatcher {
 			
 			Agv idleAgv = agvList.get(0); //need to change this part 
 			agvList.remove(0);	//agv not idle anymore 
+			
+			//print out the new location of the agv
+			/*
+			System.out.println("agv index: " + idleAgv.getAgvNum() + ", new location: " + idleAgv.getAgvLocation()[0]
+					+ ", " + idleAgv.getAgvLocation()[1]);
+			*/
 			
 			Job j = jobOrder.get(0);
 			jobOrder.remove(0); 	//remove the first job in the queue 	
@@ -937,6 +941,13 @@ public class Dispatcher {
 			agv.setAgvLocation(j.getEndPos());
 			
 			agvList.add(agv);
+			
+			//agv new location 
+			/*
+			System.out.println("agv index: " + agv.getAgvNum() + " ," + "agv end location: " + agv.getAgvLocation()[0] 
+					+ ", " + agv.getAgvLocation()[1]);
+			*/
+			
 			//System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
 			
@@ -1019,6 +1030,12 @@ public class Dispatcher {
 			agv.setAgvLocation(j.getEndPos());
 			
 			agvList.add(agv);
+			
+			// agv end location
+			/*
+			System.out.println("agv index: " + agv.getAgvNum() + " ," + "agv end location: " + agv.getAgvLocation()[0] 
+					+ ", " + agv.getAgvLocation()[1]);
+			*/
 			
 			//release sem only after agv is added back
 			//sem.release();

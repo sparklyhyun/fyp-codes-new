@@ -217,6 +217,7 @@ public class Sort {
 	}
 	
 	public void sortLoadingSimple(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
+
 		int arr = 0; 
 		for(int i=Constants.HALF_Y; i<Constants.MAX_Y; i++){
 			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
@@ -240,6 +241,11 @@ public class Sort {
 	
 	public void sortUnloadingTop(int bayNo, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
 		int arr = 0;
+		
+		//wow its sorting in order man 
+		
+		System.out.println("sort unloading top" );
+		
 
 		//first put all the column into arrayList 
 		ArrayList<ArrayList<Job>> colJobs = new ArrayList<>(); 
@@ -259,9 +265,26 @@ public class Sort {
 			//System.out.println("colum jobs new size: " + colJobs.size());
 		}
 		
+		//it was populating correctly
+		/*
+		System.out.println("print the arrayList"); 
+		for(int i=0; i<colJobs.size(); i++){
+			System.out.println("index: " + i);
+			for(int j=0; j<=colJobs.get(i).size()-1; j++){
+				System.out.println("jobs: " + colJobs.get(i).get(j).getY() + ", " + colJobs.get(i).get(j).getX());
+			}
+		}
+		*/ 
+		
+		
 		//then, sort according to top 
 		//Job[] sortArray = sortDescendingTop(colJobs); //do i need this? or can i just have void. I think i can just have void 
-		q_jobs = sortDescendingTop(colJobs); 
+		
+		ArrayList<Job> sortedArray = sortDescendingTop(colJobs); 
+		
+		for(int i=0; i<sortedArray.size(); i++){
+			q_jobs.add(sortedArray.get(i)); 
+		}
 		
 		//lets try it! 
 	}
@@ -298,12 +321,15 @@ public class Sort {
 				if(arrList.get(i).size() > 0 ){
 					cost = arrList.get(i).get(0).getTotalCost();
 					if(cost > maxCost){
+						System.out.println("maxcost: " + maxCost + ", cost: " + cost);
 						sortedList.add(arrList.get(i).get(0));
 						arrList.get(i).remove(0);
 						totalNum--; 
+						maxCost = cost; 
 					}
 				}
 			}
+			maxCost = 0; 
 		}
 		
 		return sortedList; 

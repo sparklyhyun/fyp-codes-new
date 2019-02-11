@@ -182,8 +182,8 @@ public class Dispatcher {
 			
 			//j = jarr.get(0); 
 			
-			System.out.println("the maxindex joblist size: " + q_jobsList.get(maxIndex).size());
-			System.out.println("the total qc cost remainig: " + totalQcCost[maxIndex]);
+			//System.out.println("the maxindex joblist size: " + q_jobsList.get(maxIndex).size());
+			//System.out.println("the total qc cost remainig: " + totalQcCost[maxIndex]);
 			//wow why is this part suddenly not working is it the tier by tier problem? i think so too. 
 			//maybe the total sum calculation waasn't accurate 
 			

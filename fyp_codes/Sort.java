@@ -106,6 +106,8 @@ public class Sort {
 				cost += sjl.getJob(i, j).getTotalCost();
 			}
 		}
+		
+		System.out.println("total cost here: " + cost);
 		totalCost[index] = cost; 
 	}
 	
@@ -125,16 +127,18 @@ public class Sort {
 		int numHalf = Constants.MAX_Y / 2; //top 5 unloading, bottom 5 loading 
 
 		for(int l=0; l<numBays; l++){
-			
-			
+
 			//sort 1 bay at a time. update q_jobs accordingly 
 			//sort unloading first
 			//sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
-			sortUnloadingTop(l, sjl, q_jobs, qcIndex); 
+			//sortUnloadingTop(l, sjl, q_jobs, qcIndex); 
 			
 			//sort loading
 			//sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
-			sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
+			//sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
+			
+			//merged version of tier by tier sorting 
+			sortMergedTop(l, sjl, q_jobs, qcIndex); 
 
 		}
 		//add the q_jobs into the q_jobsList
@@ -240,13 +244,8 @@ public class Sort {
 	}
 	
 	public void sortUnloadingTop(int bayNo, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
-		int arr = 0;
+		//System.out.println("sort unloading top" );
 		
-		//wow its sorting in order man 
-		
-		System.out.println("sort unloading top" );
-		
-
 		//first put all the column into arrayList 
 		ArrayList<ArrayList<Job>> colJobs = new ArrayList<>(); 
 
@@ -258,6 +257,7 @@ public class Sort {
 				sjl.getJob(i, j).setBayIndex(bayNo);
 				sjl.getJob(i, j).setQcIndex(qcIndex);
 				columnJob.add(sjl.getJob(i, j)); 
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
 				//System.out.println("job added to coljob: " + sjl.getJob(i, j).getY() + ", " + sjl.getJob(i, j).getX());
 				//System.out.println("new coljob index: " +  j + ", size: " + columnJob.size());
 			}
@@ -285,8 +285,47 @@ public class Sort {
 		for(int i=0; i<sortedArray.size(); i++){
 			q_jobs.add(sortedArray.get(i)); 
 		}
+	}
+	
+	public void sortMergedTop(int bayNo, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
+		ArrayList<ArrayList<Job>> colJobs = new ArrayList<>(); 
+
+		//problem populating this arrayList -> it was added properly. where is the problem then?? 
+		for(int j = bayNo*Constants.MAX_X ; j<(bayNo+1)*Constants.MAX_X; j++){	//col
+			//System.out.println("is it inside this loop?? : no");
+			ArrayList<Job> columnJob = new ArrayList<>();
+			for(int i=0; i<Constants.MAX_Y; i++){
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				columnJob.add(sjl.getJob(i, j)); 
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
+				//System.out.println("job added to coljob: " + sjl.getJob(i, j).getY() + ", " + sjl.getJob(i, j).getX());
+				//System.out.println("new coljob index: " +  j + ", size: " + columnJob.size());
+			}
+			colJobs.add(columnJob);
+			//System.out.println("colum jobs new size: " + colJobs.size());
+		}
 		
-		//lets try it! 
+		//it was populating correctly
+		/*
+		System.out.println("print the arrayList"); 
+		for(int i=0; i<colJobs.size(); i++){
+			System.out.println("index: " + i);
+			for(int j=0; j<=colJobs.get(i).size()-1; j++){
+				System.out.println("jobs: " + colJobs.get(i).get(j).getY() + ", " + colJobs.get(i).get(j).getX());
+			}
+		}
+		*/
+		
+		
+		//then, sort according to top 
+		//Job[] sortArray = sortDescendingTop(colJobs); //do i need this? or can i just have void. I think i can just have void 
+		
+		ArrayList<Job> sortedArray = sortDescendingTop(colJobs); //add if loading and unloading 
+		
+		for(int i=0; i<sortedArray.size(); i++){
+			q_jobs.add(sortedArray.get(i)); 
+		}
 	}
 	
 	public Job[] sortDescending(Job[] arr){	//add high cost first
@@ -310,7 +349,7 @@ public class Sort {
 		ArrayList<Job> sortedList = new ArrayList<>(); 
 		
 		//tier by tier, (same method as dispatching) 
-		Job maxJob; 
+		int maxJobIndex = 0; 
 		int maxCost = 0; 
 		int cost; 
 		
@@ -320,17 +359,20 @@ public class Sort {
 			for(int i=0; i<Constants.MAX_X; i++){
 				if(arrList.get(i).size() > 0 ){
 					cost = arrList.get(i).get(0).getTotalCost();
+					//System.out.println("maxcost: " + maxCost + ", cost: " + cost);
 					if(cost > maxCost){
-						System.out.println("maxcost: " + maxCost + ", cost: " + cost);
-						sortedList.add(arrList.get(i).get(0));
-						arrList.get(i).remove(0);
-						totalNum--; 
+						maxJobIndex = i;
 						maxCost = cost; 
 					}
 				}
 			}
+			sortedList.add(arrList.get(maxJobIndex).get(0));
+			arrList.get(maxJobIndex).remove(0); 
+			totalNum--; 
 			maxCost = 0; 
 		}
+		
+		System.out.println("what is the size of sorted list: " + sortedList.size());
 		
 		return sortedList; 
 	}

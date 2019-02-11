@@ -182,10 +182,8 @@ public class Dispatcher {
 			
 			//j = jarr.get(0); 
 			
-			//System.out.println("the maxindex joblist size: " + q_jobsList.get(maxIndex).size());
-			//System.out.println("the total qc cost remainig: " + totalQcCost[maxIndex]);
-			//wow why is this part suddenly not working is it the tier by tier problem? i think so too. 
-			//maybe the total sum calculation waasn't accurate 
+			System.out.println("the maxindex joblist size: " + q_jobsList.get(maxIndex).size());
+			System.out.println("the total qc cost remainig: " + totalQcCost[maxIndex]);
 			
 			j = q_jobsList.get(maxIndex).get(0); 
 			
@@ -758,6 +756,7 @@ public class Dispatcher {
 		private boolean bayWaited = false; 
 		private int bayWaitedTime = 0; // total waiting time waiting for next bay 
 		private boolean agvWaited = false; 
+		private boolean unloadPrevWait = false; 
 		
 		public AtomicJob(Job j, String name, Agv agv, boolean qcWait ){	
 			this.j = j; 
@@ -911,7 +910,6 @@ public class Dispatcher {
 					
 				}
 
-				
 			}
 			
 			//do i put it here? (no but it has to be together with complete) 
@@ -970,8 +968,38 @@ public class Dispatcher {
 				prevWaitEnded[j.getQcIndex()] = 0; 
 			}
 			
-			j.setAssigned();
 			
+			if(j.getY()-1 >= 0){
+				Job prev = jobList.getJob(j.getY()-1, j.getX()); 
+				if(!prev.getLoading() && prev.getAgvWait()){	//unloading, and still waiting for agv 
+					System.out.println("job : " + j.getY() + ", " + j.getX() + "prev job not picked up, need to wait........." );
+					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+					jobList.repaint();
+					unloadPrevWait = true; 
+				}
+				int i = 2; 
+				while(prev.getAgvWait() || unloadPrevWait ){
+					if(!prev.getAgvWait()){
+						if(i == 0){
+							unloadPrevWait = false; 
+						}
+						i--;
+					}
+					try {
+						Constants.TOTALDELAY++;
+						Thread.sleep(Constants.SLEEP);
+						
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				//need to wait one more clock (qc need time to pick up the load) 
+				
+			}
+			
+			
+			j.setAssigned();	//before this, check if prev job already loaded 
 			
 			if(qcWait == true && !bayWaited ){
 				j.setIsWaiting(true);	
@@ -1052,8 +1080,12 @@ public class Dispatcher {
 			int bayIndex = j.getBayIndex(); 
 			
 			if(bayIndex > 0){
+				System.out.println("here");
 				if(j.getLoading() == false){
+					System.out.println("here2");
+					//probably completejobsbay is 0. need to calculate new way 
 					if(completeJobsBay[qcIndex][bayIndex-1] >= 0){
+						System.out.println("here3");
 						//bayWait[qcIndex]++; 
 						//System.out.println("baywait index: " + qcIndex + ", baywait value: " + bayWait[qcIndex]);
 						bayWaited = true; 
@@ -1121,6 +1153,10 @@ public class Dispatcher {
 
 		}
 		
+		public void unloadingWaitPrevJob(){//wait for previous job to get loaded on the agv first!
+			
+			
+		}
 		
 		public void notWaiting(){
 			//changed here!! to solve the wait-don't wait- wait blinking problem 
@@ -1200,7 +1236,6 @@ public class Dispatcher {
 			if(j.getLoading()){
 				if(nexty < (y+1)*Constants.MAX_Y){
 					//System.out.println("----------------next one waiting: "+ nexty + ", " + j.getX() + ", " + jobList.getJob(nexty, j.getX()).getIsWaiting());
-					//not even reaching this stage somehow.....
 					if(jobList.getJob(nexty, j.getX()).getIsWaiting() == true){
 						//System.out.println("job y: " + nexty + ", x: " + j.getX() + ", no longer waiting........");
 						jobList.getJob(nexty, j.getX()).setIsWaiting(false);	//next job no longer waiting

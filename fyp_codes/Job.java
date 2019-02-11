@@ -38,7 +38,7 @@ public class Job {
 
 	private int[] startPos = new int[2]; 	//y, x , y=0, x = 2, 7, 12, 17 (depends on location) 	//start pick up point 
 	private int[] endPos = new int[2]; 	//y, x , y=1, x = 2, 7, 12, 17 (random) 	//end point
-	private boolean agvWait = false; 
+	private boolean agvWait = false; 	// waiting for agv
 	
 	
 	public Job(int y, int x , boolean loading){

@@ -74,9 +74,9 @@ public class Sort {
 		for(int i=0; i<numQcY; i++){
 			for(int j=0; j<numQcX; j++){	
 				qcName = "qc" + i + j;
-				System.out.println("qcname: " + qcName);
+				//System.out.println("qcname: " + qcName);
 				SplitJobList splitJobList = new SplitJobList(i, j, jobList, qcName); 
-				seeSplitJobList(splitJobList); 
+				//seeSplitJobList(splitJobList); 
 				setTotalQcCost(splitJobList, index); 
 				splitJobListArr.add(splitJobList); 
 				index++; 
@@ -129,7 +129,8 @@ public class Sort {
 			
 			//sort 1 bay at a time. update q_jobs accordingly 
 			//sort unloading first
-			sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
+			//sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
+			sortUnloadingTop(l, sjl, q_jobs, qcIndex); 
 			
 			//sort loading
 			//sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
@@ -239,42 +240,30 @@ public class Sort {
 	
 	public void sortUnloadingTop(int bayNo, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
 		int arr = 0;
-		
+
 		//first put all the column into arrayList 
 		ArrayList<ArrayList<Job>> colJobs = new ArrayList<>(); 
-		for(int j = bayNo*Constants.MAX_X ; j<(bayNo-1)*Constants.MAX_X; j++){	//col
+
+		//problem populating this arrayList -> it was added properly. where is the problem then?? 
+		for(int j = bayNo*Constants.MAX_X ; j<(bayNo+1)*Constants.MAX_X; j++){	//col
+			//System.out.println("is it inside this loop?? : no");
 			ArrayList<Job> columnJob = new ArrayList<>();
 			for(int i=0; i<Constants.HALF_Y; i++){
 				sjl.getJob(i, j).setBayIndex(bayNo);
 				sjl.getJob(i, j).setQcIndex(qcIndex);
 				columnJob.add(sjl.getJob(i, j)); 
+				//System.out.println("job added to coljob: " + sjl.getJob(i, j).getY() + ", " + sjl.getJob(i, j).getX());
+				//System.out.println("new coljob index: " +  j + ", size: " + columnJob.size());
 			}
 			colJobs.add(columnJob);
+			//System.out.println("colum jobs new size: " + colJobs.size());
 		}
 		
 		//then, sort according to top 
 		//Job[] sortArray = sortDescendingTop(colJobs); //do i need this? or can i just have void. I think i can just have void 
-		sortDescendingTop(colJobs); 
+		q_jobs = sortDescendingTop(colJobs); 
 		
-		
-		//copied here 
-		for(int i=0; i<Constants.HALF_Y; i++){
-			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
-				sortArray[arr] = sjl.getJob(i, j); 
-				sjl.getJob(i, j).setBayIndex(bayNo);
-				sjl.getJob(i, j).setQcIndex(qcIndex);
-				
-				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
-				//System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
-				arr++;
-			}
-			sortArray = sortDescending(sortArray);
-			
-			for(int k=0; k<Constants.MAX_X; k++){
-				q_jobs.add(sortArray[k]);
-			}
-			arr = 0; 
-		}
+		//lets try it! 
 	}
 	
 	public Job[] sortDescending(Job[] arr){	//add high cost first
@@ -292,16 +281,32 @@ public class Sort {
 		return arr; 
 	}	
 	
-	public void sortDescendingTop(ArrayList<ArrayList<Job>> arrList){
-		Job[] sortedList = new Job[Constants.HALF_Y * Constants.MAX_X];
+	public ArrayList<Job> sortDescendingTop(ArrayList<ArrayList<Job>> arrList){
+		//total number of jobs
+		int totalNum = Constants.HALF_Y * Constants.MAX_X; 
+		ArrayList<Job> sortedList = new ArrayList<>(); 
 		
 		//tier by tier, (same method as dispatching) 
 		Job maxJob; 
 		int maxCost = 0; 
-		for(int i=0; i<Constants.MAX_X; i++){
-			sdafasdf
+		int cost; 
+		
+		//total number of jobs 
+		
+		while(totalNum > 0){
+			for(int i=0; i<Constants.MAX_X; i++){
+				if(arrList.get(i).size() > 0 ){
+					cost = arrList.get(i).get(0).getTotalCost();
+					if(cost > maxCost){
+						sortedList.add(arrList.get(i).get(0));
+						arrList.get(i).remove(0);
+						totalNum--; 
+					}
+				}
+			}
 		}
 		
+		return sortedList; 
 	}
 	
 	public boolean getGreedyComplete(){

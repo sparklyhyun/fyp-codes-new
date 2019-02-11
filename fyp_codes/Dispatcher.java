@@ -151,7 +151,7 @@ public class Dispatcher {
 		for(int i=0; i<totalQcCost.length; i++){
 			totalSum+= totalQcCost[i]; 
 		}
-		
+
 		for(int i=0; i<totalQcCost.length; i++){
 			System.out.println("qc index: " + i + " , cost: " + totalQcCost[i]);
 		}
@@ -176,11 +176,18 @@ public class Dispatcher {
 			//System.out.println("simple greedy, max index = " + maxIndex);
 			//System.out.print("q_jobsList size = " + q_jobsList.size());
 			
-			jarr = q_jobsList.get(maxIndex);
+			//jarr = q_jobsList.get(maxIndex);
 			
 			//System.out.println("jarr.size =  " + jarr.size());
 			
-			j = jarr.get(0); 
+			//j = jarr.get(0); 
+			
+			System.out.println("the maxindex joblist size: " + q_jobsList.get(maxIndex).size());
+			System.out.println("the total qc cost remainig: " + totalQcCost[maxIndex]);
+			//wow why is this part suddenly not working is it the tier by tier problem? i think so too. 
+			//maybe the total sum calculation waasn't accurate 
+			
+			j = q_jobsList.get(maxIndex).get(0); 
 			
 			jobOrder.add(j);
 			q_jobsList.get(maxIndex).remove(0); 

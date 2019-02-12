@@ -865,6 +865,13 @@ public class Dispatcher {
 			this.aj = aj; 
 			//tentative
 		}
+		
+		public void agvWaitEnd(AtomicJob aj){
+			this.aj = aj; 
+			aj.getJob().setAgvWait(false);
+			aj.getJob().setAssigned();
+			//test it out 
+		}
 	}
 	
 	
@@ -901,7 +908,7 @@ public class Dispatcher {
 			}
 			
 			//before start to travel, need to wait for agv to reach.
-			agvWait(); 
+			//agvWait(); 
 			jobList.repaint();
 			
 			if(j.getLoading() == true){
@@ -982,11 +989,23 @@ public class Dispatcher {
 			//no longer waiting for agv 
 			agvOrder(); 
 			
-			j.setAgvWait(false);
+			//need setting agv in order must be in queue. else, need to set wait. //how to put this in a queue? 
+			if(!j.getLoading()){
+				int qcIndex = j.getQcIndex(); 
+				Lock l = lockArr[qcIndex];
+				synchronized(l){
+					l.agvWaitEnd(this);
+				}
+			}else{
+				j.setAgvWait(false);
+			}
+			
+			//j.setAgvWait(false);
 			
 		}
 		
 		public void travelingLoading(Agv agv){
+			agvWait(); 
 			
 			j.setAssigned();
 			j.setIsWaiting(false);
@@ -1070,6 +1089,8 @@ public class Dispatcher {
 		}
 		
 		public void travelingUnloading(Agv agv){
+			agvWait(); 
+			
 			waitForBay();
 			
 			//need to wait until the previous job is ready! so if they arrive at the same time, does it matter which job is
@@ -1101,7 +1122,7 @@ public class Dispatcher {
 				if(!prev.getLoading() && prev.getAgvWait()){	//unloading, and still waiting for agv 
 					System.out.println("job : " + j.getY() + ", " + j.getX() + "prev job not picked up, need to wait........." );
 					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
-					
+					unloadWait.get(j.getQcIndex()).add(j); 
 					/*
 					if(!unloadWait.contains(j)){
 						unloadWait.get(j.getQcIndex()).add(j); 
@@ -1137,8 +1158,10 @@ public class Dispatcher {
 			
 			if(qcWait == true && !bayWaited ){
 				j.setIsWaiting(true);	
-				
-				jobList.repaint();
+				if(!unloadWait.contains(j)){
+					unloadWait.get(j.getQcIndex()).add(j); 
+				}
+				jobList.repaint(); 	
 				
 				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
 				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
@@ -1156,11 +1179,15 @@ public class Dispatcher {
 			
 			
 			//System.out.println("Job: " + j.getY() +", " + j.getX() + " " + (j.getIsWaiting()) + (bayWaited));
+			//this is the one that assigns waiting jobs in order (comment out first) 
+			
+			
 			if(j.getIsWaiting() && !bayWaited && !agvWaited){
 				int qcIndex = j.getQcIndex(); 
 				Lock l = lockArr[qcIndex]; 
 				synchronized(l){
 					l.unloadWaitLock(this);
+					unloadWait.get(j.getQcIndex()).remove(j); 
 				}
 			}
 			
@@ -1321,6 +1348,33 @@ public class Dispatcher {
 				}
 			}
 			
+		}
+		
+		public void unloadShardQc(){
+			//one if statement for just waiting jobs
+			//one if statement for agv waiting jobs
+			//one arraylist to contain all the waiting jobs of different kinds
+			//if the job not in front of the arraylist, set waiting 
+			//if the job at the front of the arraylist, set !waiting 
+			
+			if(j.getAgvWait()){
+				//if not index 0 of the arraylist
+				//agvwait set false
+				//isWaiting set true
+				//wait using while loop 
+			}else if(j.getIsWaiting()){
+				//if not index 0 of the arraylist
+				//wait using while loop 
+			}
+			
+			//i think the wait using while loop can go here
+			while(true /*arraylist not empty */){
+				//if arraylist index 0 = this job, 
+				//unset waiting, set assigned (this is done in a lock) 
+				//remove the item from the arraylist
+				//break
+				//wait
+			}
 		}
 		
 		public void notWaiting(){

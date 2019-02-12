@@ -345,6 +345,10 @@ public class Job {
 		return endPos; 
 	}
 
+	public boolean getIsAssinged(){
+		return assigned; 
+	}	
+
 	public void setStartPos(int y, int x){
 		startPos[0] = y; 
 		startPos[1] = x; 

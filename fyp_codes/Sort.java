@@ -138,7 +138,8 @@ public class Sort {
 			//sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
 			
 			//merged version of tier by tier sorting 
-			sortMergedTop(l, sjl, q_jobs, qcIndex); 
+			//sortMergedTop(l, sjl, q_jobs, qcIndex); 
+			sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
 
 		}
 		//add the q_jobs into the q_jobsList
@@ -280,7 +281,7 @@ public class Sort {
 		//then, sort according to top 
 		//Job[] sortArray = sortDescendingTop(colJobs); //do i need this? or can i just have void. I think i can just have void 
 		
-		ArrayList<Job> sortedArray = sortDescendingTop(colJobs); 
+		ArrayList<Job> sortedArray = sortDescendingTop(colJobs, false); 
 		
 		for(int i=0; i<sortedArray.size(); i++){
 			q_jobs.add(sortedArray.get(i)); 
@@ -321,7 +322,33 @@ public class Sort {
 		//then, sort according to top 
 		//Job[] sortArray = sortDescendingTop(colJobs); //do i need this? or can i just have void. I think i can just have void 
 		
-		ArrayList<Job> sortedArray = sortDescendingTop(colJobs); //add if loading and unloading 
+		ArrayList<Job> sortedArray = sortDescendingTop(colJobs, true); //add if loading and unloading 
+		
+		for(int i=0; i<sortedArray.size(); i++){
+			q_jobs.add(sortedArray.get(i)); 
+		}
+	}
+	
+	public void sortMergedByTotalCost(int bayNo, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){	//sort according to the total cost remaining 
+		ArrayList<ArrayList<Job>> colJobs = new ArrayList<>(); 
+
+		for(int j = bayNo*Constants.MAX_X ; j<(bayNo+1)*Constants.MAX_X; j++){	//col
+			//System.out.println("is it inside this loop?? : no");
+			ArrayList<Job> columnJob = new ArrayList<>();
+			for(int i=0; i<Constants.MAX_Y; i++){
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				columnJob.add(sjl.getJob(i, j)); 
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
+				//System.out.println("job added to coljob: " + sjl.getJob(i, j).getY() + ", " + sjl.getJob(i, j).getX());
+				//System.out.println("new coljob index: " +  j + ", size: " + columnJob.size());
+			}
+			colJobs.add(columnJob);
+			//System.out.println("colum jobs new size: " + colJobs.size());
+		}
+
+
+		ArrayList<Job> sortedArray = sortedDescendingByTotalCost(colJobs);
 		
 		for(int i=0; i<sortedArray.size(); i++){
 			q_jobs.add(sortedArray.get(i)); 
@@ -343,9 +370,15 @@ public class Sort {
 		return arr; 
 	}	
 	
-	public ArrayList<Job> sortDescendingTop(ArrayList<ArrayList<Job>> arrList){
+	public ArrayList<Job> sortDescendingTop(ArrayList<ArrayList<Job>> arrList, boolean b){
 		//total number of jobs
-		int totalNum = Constants.HALF_Y * Constants.MAX_X; 
+		int totalNum; 
+		if(b){	//the entire column 
+			totalNum = Constants.MAX_Y * Constants.MAX_X; 
+		}else{	//only the unloading part
+			totalNum = Constants.HALF_Y * Constants.MAX_X;
+		}
+		
 		ArrayList<Job> sortedList = new ArrayList<>(); 
 		
 		//tier by tier, (same method as dispatching) 
@@ -375,6 +408,52 @@ public class Sort {
 		System.out.println("what is the size of sorted list: " + sortedList.size());
 		
 		return sortedList; 
+	}
+	
+	public ArrayList<Job> sortedDescendingByTotalCost(ArrayList<ArrayList<Job>> arrList){
+		//same method as dispatching! 
+		ArrayList<Job> sortedList = new ArrayList<>(); 
+		int[] totalSum = {0,0,0,0}; 
+		int total = 0; 
+		//calculate the total sum for each qc 
+		
+		for(int i=0; i<arrList.size(); i++){
+			for(int j=0; j<arrList.get(0).size(); j++ ){
+				totalSum[i] += arrList.get(i).get(j).getTotalCost(); 
+				total += arrList.get(i).get(j).getTotalCost(); 
+			}
+		}
+		
+		//print to check the total cost
+		for(int i=0; i<totalSum.length; i++){
+			System.out.println("qc index: " + i + ", total cost: " + totalSum[i]);
+		}
+		System.out.println("total sum of all qc: " + total);
+		
+		Job j; 
+		while(total>0){
+			int max = 0;
+			int maxIndex = 0; 
+			
+			for(int i=0; i<totalSum.length; i++){
+				if(totalSum[i] > max){
+					//System.out.println("total cost: " + totalQcCost[i]); 
+					max = totalSum[i];
+					maxIndex = i; 
+				}
+			}
+			
+			j = arrList.get(maxIndex).get(0);
+			sortedList.add(j);
+			arrList.get(maxIndex).remove(0); 
+			totalSum[maxIndex] -= j.getTotalCost(); 
+			total -= j.getTotalCost();
+		}
+		
+		
+		
+		return sortedList; 
+		
 	}
 	
 	public boolean getGreedyComplete(){

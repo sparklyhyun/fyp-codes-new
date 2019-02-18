@@ -21,7 +21,7 @@ public class JobList extends JPanel{
 		//creating the full job list 
 		//createJobLists(); 
 		
-		tests(1); 
+		tests(2); 
 		
 		
 		
@@ -424,7 +424,7 @@ public class JobList extends JPanel{
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
 				jobs[i][j].setIncomplete();
-				jobs[i][j].setNotvisited();
+				jobs[i][j].setVisited(false);
 				jobs[i][j].setNotAssigned();
 				jobs[i][j].setIsWaiting(false);
 			}

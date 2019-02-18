@@ -176,7 +176,7 @@ public class Greedy implements Runnable{
 						if(nextCost > sortArray[k].getTotalCost()){
 							//add next task into the queue first 
 							q_jobs.add(nextJob);
-							jobList.getJob(nexty, x).setVisited();
+							jobList.getJob(nexty, x).setVisited(true);
 
 							count++; 
 						}
@@ -280,7 +280,7 @@ public class Greedy implements Runnable{
 							if(nextCost > sortArray[k].getTotalCost()){
 								//add next task into the queue first 
 								q_jobs.add(nextJob);
-								jobList.getJob(nexty, x).setVisited();
+								jobList.getJob(nexty, x).setVisited(true);
 								
 								count++; 
 							}

@@ -40,7 +40,7 @@ public class SplitJobList extends JPanel{
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
 				splitJobs[i][j].setIncomplete();
-				splitJobs[i][j].setNotvisited();
+				splitJobs[i][j].setVisited(false);
 			}
 		}
 	}

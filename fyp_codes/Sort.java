@@ -132,6 +132,8 @@ public class Sort {
 			//sort unloading first
 			//sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
 			//sortUnloadingTop(l, sjl, q_jobs, qcIndex); 
+			//test if this works for unloading too
+			
 			
 			//sort loading
 			//sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
@@ -139,7 +141,8 @@ public class Sort {
 			
 			//merged version of tier by tier sorting 
 			//sortMergedTop(l, sjl, q_jobs, qcIndex); 
-			sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
+			//sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
+			sortModifiedMerged(l, sortArray, sjl, q_jobs, qcIndex);
 
 		}
 		//add the q_jobs into the q_jobsList
@@ -203,7 +206,7 @@ public class Sort {
 						if(nextCost > sortArray[k].getTotalCost()){
 							//add next task into the queue first 
 							q_jobs.add(nextJob);
-							jobList.getJob(nexty, x).setVisited();
+							jobList.getJob(nexty, x).setVisited(true);
 
 							count++; 
 						}
@@ -219,6 +222,58 @@ public class Sort {
 			arr = 0; 
 		}
 	
+	}
+	
+	public void sortModifiedMerged(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){
+		int arr = 0;
+		
+		//int splity, splitx; 
+		for(int i=0; i<Constants.MAX_Y; i++){
+			for(int j=bayNo*Constants.MAX_X; j<(bayNo+1)*Constants.MAX_X; j++){
+				sortArray[arr] = sjl.getJob(i, j); 
+				sjl.getJob(i, j).setBayIndex(bayNo);
+				sjl.getJob(i, j).setQcIndex(qcIndex);
+				
+				completeJobsBay[sjl.getJob(i, j).getQcIndex()][bayNo]++; 
+				//System.out.println("job: " + i + ", " + j+ " qc index: " + sjl.getJob(i, j).getQcIndex()+ ", bay no: " + bayNo );
+				arr++;
+			}
+			sortArray = sortDescending(sortArray);
+			
+			for(int k=0; k<Constants.MAX_X; k++){
+				//new step, check next item and add the next item in front if it has higher cost
+				//fullListX and fullListY already obtaned here 
+				int y = sortArray[k].getY();
+				int nexty = y+1;
+				int x = sortArray[k].getX();
+				int count = 0; 
+				
+				//int fullListX, fullListY;
+				
+				if(nexty<Constants.MAX_Y && count < Constants.AGV-1){
+					Job nextJob = jobList.getJob(nexty, x); 
+					if(jobList.getJob(y, x).getVisited()==false){
+						//compare, when setting visited, set in the joblist
+						int nextCost = nextJob.getTotalCost();
+						if(nextCost > sortArray[k].getTotalCost()){
+							//add next task into the queue first 
+							q_jobs.add(nextJob);
+							jobList.getJob(nexty, x).setVisited(true);
+
+							count++; 
+						}
+						q_jobs.add(sortArray[k]);
+					}
+				}else{				
+					if(jobList.getJob(y, x).getVisited() == false){
+						q_jobs.add(sortArray[k]);
+					}
+				}
+				
+				System.out.println("sort modified merged, q_jobs size: " + q_jobs.size());
+			}
+			arr = 0; 
+		}
 	}
 	
 	public void sortLoadingSimple(int bayNo, Job[] sortArray, SplitJobList sjl, ArrayList<Job> q_jobs, int qcIndex){

@@ -8,9 +8,11 @@ public class Job {
 	//private int index; //priority 
 	private boolean	loading = false;	//for unloading task, false. for loading task, true
 	private boolean visited = false; 	//if visited = true, else = false
+	private boolean created = false; 
 	private boolean complete = false; 	//if job complete = true, else = false
 	private boolean assigned = false; 	//if the load on the agv = true 
 	private boolean travelling = false; 
+	private boolean unloadAssigned = false; //this is only for the merged modified greedy 
 	
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
@@ -363,12 +365,8 @@ public class Job {
 		loading = true; 
 	}
 	
-	public void setVisited(){
-		visited = true;
-	}
-	
-	public void setNotvisited(){
-		visited = false; 
+	public void setVisited(boolean b){
+		visited = b;
 	}
 	
 	public void setAssigned(){
@@ -458,4 +456,19 @@ public class Job {
 		this.agvWait = b; 
 	}
 	
+	public void setUnloadAssigned(boolean b){
+		this.unloadAssigned = b; 
+	}
+	
+	public boolean getUnloadAssigned(){
+		return unloadAssigned; 
+	}
+	
+	public boolean getCreated(){
+		return created; 
+	}
+	
+	public void setCreated(boolean b){
+		created = b; 
+	}
 }

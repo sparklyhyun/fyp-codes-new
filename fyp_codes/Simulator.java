@@ -72,8 +72,8 @@ public class Simulator {
 		CalcTime totalTimer = new CalcTime("totalTimer"); 
 		totalTimer.start();
 		
-		Dispatcher dispatcher = new Dispatcher(joblist); 
-		
+		//Dispatcher dispatcher = new Dispatcher(joblist); 
+		DispatcherTest dispatcher = new DispatcherTest(joblist); 
 		
 		initTasks();
 

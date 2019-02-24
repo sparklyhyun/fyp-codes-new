@@ -141,8 +141,8 @@ public class Sort {
 			
 			//merged version of tier by tier sorting 
 			//sortMergedTop(l, sjl, q_jobs, qcIndex); 
-			//sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
-			sortModifiedMerged(l, sortArray, sjl, q_jobs, qcIndex);
+			sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
+			//sortModifiedMerged(l, sortArray, sjl, q_jobs, qcIndex);
 
 		}
 		//add the q_jobs into the q_jobsList
@@ -480,10 +480,12 @@ public class Sort {
 		}
 		
 		//print to check the total cost
+		/*
 		for(int i=0; i<totalSum.length; i++){
 			System.out.println("qc index: " + i + ", total cost: " + totalSum[i]);
 		}
 		System.out.println("total sum of all qc: " + total);
+		*/
 		
 		Job j; 
 		while(total>0){

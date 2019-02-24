@@ -859,7 +859,7 @@ public class Dispatcher {
 		public void unloadAssign(AtomicJob aj){
 			this.aj = aj; 
 			
-			if(!aj.getJob().getIsAssinged()){
+			if(!aj.getJob().getAssigned()){
 				aj.getJob().setIsWaiting(false);
 				aj.getJob().setAssigned();
 			}else if(aj.getJob().getAgvWait()){

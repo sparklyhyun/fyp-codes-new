@@ -14,6 +14,8 @@ public class Job {
 	private boolean travelling = false; 
 	private boolean unloadAssigned = false; //this is only for the merged modified greedy 
 	
+	private boolean bayWaited = false; 
+	
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
 	private int dCost = 2;	//time takent to drop off / pick up 
@@ -347,9 +349,6 @@ public class Job {
 		return endPos; 
 	}
 
-	public boolean getIsAssinged(){
-		return assigned; 
-	}	
 
 	public void setStartPos(int y, int x){
 		startPos[0] = y; 
@@ -470,5 +469,13 @@ public class Job {
 	
 	public void setCreated(boolean b){
 		created = b; 
+	}
+	
+	public void setBayWaited(boolean b){
+		bayWaited = b;
+	}
+	
+	public boolean getBayWaited(){
+		return bayWaited; 
 	}
 }

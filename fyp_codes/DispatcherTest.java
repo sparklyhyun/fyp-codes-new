@@ -63,6 +63,7 @@ public class DispatcherTest {
 	private static ArrayList<ArrayList<Job>> agvWaitJobs = new ArrayList<>(); // store jobs waiting for agv for pick up 
 	
 	private static ArrayList<ArrayList<Job>> unloadWait = new ArrayList<>(); //unload jobs waiting for prev ones to be loaded onto agv 
+	private static ArrayList<ArrayList<Job>> agvWait = new ArrayList<>(); // agv waiting for jobs 
 	
 	//private static int[] bayWait = new int[Constants.NUM_QC]; //to keep track of whether to wait in front or not 
 	
@@ -98,6 +99,12 @@ public class DispatcherTest {
 		for(int i=0; i<Constants.NUM_QC; i++){
 			ArrayList<Job> agvWait = new ArrayList<>();
 			agvWaitJobs.add(agvWait); 
+		}
+		
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			ArrayList<Job> agvWaiting = new ArrayList<>(); 
+			agvWait.add(agvWaiting); 
 		}
 		
 		//initialize lock 
@@ -143,10 +150,11 @@ public class DispatcherTest {
 		for(int i=0; i<totalQcCost.length; i++){
 			totalSum+= totalQcCost[i]; 
 		}
-
+		
+		/*
 		for(int i=0; i<totalQcCost.length; i++){
 			System.out.println("qc index: " + i + " , cost: " + totalQcCost[i]);
-		}
+		}*/
 		
 		System.out.println("total sum: " + totalSum);
 		
@@ -165,8 +173,10 @@ public class DispatcherTest {
 				}
 			}
 			
+			/*
 			System.out.println("the maxindex joblist size: " + q_jobsList.get(maxIndex).size());
 			System.out.println("the total qc cost remainig: " + totalQcCost[maxIndex]);
+			*/ 
 			
 			j = q_jobsList.get(maxIndex).get(0); 
 			
@@ -339,7 +349,7 @@ public class DispatcherTest {
 			
 			while(agvList.isEmpty() == true){
 				emptyAgv = true; 
-				System.out.println("agv not available, waiting.....");
+				//System.out.println("agv not available, waiting.....");
 				addDelay = 0; 
 				try {
 					Thread.sleep(Constants.SLEEP);
@@ -611,28 +621,25 @@ public class DispatcherTest {
 		}
 		
 		public void unloadAssign(AtomicJob aj){
+			System.out.println("inside unloadAssign!");
+			
 			this.aj = aj; 
+			aj.unloadNotWait(); 
+			/*
+			Job j = aj.getJob(); 
+			j.setIsWaiting(false);
+			//aj.getJob().setAssigned();
 			
-			if(!aj.getJob().getIsAssinged()){
-				aj.getJob().setIsWaiting(false);
-				aj.getJob().setAssigned();
-			}else if(aj.getJob().getAgvWait()){
-				aj.getJob().setAgvWait(false);
-				aj.getJob().setAssigned();
-			}
-			
+			//remove first item (doing this in the lock is safer) 
+			System.out.println("removing the first job......: " + j.getY() + ", " + j.getX());
+			unloadWait.get(j.getQcIndex()).remove(0);
+			*/
 		}
 		
-		public void notWaitingBay(AtomicJob aj){
+		public void unloadAgvAssign(AtomicJob aj){
+			System.out.println("inside unload agv assign");
 			this.aj = aj; 
-			//tentative
-		}
-		
-		public void agvWaitEnd(AtomicJob aj){
-			this.aj = aj; 
-			aj.getJob().setAgvWait(false);
-			aj.getJob().setAssigned();
-			//test it out 
+			aj.agvWaitEnded(); 
 		}
 	}
 	
@@ -641,7 +648,7 @@ public class DispatcherTest {
 		Job j; 
 		private Thread t; 
 		private String name; 
-		private Agv agv;
+		private Agv agv = new Agv(000);
 		private boolean qcWait;	//true- unloading not first, false- unloading first/ loading. true - need to set delay 1 unit before  
 		private boolean bayWaited = false; 
 		private int bayWaitedTime = 0; // total waiting time waiting for next bay 
@@ -732,40 +739,67 @@ public class DispatcherTest {
 		}
 		
 		public void agvWait(){
-			//agv is assigned, just waiting for it to reach the respective qc 
+			//this is complete, don't touch this part anymore! 
 			int delay = agv.getAgvWaitTime(); 
 			j.setAgvWait(true);
-			jobList.repaint();
 			
-			System.out.println("AGV assigned, waiting for the agv, agvWait: " + delay);
+			jobList.repaint();
 			while(delay >0){
 				delay--;
 				try {
 					Thread.sleep(Constants.SLEEP);
 					Constants.TRAVELTIME++; 
-					//do i need to add additional delay here?? waiting time?? ********************************************
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			
-			//this, also need the unloadwait 
-			unloadShardQc(); 
+			//j.setAgvWait(false);
 			
-			agvWaited = false; 
+			
+			if(j.getLoading()){
+				j.setAgvWait(false);
+				return; 
+			}
+			
+			if(!j.getLoading() && !agvWait.get(j.getQcIndex()).contains(j)){
+				System.out.println("agvwaitlist added: " + j.getY() + ", " + j.getX());
+				agvWait.get(j.getQcIndex()).add(j); 
+			}
+			
+			while(agvWait.get(j.getQcIndex()).size()>0){	
+				//this entire part needs to undergo overhaul
+				if(agvWait.get(j.getQcIndex()).size()>0 && agvWait.get(j.getQcIndex()).get(0) == j){
+					Lock l = lockArr[j.getQcIndex()]; 
+					synchronized(l){
+						l.unloadAgvAssign(this);
+					}	
+					//prevWaitEnded[j.getQcIndex()] = 1;
+					break;
+				}
+				
+				j.setIsWaiting(true);
+
+				try {
+					Thread.sleep(Constants.SLEEP);								
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
 			
 		}
 		
 		public void travelingLoading(Agv agv){
+			//this part is done. don't touch anymore
 			agvWait(); 
 			
 			j.setAssigned();
 			j.setIsWaiting(false);
 			
 			jobList.repaint();
-			//System.out.println("job " + j.getY() + ", " + j.getX()+ " on agv");
-
 			
 			//here, delay for traveling. Hold the agv. 
 			int c = j.getTotalCost();
@@ -780,8 +814,7 @@ public class DispatcherTest {
 					e.printStackTrace();
 				}
 			}
-			
-			
+
 			//if the previous job (column) not complete, wait
 			if(j.getY()-1 >= 0){
 				Job prev = jobList.getJob(j.getY()-1, j.getX());
@@ -805,12 +838,6 @@ public class DispatcherTest {
 
 			}
 			
-			//do i put it here? (no but it has to be together with complete) 
-			/*
-			jobList.getJob(j.getY(), j.getX()).setIsWaiting(false);
-			jobList.repaint();
-			*/
-			
 			
 			waitForBay(); 
 			
@@ -819,117 +846,91 @@ public class DispatcherTest {
 			
 			//complete the job
 			synchronized(l){
-				//only release sem after agv is added back
-				//sem.release();
 				l.lock(this, true);
 			}
-			
 			
 			agv.setAgvLocation(j.getEndPos());
 			
 			agvList.add(agv);
-			
-			//agv new location 
-			/*
-			System.out.println("agv index: " + agv.getAgvNum() + " ," + "agv end location: " + agv.getAgvLocation()[0] 
-					+ ", " + agv.getAgvLocation()[1]);
-			*/
-			
-			//System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
 			
 
 		}
 		
 		public void travelingUnloading(Agv agv){
+			j.setAssigned();
+			// 3. if there is any job in the wait queue that was waiting for the bay ,
 			agvWait(); 
-			
 			waitForBay();
 			
+			//unloadSharedQc(); //this belongs here? 
+			
+			//check if there is item waiting for qc in the list
+			if(unloadWait.get(j.getQcIndex()).size()>0){
+				if(!unloadWait.get(j.getQcIndex()).contains(j) && !j.getBayWaited()){
+					System.out.println("here 0 added, job: " + j.getY() + ", " + j.getX());
+					unloadWait.get(j.getQcIndex()).add(j); 
+					j.setIsWaiting(true);
+					qcWait = true; 
+				}
+			}
+			
+			
+			
+			//1. if the qc was used immediately before! 
+			//so this part doesn't work anymore huh. 
+			
+			//should i put this part in a function??? 
+			
+			////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/*
 			if(prevWaitEnded[j.getQcIndex()] == 1){
 				qcWait = true; 
-				
 				//add to waiting list 
-				//unloadWait.get(j.getQcIndex()).add(j); 
 				
-				try {
-					Constants.TOTALDELAY++;
-					Thread.sleep(Constants.SLEEP);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				//prevWaitEnded = -1; 
-				prevWaitEnded[j.getQcIndex()] = 0; 
-			}
-			
-			
-			if(j.getY()-1 >= 0){
-				Job prev = jobList.getJob(j.getY()-1, j.getX()); 
+				System.out.println("here 1: " +unloadWait.get(j.getQcIndex()).contains(j) );
 				
-				if(!prev.getLoading() && prev.getAgvWait() /*(prev.getAgvWait() || !prev.getUnloadAssigned())*/){	//unloading, and still waiting for agv 
-					System.out.println("job : " + j.getY() + ", " + j.getX() + "prev job not picked up, need to wait........." );
-					jobList.getJob(j.getY(), j.getX()).setIsWaiting(true);
+				if(!unloadWait.get(j.getQcIndex()).contains(j) && !j.getBayWaited()){
+					System.out.println("here 1 added, job: " + j.getY() + ", " + j.getX());
 					unloadWait.get(j.getQcIndex()).add(j); 
-					/*
-					if(!unloadWait.contains(j)){
-						unloadWait.get(j.getQcIndex()).add(j); 
-					}*/
-					
-					jobList.repaint();
-					unloadPrevWait = true; 
-				}
-				int i = 2; 
-				while(prev.getAgvWait() || unloadPrevWait ){
-					if(!prev.getAgvWait()){
-						if(i == 0){
-							unloadPrevWait = false; 
-						}
-						i--;
-					}
-					try {
-						Constants.TOTALDELAY++;
-						Thread.sleep(Constants.SLEEP);
-						
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
 				}
 				
-				//need to wait one more clock (qc need time to pick up the load) 
-				
+				System.out.println(j.getQcIndex() +" waiting for previous job, unload wait size: " + unloadWait.get(j.getQcIndex()).size());
+
 			}
+			*/
+			///////////////////////////////////////////////////////////////////////////////////////////////////////
 			
-			j.setAssigned();	//before this, check if prev job already loaded. this needs lock! 
-			j.setUnloadAssigned(true);
-			
-			//unloadingWaitPrevJob(); 
+			//2. if qcwait is true, wait for 1 unit 
 			
 			if(qcWait == true && !bayWaited ){
 				j.setIsWaiting(true);	
-				if(!unloadWait.contains(j)){
+				System.out.println("here 2: " +unloadWait.get(j.getQcIndex()).contains(j) );
+				if(!unloadWait.get(j.getQcIndex()).contains(j)){
+					System.out.println("here 2 added, job: " + j.getY() + ", " + j.getX());
 					unloadWait.get(j.getQcIndex()).add(j); 
 				}
 				jobList.repaint(); 	
 				
-				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
-				//System.out.println("job " + j.getY() + ", " + j.getX()+ " null agv, waiting for agv");
-				
 				try {
 					Constants.TOTALDELAY++;
-					//updateDelayTimer();
 					Thread.sleep(Constants.SLEEP);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
+				unloadSharedQc(); 
 			}
 			
 			
-			//System.out.println("Job: " + j.getY() +", " + j.getX() + " " + (j.getIsWaiting()) + (bayWaited));
-			//this is the one that assigns waiting jobs in order (comment out first) 
+			prevWaitEnded[j.getQcIndex()] = 0; 
 			
+			//this, replace with unloadsharedqc. 
+			unloadSharedQc(); 
+			//////////////////////////////////////////////////////////////////////////////////
 			
+			/*
 			if(j.getIsWaiting() && !bayWaited && !agvWaited){
 				int qcIndex = j.getQcIndex(); 
 				Lock l = lockArr[qcIndex]; 
@@ -938,6 +939,11 @@ public class DispatcherTest {
 					unloadWait.get(j.getQcIndex()).remove(j); 
 				}
 			}
+			
+			j.setAssigned();	//before this, check if prev job already loaded. this needs lock! 
+			j.setUnloadAssigned(true);
+			*/
+			///////////////////////////////////////////////////////////////////////////////////////////
 			
 			//unloadingWaitPrevJob(); 
 			j.setTravelling(true);
@@ -960,22 +966,13 @@ public class DispatcherTest {
 			
 			//job completion can happen at the same time
 			completeTask();
-			
-			//System.out.println("complete jobs bay: " + j.getQcIndex()+ ", " + j.getBayIndex() + ", jobs left: " + completeJobsBay[j.getQcIndex()][j.getBayIndex()]);
+
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
 			
 			agv.setAgvLocation(j.getEndPos());
 			
 			agvList.add(agv);
-			
-			// agv end location
-			/*
-			System.out.println("agv index: " + agv.getAgvNum() + " ," + "agv end location: " + agv.getAgvLocation()[0] 
-					+ ", " + agv.getAgvLocation()[1]);
-			*/
-			
-			//release sem only after agv is added back
-			//sem.release();
+
 			
 			System.out.println("agv added back..........................................." );
 			System.out.println("new agv list size: " + agvList.size());
@@ -989,25 +986,36 @@ public class DispatcherTest {
 			int bayIndex = j.getBayIndex(); 
 			
 			if(bayIndex > 0){
-				if(j.getLoading() == false){
+				if(j.getLoading() == false){ //this is for unloading 
 					if(completeJobsBay[qcIndex][bayIndex-1] >= 0){
-						//bayWait[qcIndex]++; 
-						//System.out.println("baywait index: " + qcIndex + ", baywait value: " + bayWait[qcIndex]);
-						bayWaited = true; 
-						//bayWait.get(j.getQcIndex()).add(j); 
+						j.setAgvWait(false);	//this doesn't work well now......
+						bayWaited = true; 	//do i still need this since I now have the shared waiting list? 	(i'll think about it) 
 						unloadWait.get(qcIndex).add(j); 
-						//System.out.println("------------ baywait added job: " + j.getY()+", " + j.getX());
-						System.out.println("------------ bayWait added: "+j.getQcIndex() +" , new length: " + bayWait.get(j.getQcIndex()).size());
+						//System.out.println("------------ bayWait added: "+j.getQcIndex() +" , new length: " + bayWait.get(j.getQcIndex()).size());
+					}else{
+						if(unloadWait.get(j.getQcIndex()).size()>0 && !j.getBayWaited()){
+							if(unloadWait.get(j.getQcIndex()).get(unloadWait.get(j.getQcIndex()).size()-1).getBayWaited()){
+								j.setIsWaiting(true);
+								
+								System.out.println("Bay wait items still exist in unloadwait, job: " + j.getY() + ", " + j.getX()+ 
+										" added to unloadwait");
+								if(!unloadWait.get(j.getQcIndex()).contains(j)){
+									unloadWait.get(j.getQcIndex()).add(j);
+									System.out.println("job: " + j.getY() +", " + j.getX() + " really added to unloadwait");
+								}
+								jobList.repaint();
+							}
+						}
 					}
 				}
 				while(completeJobsBay[qcIndex][bayIndex-1] >= 0){
-					
 					if(completeJobsBay[qcIndex][bayIndex-1] < 1){
 						completeJobsBay[qcIndex][bayIndex-1]--;
 					}
 					
 					//wait
 					j.setIsWaiting(true);
+					j.setBayWaited(true);
 					bayWaitedTime++;
 					jobList.repaint();
 					try {
@@ -1018,24 +1026,20 @@ public class DispatcherTest {
 					}
 				}
 				if(j.getLoading() == false){
-					//test without this part 
 					if(unloadWait.get(qcIndex).size()>0){
-						while(true){	
+						while(unloadWait.get(qcIndex).size()>0){	
+							//this entire part needs to undergo overhaul
 							if(unloadWait.get(qcIndex).size()>0 && unloadWait.get(qcIndex).get(0) == j){
 								
 								Lock l = lockArr[qcIndex]; 
 								synchronized(l){
-									l.unloadWaitLock(this);
-									//l.unloadAssign(this);
+									l.unloadAssign(this);
 								}	
-								//System.out.println("arrayList size before: " + bayWait.get(qcIndex).size());
-								//prevWaitEnded = j.getQcIndex(); 
 								prevWaitEnded[j.getQcIndex()] = 1;
 								
 								break;
 							}
-							
-							
+
 							try {
 								Thread.sleep(Constants.SLEEP);								
 							} catch (InterruptedException e) {
@@ -1047,63 +1051,96 @@ public class DispatcherTest {
 					}
 				}else{
 					j.setIsWaiting(false);
-					jobList.repaint();
 				}
 			}
+			jobList.repaint();
 
 		}
 		
-		public void unloadShardQc(){// so this is the sharing function//// 
-			//one if statement for just waiting jobs
-			//one if statement for agv waiting jobs
-			//one arraylist to contain all the waiting jobs of different kinds
-			//if the job not in front of the arraylist, set waiting 
-			//if the job at the front of the arraylist, set !waiting 
+		public void unloadSharedQc(){// so this is the sharing function//// 
+			//job 1 = j.setAgvWait(false);
+			//job 2 = j.setIsWaiting(false); 
 			
+			/* wait if: (for unloading)
+			 * 	1. job on top not assigned to an agv
+			 *  2. if this job not at the front of unloadWait arrayList.
+			 *  3. bayWaited = true (this is special case, as inside the bay wait function job is already waiting) ******
+			 * 
+			 */
+			
+			//1. check if there is previous job. 
 			int prevY = j.getSplitY()-1; 
 			int qcIndex = j.getQcIndex(); 
 			
-			if(j.getLoading()){
-				j.setAgvWait(false);
-			}else{
-				if(prevY >= 0 && !j.getAgvWait()){	//already has agv 
-					Job prevJob = jobList.getJob(prevY, j.getX()); //previous job 
+			if(prevY >= 0){
+				Job prevJob = jobList.getJob(prevY, j.getX());
+				// if previous job is unloading, and not assigned to agv yet -> wait. 
+				// will only get assigned after waiting right? 
+				if(prevY >= 0 && !prevJob.getLoading() && (prevJob.getIsWaiting() || prevJob.getAgvWait())){
+					//System.out.println("job inside this prev Y");
+					j.setIsWaiting(true);
+					System.out.println("does unloadwait contain job: " + j.getY() + ", " + j.getX() + "? : " + 
+							unloadWait.get(qcIndex).contains(j));
+					if(!unloadWait.get(qcIndex).contains(j)){
+						
+						unloadWait.get(qcIndex).add(j);
+					}
+					jobList.repaint();
+				}
+			}
+			
+			
+			//2. job waiting, but not at the front row 
+			if(j.getIsWaiting()){
+				// wait until the job gets to the index 0 of waiting list
+				//System.out.println("job inside this get is waiting");
+				while(unloadWait.get(qcIndex).size() > 0){
+					System.out.println("first job: " + unloadWait.get(qcIndex).get(0).getY() + "," + 
+				unloadWait.get(qcIndex).get(0).getX());
+					//so the problem is here. it is not getting removed. wow. why.
 					
-					if(!prevJob.getCreated() || prevJob.getAgvWait() || prevJob.getIsWaiting()){		// prev job not even created
-						//wait untl prev job is visited (set wait, and put it in the wait arraylist) 
-						j.setIsWaiting(true);
-						unloadWait.get(qcIndex).add(j); 
-						jobList.repaint();
-						
-						while(true){
-							//only break if all 3 conditions are satisfied.and the job is at unloadWait index 0
-							if(prevJob.getCreated() && !prevJob.getAgvWait() && !prevJob.getIsWaiting()){
-								//is index 0 this job?
-								if(unloadWait.get(qcIndex).get(0) == j){
-									
-									break; 
-								}
-							}
-							try {
-								Thread.sleep(Constants.SLEEP);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						
-						
+					System.out.println("is job: " + j.getY() + ", " + j.getX() + " the first job?: "+ (unloadWait.get(qcIndex).get(0) == j));
+					printArrayList(unloadWait.get(qcIndex)); 
+					
+					if(unloadWait.get(qcIndex).get(0) == j){
+						break;	
+					}
+					try {
+						Thread.sleep(Constants.SLEEP);								
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
-				
 				Lock l = lockArr[qcIndex]; 
 				synchronized(l){
-					//l.unloadWaitLock(this);
 					l.unloadAssign(this);
 				}
-				prevWaitEnded[j.getQcIndex()] = 1;
+				System.out.println("job: " +j.getY() + ", " + j.getX() + " not waiting anymore!");
+				//if still first job, need to remove!
+				/*
+				if(unloadWait.get(qcIndex).size() > 0){
+					if(unloadWait.get(qcIndex).get(0) == j){
+						System.out.println("not removed properly. remove again");
+						unloadWait.get(qcIndex).remove(0);
+					}
+				}*/
 				
+				try {
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				//unloadWait.get(qcIndex).remove(0);
 			}
+			
+			
+			prevWaitEnded[j.getQcIndex()] = 1;
+							
+			agvWaited = false;
+			 
 		}
+		
 		
 		public void notWaiting(){
 			//changed here!! to solve the wait-don't wait- wait blinking problem 
@@ -1127,6 +1164,15 @@ public class DispatcherTest {
 			
 		}
 		
+		public void unloadNotWait(){
+			j.setIsWaiting(false);
+			j.setAssigned();
+			jobList.repaint();
+			
+			System.out.println("removing the first job......: " + j.getY() + ", " + j.getX());
+			unloadWait.get(j.getQcIndex()).remove(0); 
+		}
+		
 		
 		public void completeTask(){ //this one is for unloading 				
 			
@@ -1137,11 +1183,6 @@ public class DispatcherTest {
 			int y = j.getSplitY();
 			
 			int nexty = j.getY()+1;
-			
-			
-			//System.out.println("max y: " + Constants.MAX_Y);
-			//System.out.println("splity: " + y);
-			//System.out.println("nexty: " + nexty + ", limit: "+(y+1)*Constants.MAX_Y+", condition: " + (nexty < (y+1)*Constants.MAX_Y));
 			
 			///problem is here. the index stops at nexty index out of range
 			if(j.getLoading()){
@@ -1155,11 +1196,6 @@ public class DispatcherTest {
 				}
 			}
 			
-			
-			//System.out.println("agv added to the queue, new queue length: " + agvList.size());
-			
-			//jobList.getJob(j.getY(), j.getX()).setComplete();
-			//jobList.getJob(j.getSplitY(), j.getSplitX()); 
 			
 			jobList.repaint();
 			System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
@@ -1178,15 +1214,19 @@ public class DispatcherTest {
 			}
 		}
 		
-		public synchronized void bayNotWaiting(){
-			if(bayWait.get(j.getQcIndex()).get(0) == j){
-				
-				Lock l = lockArr[j.getQcIndex()]; 
-				synchronized(l){
-					l.unloadWaitLock(this);
-				}	
-				System.out.println("arrayList size before: " + bayWait.get(j.getQcIndex()).size());
+		public void printArrayList(ArrayList<Job> arr){
+			for(int i=0; i<arr.size(); i++){
+				System.out.println("job " + i + ": " + arr.get(i).getY() + ", " + arr.get(i).getX());
 			}
+			
+		}
+		
+		public void agvWaitEnded(){
+			j.setAgvWait(false);
+			jobList.repaint();
+			
+			System.out.println("agv wait removing the first job......: " + j.getY() + ", " + j.getX());
+			agvWait.get(j.getQcIndex()).remove(0); 
 		}
 
 		

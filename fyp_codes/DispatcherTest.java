@@ -621,7 +621,7 @@ public class DispatcherTest {
 		}
 		
 		public void unloadAssign(AtomicJob aj){
-			System.out.println("inside unloadAssign!");
+			//System.out.println("inside unloadAssign!");
 			
 			this.aj = aj; 
 			aj.unloadNotWait(); 
@@ -637,7 +637,7 @@ public class DispatcherTest {
 		}
 		
 		public void unloadAgvAssign(AtomicJob aj){
-			System.out.println("inside unload agv assign");
+			//System.out.println("inside unload agv assign");
 			this.aj = aj; 
 			aj.agvWaitEnded(); 
 		}
@@ -764,7 +764,7 @@ public class DispatcherTest {
 			}
 			
 			if(!j.getLoading() && !agvWait.get(j.getQcIndex()).contains(j)){
-				System.out.println("agvwaitlist added: " + j.getY() + ", " + j.getX());
+				//System.out.println("agvwaitlist added: " + j.getY() + ", " + j.getX());
 				agvWait.get(j.getQcIndex()).add(j); 
 			}
 			
@@ -858,6 +858,7 @@ public class DispatcherTest {
 		}
 		
 		public void travelingUnloading(Agv agv){
+			//prevWaitEnded[j.getQcIndex()] = 0;
 			j.setAssigned();
 			// 3. if there is any job in the wait queue that was waiting for the bay ,
 			agvWait(); 
@@ -1081,9 +1082,14 @@ public class DispatcherTest {
 			int qcIndex = j.getQcIndex(); 
 			
 			if(prevY >= 0){
+				System.out.println("here1 job: " + j.getY() +", " + j.getX());
 				Job prevJob = jobList.getJob(prevY, j.getX());
 				if(prevY >= 0 && !prevJob.getLoading() && (prevJob.getIsWaiting() || prevJob.getAgvWait())){
+					System.out.println("waiting for previous job: " + j.getY() + ", " + j.getX());
+					//not entering this part at all!!!! why!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					
 					j.setIsWaiting(true);
+					j.setPrevWaiting(true);
 					
 					if(!unloadWait.get(qcIndex).contains(j)){
 						
@@ -1096,7 +1102,7 @@ public class DispatcherTest {
 			//2. check if waiting for any job 
 			if(unloadWait.get(j.getQcIndex()).size()>0){
 				if(!unloadWait.get(j.getQcIndex()).contains(j) && !j.getBayWaited()){
-					System.out.println("qcWait true job : " + j.getY() + ", " + j.getX());
+					//System.out.println("qcWait true job : " + j.getY() + ", " + j.getX());
 					unloadWait.get(j.getQcIndex()).add(j); 
 					j.setIsWaiting(true);
 					qcWait = true; 
@@ -1108,10 +1114,10 @@ public class DispatcherTest {
 				qcWait = true; 
 				//add to waiting list 
 				
-				System.out.println("here 1: " +unloadWait.get(j.getQcIndex()).contains(j) );
+				//System.out.println("here 1: " +unloadWait.get(j.getQcIndex()).contains(j) );
 				
 				if(!unloadWait.get(j.getQcIndex()).contains(j) && !j.getBayWaited()){
-					System.out.println("here 1 added, job: " + j.getY() + ", " + j.getX());
+					//System.out.println("here 1 added, job: " + j.getY() + ", " + j.getX());
 					j.setIsWaiting(true);
 					unloadWait.get(j.getQcIndex()).add(j); 
 				}
@@ -1120,7 +1126,7 @@ public class DispatcherTest {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				System.out.println(j.getQcIndex() +" waiting for previous job, unload wait size: " + unloadWait.get(j.getQcIndex()).size());
+				//System.out.println(j.getQcIndex() +" waiting for previous job, unload wait size: " + unloadWait.get(j.getQcIndex()).size());
 
 			}
 			
@@ -1137,7 +1143,18 @@ public class DispatcherTest {
 					//printArrayList(unloadWait.get(qcIndex)); 
 					
 					if(unloadWait.get(qcIndex).get(0) == j){
-						break;	
+						System.out.println("is job waiting for prev: " + j.getY() + ", " + j.getX() + ", " + 
+								j.getPrevWaiting());
+						if(!j.getPrevWaiting()){
+							
+							if(j.getY()+1 < Constants.TOTAL_Y && jobList.getJob(j.getY()+1, j.getX()).getPrevWaiting()){
+								System.out.println("\t\t\t\t\t\t inside this line");
+								jobList.getJob(j.getY()+1, j.getX()).setPrevWaiting(false);
+							}
+							break;	
+						}
+						
+						
 					}
 					
 					try {
@@ -1154,7 +1171,7 @@ public class DispatcherTest {
 					l.unloadAssign(this);
 				}
 				prevWaitEnded[j.getQcIndex()] = 1;
-				//System.out.println("job: " +j.getY() + ", " + j.getX() + " not waiting anymore!");
+				System.out.println("job: " +j.getY() + ", " + j.getX() + " not waiting anymore!");
 				//if still first job, need to remove!
 				/*
 				if(unloadWait.get(qcIndex).size() > 0){
@@ -1204,7 +1221,7 @@ public class DispatcherTest {
 				
 			}*/
 			
-			prevWaitEnded[j.getQcIndex()] = 1;
+			//prevWaitEnded[j.getQcIndex()] = 1;
 							
 			agvWaited = false;
 			 

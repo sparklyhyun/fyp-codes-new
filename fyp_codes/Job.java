@@ -43,6 +43,7 @@ public class Job {
 	private int[] startPos = new int[2]; 	//y, x , y=0, x = 2, 7, 12, 17 (depends on location) 	//start pick up point 
 	private int[] endPos = new int[2]; 	//y, x , y=1, x = 2, 7, 12, 17 (random) 	//end point
 	private boolean agvWait = false; 	// waiting for agv
+	private boolean prevWaiting = false; 
 	
 	
 	public Job(int y, int x , boolean loading){
@@ -477,5 +478,13 @@ public class Job {
 	
 	public boolean getBayWaited(){
 		return bayWaited; 
+	}
+	
+	public boolean getPrevWaiting(){
+		return prevWaiting; 
+	}
+	
+	public void setPrevWaiting(boolean b){
+		prevWaiting = b; 
 	}
 }

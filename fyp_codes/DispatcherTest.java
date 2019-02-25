@@ -1069,14 +1069,29 @@ public class DispatcherTest {
 		public void unloadSharedQc(){// so this is the sharing function//// 
 			
 			//1. check if there is previous job. 
-			int prevY = j.getSplitY()-1; 
-			int qcIndex = j.getQcIndex(); 
 			
-			if(prevY >= 0){
+			int prevY = j.getY()-1; 
+			int qcIndex = j.getQcIndex(); 
+			//split y not working!!!!!
+			
+			System.out.println("qcnum for job: " + j.getY() + ", " + j.getX() +" : " + j.getQcIndex());
+			
+			int minY, maxY; 
+			if(j.getQcIndex()>1){
+				minY = 0;
+				maxY = Constants.MAX_Y-1; 
+			}else{
+				minY = Constants.MAX_Y; 
+				maxY = Constants.TOTAL_Y-1; 
+			}
+			
+			
+			if(prevY >= minY){
 				//System.out.println("here1 job: " + j.getY() +", " + j.getX());
-				Job prevJob = jobList.getJob(prevY, j.getX());
-				if(!prevJob.getLoading() && (prevJob.getIsWaiting() || prevJob.getAgvWait())){
-					
+				Job prevJob = jobList.getJob(j.getY(), j.getX());
+				
+				if(prevJob.getLoading()==false && (prevJob.getIsWaiting() || prevJob.getAgvWait())){
+					//the job that shouldn't be here is here. why? 
 					//so this part is used 
 					j.setIsWaiting(true);
 					j.setPrevWaiting(true);
@@ -1141,13 +1156,15 @@ public class DispatcherTest {
 								j.getPrevWaiting());
 						if(!j.getPrevWaiting()){
 							int nextY = j.getY()+1;
-							if(nextY <Constants.TOTAL_Y){
+							if(nextY <= maxY ){
 								System.out.println("is next job waiting for job :" + j.getY() + ", " + j.getX() + "? "
-										+ jobList.getJob(nextY, j.getX()).getPrevWaiting());
+										+ jobList.getJob(j.getY(), j.getX()).getPrevWaiting());
+								
 								//this will give false. what is the reason?? 
-								if(jobList.getJob(nextY, j.getX()).getPrevWaiting()){
+								if(jobList.getJob(j.getY(), j.getX()).getPrevWaiting()){
 									System.out.println("\t\t\t\t\t\t inside this line");
 									jobList.getJob(j.getY()+1, j.getX()).setPrevWaiting(false);
+									//setting boolean must be within the same obj???? 
 								}
 							}
 							break;	

@@ -1067,30 +1067,22 @@ public class DispatcherTest {
 		}
 		
 		public void unloadSharedQc(){// so this is the sharing function//// 
-			//job 1 = j.setAgvWait(false);
-			//job 2 = j.setIsWaiting(false); 
-			
-			/* wait if: (for unloading)
-			 * 	1. job on top not assigned to an agv
-			 *  2. if this job not at the front of unloadWait arrayList.
-			 *  3. bayWaited = true (this is special case, as inside the bay wait function job is already waiting) ******
-			 * 
-			 */
 			
 			//1. check if there is previous job. 
 			int prevY = j.getSplitY()-1; 
 			int qcIndex = j.getQcIndex(); 
 			
 			if(prevY >= 0){
-				System.out.println("here1 job: " + j.getY() +", " + j.getX());
+				//System.out.println("here1 job: " + j.getY() +", " + j.getX());
 				Job prevJob = jobList.getJob(prevY, j.getX());
-				if(prevY >= 0 && !prevJob.getLoading() && (prevJob.getIsWaiting() || prevJob.getAgvWait())){
-					System.out.println("waiting for previous job: " + j.getY() + ", " + j.getX());
-					//not entering this part at all!!!! why!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				if(!prevJob.getLoading() && (prevJob.getIsWaiting() || prevJob.getAgvWait())){
 					
+					//so this part is used 
 					j.setIsWaiting(true);
 					j.setPrevWaiting(true);
-					
+					System.out.println("waiting for previous job: " + j.getY() + ", " + j.getX() + " " +
+					j.getPrevWaiting());
+					// so this part works 
 					if(!unloadWait.get(qcIndex).contains(j)){
 						
 						unloadWait.get(qcIndex).add(j);
@@ -1115,6 +1107,8 @@ public class DispatcherTest {
 				//add to waiting list 
 				
 				//System.out.println("here 1: " +unloadWait.get(j.getQcIndex()).contains(j) );
+				////////////////////////////////////////////////////////////////////////////////////
+				
 				
 				if(!unloadWait.get(j.getQcIndex()).contains(j) && !j.getBayWaited()){
 					//System.out.println("here 1 added, job: " + j.getY() + ", " + j.getX());
@@ -1146,10 +1140,15 @@ public class DispatcherTest {
 						System.out.println("is job waiting for prev: " + j.getY() + ", " + j.getX() + ", " + 
 								j.getPrevWaiting());
 						if(!j.getPrevWaiting()){
-							
-							if(j.getY()+1 < Constants.TOTAL_Y && jobList.getJob(j.getY()+1, j.getX()).getPrevWaiting()){
-								System.out.println("\t\t\t\t\t\t inside this line");
-								jobList.getJob(j.getY()+1, j.getX()).setPrevWaiting(false);
+							int nextY = j.getY()+1;
+							if(nextY <Constants.TOTAL_Y){
+								System.out.println("is next job waiting for job :" + j.getY() + ", " + j.getX() + "? "
+										+ jobList.getJob(nextY, j.getX()).getPrevWaiting());
+								//this will give false. what is the reason?? 
+								if(jobList.getJob(nextY, j.getX()).getPrevWaiting()){
+									System.out.println("\t\t\t\t\t\t inside this line");
+									jobList.getJob(j.getY()+1, j.getX()).setPrevWaiting(false);
+								}
 							}
 							break;	
 						}
@@ -1255,7 +1254,7 @@ public class DispatcherTest {
 			j.setAssigned();
 			jobList.repaint();
 			
-			System.out.println("removing the first job......: " + j.getY() + ", " + j.getX());
+			//System.out.println("removing the first job......: " + j.getY() + ", " + j.getX());
 			unloadWait.get(j.getQcIndex()).remove(j); 
 		}
 		

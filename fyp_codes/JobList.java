@@ -21,7 +21,7 @@ public class JobList extends JPanel{
 		//creating the full job list 
 		//createJobLists(); 
 		
-		tests(2); 
+		tests(1); 
 		
 		
 		

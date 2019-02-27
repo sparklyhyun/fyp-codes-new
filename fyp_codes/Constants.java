@@ -31,7 +31,7 @@ public class Constants {
 	public static final int NUM_QC_Y = 2; 
 	public static int NUM_QC = Constants.NUM_QC_X * Constants.NUM_QC_Y;
 	
-	public static final int AGV = 12; //number of AGV
+	public static final int AGV = 20; //number of AGV
 	
 	public static final int CELL_SIZE = 20; 
 	public static final Color COLOR_LOADING = Color.BLUE;
@@ -42,7 +42,7 @@ public class Constants {
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	public static final Color COLOR_WAITAGV = Color.LIGHT_GRAY; //assigned vehicle, but waiting for agv 
 	
-	public static final int SLEEP = 500; 
+	public static final int SLEEP = 200; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;
@@ -108,6 +108,11 @@ public class Constants {
 		
 		public void updateTotalTimer(){
 			lblTotaltime_counter.setText(" " +Integer.toString(Constants.TOTALTIME)+ "         ");
+		}
+		
+		public int getTotalTimerText(){
+			String a = lblTotaltime_counter.getText().replaceAll("\\s+",""); 
+			return Integer.parseInt(a);  
 		}
 	}
 	

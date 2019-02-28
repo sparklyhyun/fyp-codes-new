@@ -625,7 +625,9 @@ public class DispatcherTest {
 			//System.out.println("inside unloadAssign!");
 			
 			this.aj = aj; 
+			System.out.println("job is waiting for agv: " + aj.getJob().getY() + ", " + aj.getJob().getX() + " " + aj.getJob().getAgvWait()); 
 			if(aj.getJob().getAgvWait()){
+				System.out.println("job waiting for agv true: " + aj.getJob().getY() + ", " + aj.getJob().getX());
 				aj.agvWaitEnded(); 
 			}
 			
@@ -774,6 +776,7 @@ public class DispatcherTest {
 				agvWait.get(j.getQcIndex()).add(j); 
 				if(!unloadWait.get(j.getQcIndex()).contains(j)){
 					unloadWait.get(j.getQcIndex()).add(j); 
+					System.out.println("agvwait here: " +j.getY() + ", " + j.getX());
 				}
 				
 			}
@@ -1236,6 +1239,7 @@ public class DispatcherTest {
 			
 			//System.out.println("agv wait removing the first job......: " + j.getY() + ", " + j.getX());
 			agvWait.get(j.getQcIndex()).remove(0); 
+			System.out.println("new agvlist size: " + agvWait.get(j.getQcIndex()).size());
 		}
 
 		

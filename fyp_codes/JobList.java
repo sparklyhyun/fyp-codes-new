@@ -49,7 +49,7 @@ public class JobList extends JPanel{
 			testCases(Constants.testCaseNew1Start0, Constants.testCaseNew2Start1, Constants.testCaseNew1End0, Constants.testCaseNew2End1);
 			break; 
 		case 3: // qc1 lower cost, others at random 
-			testCases(Constants.testCaseNew1Start0, Constants.testCaseNew2Start1, Constants.testCaseNew1End0, Constants.testCaseNew2End1);
+			testCases(Constants.testCaseNew1Start0, Constants.testCaseNew3Start1, Constants.testCaseNew1End0, Constants.testCaseNew3End1);
 			break; 
 		default: break; 
 		}

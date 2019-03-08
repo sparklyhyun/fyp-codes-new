@@ -83,17 +83,26 @@ public class Simulator {
 		
 		//updating the timer test
 		//tenative, stops after all threads are created, not when all ends 
+		
+		int wait = 0; 
 		while(true){
 			System.out.println("jobs completed: " + Constants.jobsCompleted);
 			if(Constants.jobsCompleted >= Constants.TOTAL_SIZE){
 				totalTimer.t.stop();
 				break;
 			}
+			
+			if(wait > 30){
+				totalTimer.t.stop();
+				break; 
+			}
+			
 			try {
 				Thread.sleep(Constants.SLEEP);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			wait++; 
 		}
 
 		try {

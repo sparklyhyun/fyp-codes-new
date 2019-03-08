@@ -67,6 +67,7 @@ public class DispatcherTest {
 	private static ArrayList<ArrayList<Job>> agvWait = new ArrayList<>(); // agv waiting for jobs 
 	
 	private static ArrayList<ArrayList<Job>> prevWaitList = new ArrayList<>(); 
+	private static ArrayList<ArrayList<Job>> consecWaitList = new ArrayList<>(); 
 	
 	//private static int[] bayWait = new int[Constants.NUM_QC]; //to keep track of whether to wait in front or not 
 	
@@ -118,6 +119,11 @@ public class DispatcherTest {
 		for(int i=0; i<Constants.NUM_QC; i++){
 			ArrayList<Job> prevWait = new ArrayList<>();
 			prevWaitList.add(prevWait); 
+		}
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			ArrayList<Job> consecWait = new ArrayList<>();
+			consecWaitList.add(consecWait); 
 		}
 		
 		
@@ -634,17 +640,22 @@ public class DispatcherTest {
 			//System.out.println("inside unloadAssign!");
 			
 			this.aj = aj; 
-			System.out.println("job is waiting for agv: " + aj.getJob().getY() + ", " + aj.getJob().getX() + " " + aj.getJob().getAgvWait()); 
+			//System.out.println("job is waiting for agv: " + aj.getJob().getY() + ", " + aj.getJob().getX() + " " + aj.getJob().getAgvWait()); 
 			if(aj.getJob().getAgvWait()){
-				System.out.println("job waiting for agv true: " + aj.getJob().getY() + ", " + aj.getJob().getX());
+				//System.out.println("job waiting for agv true: " + aj.getJob().getY() + ", " + aj.getJob().getX());
 				aj.agvWaitEnded(); 
 			}
 			
 			aj.unloadNotWait(); 
+			
+			prevWaitEnded[aj.getJob().getQcIndex()] = Constants.TIMERS.getTotalTimerText(); 
+			
 			/*
 			Job j = aj.getJob(); 
 			j.setIsWaiting(false);
 			//aj.getJob().setAssigned();
+			
+			
 			
 			//remove first item (doing this in the lock is safer) 
 			System.out.println("removing the first job......: " + j.getY() + ", " + j.getX());
@@ -1018,29 +1029,14 @@ public class DispatcherTest {
 		}
 		
 		public void unloadSharedQc(){// so this is the sharing function//// 
-			int qcIndex = j.getQcIndex();
+			int qcIndex = j.getQcIndex();		
 			
-			//put in the waitlist first. 
-			/*
-			if(!unloadWait.get(qcIndex).contains(j)){
+			if(!unloadWait.get(qcIndex).contains(j) && !prevWaitList.get(qcIndex).contains(j)){
+				System.out.println("job was put in the unloadwait list: " + j.getY() +  ", " + j.getX());
 				//if waitlist does not contain j, 
 				j.setIsWaiting(true);
 				unloadWait.get(j.getQcIndex()).add(j); 
 			}
-			*/ 
-			
-			
-			//then decide whether to wait or not. 
-			
-			// 1. is this job consecutive?
-			// 2. is this job waiting for previous job?
-			// 3. is this job the first job in the qc? <- this is the releasse function! 
-				// is there is next job waiting for this job? 
-					// need a queue for prev waiting jobs <- these are also released in order! 
-					
-			
-			//is there a job waiting for it before you????
-			
 			
 			//2. is this job waiting for previous job? 
 				//if yes, then wait here until the previous job is completed <- maybe i need a boolean to check if its waiting
@@ -1080,12 +1076,13 @@ public class DispatcherTest {
 			
 			System.out.println("job in prevWaitList: " + j.getY() + ", " + j.getX() + " " + prevWaitList.get(qcIndex).contains(j));
 			//after this, if not on the prev list, put it in the waitlist. 
+			/*
 			if(!unloadWait.get(qcIndex).contains(j) && !prevWaitList.get(qcIndex).contains(j)){
 				System.out.println("job was put in the unloadwait list: " + j.getY() +  ", " + j.getX());
 				//if waitlist does not contain j, 
 				j.setIsWaiting(true);
 				unloadWait.get(j.getQcIndex()).add(j); 
-			}
+			}*/
 			
 			// 3. the release function!! <- all the jobs are by now inside some arraylist. 
 			if(j.getIsWaiting()){
@@ -1104,6 +1101,14 @@ public class DispatcherTest {
 						
 					}
 					
+					while(unloadWait.get(qcIndex).get(0) != j){
+						try {
+							Thread.sleep(Constants.SLEEP);								
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					
 					//after waiting is done, force remove
 					//pause 1 unit to wait for qc 
 					
@@ -1113,6 +1118,7 @@ public class DispatcherTest {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+					
 					
 					ReentrantLock l = lockArr[qcIndex]; 
 					synchronized(l){
@@ -1127,7 +1133,7 @@ public class DispatcherTest {
 					
 					//if job at the front row
 					while(unloadWait.get(qcIndex).size() > 0){
-						System.out.println("what is the first item?: " + unloadWait.get(qcIndex).get(0).getY() + ", " + unloadWait.get(qcIndex).get(0).getX());
+						//System.out.println("what is the first item?: " + unloadWait.get(qcIndex).get(0).getY() + ", " + unloadWait.get(qcIndex).get(0).getX());
 						if(unloadWait.get(qcIndex).get(0) == j){
 								break;	
 						}
@@ -1144,13 +1150,46 @@ public class DispatcherTest {
 					
 					//ok, this is almost like consecutive...... (consecutive should only be considered when unassigning wait..) 
 					//so, this is the consecutive part i should put. only wait when consecutive.
+					//should not do this if prevwaiting is present??? 
+					
+					
+					if(consecWaitList.get(qcIndex).size() > 0){
+						//remove it, and then wait
+						System.out.println("job: " + j.getY() + ", " + j.getX() + ", consecwaitlist : " + consecWaitList.get(qcIndex).size());
+						consecWaitList.get(qcIndex).remove(0); 
+						try {
+							Thread.sleep(Constants.SLEEP);								
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						
+					}
+					
+					/*
+					System.out.println("the job is consecutive: " + j.getY() + ", " + j.getX() + " " + (prevWaitEnded[j.getQcIndex()] == (Constants.TIMERS.getTotalTimerText()-1)));
 					if(prevWaitEnded[j.getQcIndex()] == (Constants.TIMERS.getTotalTimerText()-1)){
-					try {
-						Thread.sleep(Constants.SLEEP);								
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						try {
+							Thread.sleep(Constants.SLEEP);								
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
-					}
+					jobList.repaint();
+					*/
+					
+					
+					//maybe rather than unloadwait 0, should make another one. to add 1 and remove 1 every time. consecWaitList.
+					
+					/*
+					if(unloadWait.get(qcIndex).size() >0){
+						System.out.println("consecutive check, if waitlist size greater than 0: " + unloadWait.get(qcIndex).size());
+						try {
+							Thread.sleep(Constants.SLEEP);								
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}*/
 					
 					ReentrantLock l = lockArr[qcIndex]; 
 					
@@ -1165,8 +1204,23 @@ public class DispatcherTest {
 				}
 			}
 			//4. job waiting, but not at the front row 				
-			System.out.println("job: " +j.getY() + ", " + j.getX() + " not waiting anymore!");
-			prevWaitEnded[j.getQcIndex()] = Constants.TIMERS.getTotalTimerText()-1; 
+			//System.out.println("job: " +j.getY() + ", " + j.getX() + " not waiting anymore!");
+			//prevWaitEnded[j.getQcIndex()] = Constants.TIMERS.getTotalTimerText()-1; 
+			/*
+			try {
+				Thread.sleep(Constants.SLEEP);								
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			if(consecWaitList.get(qcIndex).size() > 0 ){
+				//remove it, and then wait
+				if(consecWaitList.get(qcIndex).get(0) == j){
+					consecWaitList.get(qcIndex).remove(0); 
+				}
+				
+			}*/
+			
 		}
 		
 		/*
@@ -1350,6 +1404,9 @@ public class DispatcherTest {
 			
 			//System.out.println("removing the first job......: " + j.getY() + ", " + j.getX());
 			unloadWait.get(j.getQcIndex()).remove(j); 
+			
+			consecWaitList.get(j.getQcIndex()).add(j); 
+			
 			//prevWaitEnded[j.getQcIndex()] = 1;
 			
 			//prevWaitEnded[j.getQcIndex()] = Constants.TOTALTIME;

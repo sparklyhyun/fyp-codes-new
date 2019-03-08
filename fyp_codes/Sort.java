@@ -140,8 +140,8 @@ public class Sort {
 			//sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
 			
 			//merged version of tier by tier sorting 
-			sortMergedTop(l, sjl, q_jobs, qcIndex); 
-			//sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
+			//sortMergedTop(l, sjl, q_jobs, qcIndex); 
+			sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
 			//sortModifiedMerged(l, sortArray, sjl, q_jobs, qcIndex);
 
 		}

@@ -775,6 +775,7 @@ public class DispatcherTest {
 				return; 
 			}
 			
+			/*
 			if(!j.getLoading() && !agvWait.get(j.getQcIndex()).contains(j)){
 				//System.out.println("agvwaitlist added: " + j.getY() + ", " + j.getX());
 				agvWait.get(j.getQcIndex()).add(j); 
@@ -808,7 +809,7 @@ public class DispatcherTest {
 			}
 			
 			//prevWaitEnded[j.getQcIndex()] = 0;
-			
+			*/
 			
 		}
 		
@@ -1007,7 +1008,7 @@ public class DispatcherTest {
 		}
 		
 		public void unloadSharedQc(){// so this is the sharing function//// 
-
+			
 			int qcIndex = j.getQcIndex(); 	
 			
 			//1. check if job is consecutive! 
@@ -1022,7 +1023,6 @@ public class DispatcherTest {
 					j.setIsWaiting(true);
 					unloadWait.get(j.getQcIndex()).add(j);
 					//printArrayList(unloadWait.get(qcIndex)); 
-					
 					try {
 						Thread.sleep(Constants.SLEEP);	
 						Constants.TOTALDELAY++; 
@@ -1037,7 +1037,6 @@ public class DispatcherTest {
 			//2. check if there is previous job. 
 			int prevY = j.getY()-1; 
 			
-
 			int minY, maxY; 
 			if(j.getQcIndex()<1){
 				minY = 0;
@@ -1047,7 +1046,6 @@ public class DispatcherTest {
 				maxY = Constants.TOTAL_Y-1; 
 			}
 			
-			
 			//update this part. This needs changin 
 			if(prevY >= minY){
 				//System.out.println("here1 job: " + j.getY() +", " + j.getX());
@@ -1055,6 +1053,7 @@ public class DispatcherTest {
 				
 				System.out.println( "prevjob index: " +prevJob.getY() + ", " + prevJob.getX() +" is prev job waiting for any: " 
 						+ prevJob.getIsWaiting() + " , " + prevJob.getAgvWait());
+				
 				if(!prevJob.getLoading() && (prevJob.getIsWaiting() || prevJob.getAgvWait() || !prevJob.getAssigned())){
 					System.out.println("here, prev job waiting: " + prevJob.getY() + ", " + prevJob.getX() 
 					+ " is job already in unloadwait: " + j.getY()+", " + j.getX() + " " + unloadWait.get(qcIndex).contains(j));

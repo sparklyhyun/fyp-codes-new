@@ -21,7 +21,7 @@ public class JobList extends JPanel{
 		//creating the full job list 
 		//createJobLists(); 
 		
-		tests(2); 
+		tests(1); 
 		
 		
 		
@@ -583,7 +583,7 @@ public class JobList extends JPanel{
 							cellColor = Constants.COLOR_LOADING;
 						}
 					}else if(!isLoading(i,j)){
-						if(isAssigned(i,j) && isWaiting(i,j)){
+						if(!isAssigned(i,j) && isWaiting(i,j)){
 							cellColor = Constants.COLOR_WAITAGV; 
 						}
 						else if(isAssigned(i,j) && !isWaiting(i,j)){

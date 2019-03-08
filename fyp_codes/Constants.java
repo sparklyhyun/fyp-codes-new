@@ -25,6 +25,9 @@ public class Constants {
 	
 	public static final int TOTAL_Y = 20; // 2 qc, top and bottom 
 	public static final int TOTAL_X = 24; // 2 qc, left and right
+	
+	//public static final int TOTAL_X = 48; // 2 qc, left and right
+	
 	public static final int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 
 	
 	public static final int NUM_QC_X = 2;
@@ -42,7 +45,7 @@ public class Constants {
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	public static final Color COLOR_WAITAGV = Color.LIGHT_GRAY; //assigned vehicle, but waiting for agv 
 	
-	public static final int SLEEP = 100; 
+	public static final int SLEEP = 200; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;

@@ -42,29 +42,54 @@ public class Event {
 	
 	public void changeState(){
 		System.out.println("change state job: " + job.getY() + ", " + job.getX() + " = " + eventType);
-		
-
-			//this, need to differentiate by loading & unloading 
-			switch(eventType){
-			case 0:	//travel. then update time.
-				//need to check for delay in front 
-				System.out.println("job finished travelling: " + job.getY() + ", " + job.getX());
-				job.setAssigned();
-				job.setAgvWait(false);
-				time = job.getTotalCost() + Constants.TOTALTIME; 
-				eventType = Constants.RELEASE; 
-				Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 2;	//next free time is +2 after this  
-				System.out.println("job finished travelling: " + job.getY() + ", " + job.getX() + " new time: " + time);
-				break; 
-			case 1:	//job finished 
-				System.out.println("job finished completion: " + job.getY() + ", " + job.getX());
-				job.setComplete();
-				job.getAgv().setIdle(true);
-				job.getAgv().setAgvLocation(job.getEndPos());
-				Constants.jobsCompleted++; 
-				break; 
-			default: break; 
+			if(loading){
+				
+			}else{
+				//this, need to differentiate by loading & unloading 
+				switch(eventType){
+				case 0:	//travel. then update time.
+					//need to check for delay in front 
+					System.out.println("job finished travelling: " + job.getY() + ", " + job.getX());
+					job.setAgvWait(false);
+					
+					if(time <= Constants.CRANEUSED[job.getQcIndex()]){
+						eventType = Constants.DELAY; 
+						job.setIsWaiting(true);
+						time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]); 
+						Constants.CRANEUSED[job.getQcIndex()]+= 1; 
+						
+					}else{
+						job.setAssigned();
+						time = job.getTotalCost() + Constants.TOTALTIME; 
+						eventType = Constants.RELEASE; 
+						Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;	//next free time is +2 after this  
+						System.out.println("job finished travelling: " + job.getY() + ", " + job.getX() + " new time: " + time);
+					}
+					
+					break; 
+				case 1:	//job finished 
+					System.out.println("job finished completion: " + job.getY() + ", " + job.getX());
+					job.setComplete();
+					job.getAgv().setIdle(true);
+					job.getAgv().setAgvLocation(job.getEndPos());
+					Constants.jobsCompleted++; 
+					break; 
+				case 2: //delay
+					if(time >= Constants.CRANEUSED[job.getQcIndex()]){
+						job.setIsWaiting(false);
+						job.setAssigned();
+						eventType = Constants.RELEASE; 
+						Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;
+					}else{
+						time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]); 
+						Constants.CRANEUSED[job.getQcIndex()]+= 1; 
+					}
+					break; 
+				default: break; 
+				}
 			}
+
+			
 		
 		
 

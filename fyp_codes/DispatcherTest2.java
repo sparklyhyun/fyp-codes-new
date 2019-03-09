@@ -163,7 +163,14 @@ public class DispatcherTest2 {
 								eventOrder.get(i).remove(k); // this has to be handled..... 
 								k = -1;
 								
-							}else if(eventOrder.get(i).get(k).getEventType() == 0){
+							}else if(eventOrder.get(i).get(k).getEventType() == 0){ //if travelling or delay.
+								eventOrder.get(i).get(k).changeState();
+								for(int l=0; l<Constants.NUM_QC; l++){
+									Collections.sort(eventOrder.get(l), new EventCompare());
+								}
+								k = 0;
+								continue; 
+							}else if(eventOrder.get(i).get(k).getEventType() == 2){	//this is for delay jobs 
 								eventOrder.get(i).get(k).changeState();
 								for(int l=0; l<Constants.NUM_QC; l++){
 									Collections.sort(eventOrder.get(l), new EventCompare());

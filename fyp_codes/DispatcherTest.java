@@ -85,6 +85,9 @@ public class DispatcherTest {
 	//public static int prevWaitEnded = -1; 
 	public static int[] prevWaitEnded = {0,0,0,0}; 
 	
+	//this for agv tracking 
+	public static int[] agvArrived = {0,0,0,0}; 
+	
 	public DispatcherTest(JobList j){
 		this.jobList = j; 
 		
@@ -657,7 +660,7 @@ public class DispatcherTest {
 			super(true); 
 		}
 		
-		public void completingJob(AtomicJob aj, boolean complete){
+		public synchronized void completingJob(AtomicJob aj, boolean complete){
 			lock(); 
 			this.aj = aj;
 			if(complete){
@@ -683,7 +686,7 @@ public class DispatcherTest {
 			unlock(); 
 		}
 		
-		public void unloadWaitLock(AtomicJob aj){
+		public synchronized  void unloadWaitLock(AtomicJob aj){
 			this.aj = aj;
 			lock(); 
 			//assign waiting false 
@@ -691,7 +694,7 @@ public class DispatcherTest {
 			unlock(); 
 		}
 		
-		public void unloadAssign(AtomicJob aj){
+		public synchronized void unloadAssign(AtomicJob aj){
 			//System.out.println("inside unloadAssign!");
 			lock(); 
 			this.aj = aj; 
@@ -719,7 +722,7 @@ public class DispatcherTest {
 			unlock(); 
 		}
 		
-		public void unloadAgvAssign(AtomicJob aj){
+		public synchronized void unloadAgvAssign(AtomicJob aj){
 			//System.out.println("inside unload agv assign");
 			this.aj = aj; 
 			
@@ -728,7 +731,7 @@ public class DispatcherTest {
 			unlock(); 
 		}
 		
-		public Agv agvRemove(){
+		public synchronized Agv agvRemove(){
 			lock(); 
 			while(agvList.isEmpty()){
 				try {
@@ -745,8 +748,8 @@ public class DispatcherTest {
 			
 		}
 		
-		public void sortUnloadWait(ArrayList<Job> uw){
-			
+		public synchronized void sortJobs(ArrayList<Job> uw){
+			Collections.sort(uw, new jobCompare() );
 		}
 	}
 	
@@ -998,12 +1001,14 @@ public class DispatcherTest {
 				completeList.get(qcIndex).add(j); 
 			}
 			
+			//l.sortJobs(completeList.get(qcIndex));
+			
 			while(true){
 				if(completeList.get(qcIndex).get(0) == j){
 					break; 
 				}
-				System.out.println("first item in the queue: " + completeList.get(qcIndex).get(0).getY() + ", " + completeList.get(qcIndex).get(0).getX());
-				System.out.println("this job: " + j.getY() + ", " + j.getX());
+				//System.out.println("first item in the queue: " + completeList.get(qcIndex).get(0).getY() + ", " + completeList.get(qcIndex).get(0).getX());
+				//System.out.println("this job: " + j.getY() + ", " + j.getX());
 				try {
 					Thread.sleep(Constants.SLEEP);
 				} catch (InterruptedException e) {
@@ -1191,13 +1196,10 @@ public class DispatcherTest {
 				//if waitlist does not contain j, 
 				j.setIsWaiting(true);
 				unloadWait.get(j.getQcIndex()).add(j); 
-				unloadWaitOrder.get(j.getQcIndex()).add(j)
+				unloadWaitOrder.get(j.getQcIndex()).add(j);
 				
-				//sort unloadWait (lock here) in the correct order (smaller job index first)
-				adsf
-				
-				
-				; 
+				System.out.println("size of unloadWait: " + unloadWait.get(qcIndex).size());
+
 			}
 			
 			//2. is this job waiting for previous job? 
@@ -1247,6 +1249,10 @@ public class DispatcherTest {
 			}*/
 			
 			// 3. the release function!! <- all the jobs are by now inside some arraylist. 
+			//l.sortJobs(unloadWait.get(j.getQcIndex())); //sort doesnt work if only 1 job waiting at a time 
+			
+			//l.sortJobs(unloadWaitOrder.get(j.getQcIndex())); //actually, this will get sorted..... 
+			
 			if(j.getIsWaiting()){
 				//all jobs are set as waiting at this stage.....
 				

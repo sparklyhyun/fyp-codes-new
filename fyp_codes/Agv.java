@@ -9,10 +9,10 @@ public class Agv {
 	private boolean atQc = false; 	// true if agv is at the same qc as the next job 
 	
 	private int[] currCoord = new int[2]; 
-	private int agvWaitTime; 
+	private int agvWaitTime; 	//this is actually the travel time 
 	
-	public Agv(int i){
-		this.agvNum = i; 
+	public Agv(){//int i){
+		//this.agvNum = i; 
 		//initAgvLocation(); 
 		
 		//agvs start from the same location 
@@ -37,12 +37,6 @@ public class Agv {
 	
 	public int getAgvNum(){
 		return agvNum; 
-	}
-	
-	public void taskExecute(){
-		//TimeUnit.MILLISECONDS.sleep(100); 
-		//1 cost unit  = 100 milliseconds 
-		//System.out.println("task executed" + task id );
 	}
 	
 	public int getAgvWaitTime(){
@@ -72,8 +66,6 @@ public class Agv {
 	
 	public void setAgvLocation(int[] loc){
 		this.currCoord = loc;
-		//agv end point is always at the yc. need to be updated all the time 
-		
 	}
 	
 	public int[] getAgvLocation(){

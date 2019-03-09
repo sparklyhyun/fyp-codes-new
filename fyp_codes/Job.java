@@ -1,8 +1,10 @@
 package fyp_codes;
 
 import java.util.Random;
-
+//should i add the next job? here?? 
 public class Job{
+	
+	
 	private final int x;	//no. of bay (column)
 	private final int y;	//tier 		(row) 
 	//private int index; //priority 
@@ -38,6 +40,7 @@ public class Job{
 	private Agv agv; 
 	
 	private int jobIndex = 0; 
+	//private int jobIndex2 = 0; //this, to track agv arrival & departure 
 	
 	private int qcIndex;
 	private int bayIndex; 
@@ -47,6 +50,7 @@ public class Job{
 	private boolean agvWait = false; 	// waiting for agv
 	private boolean prevWaiting = false; 
 	
+	private int agvWaitTime = 0; 
 	
 	public Job(int y, int x , boolean loading){
 		this.x = x;
@@ -419,6 +423,12 @@ public class Job{
 	
 	public void setAgv(Agv agv){
 		this.agv = agv; 
+		agvWaitTime = agv.getAgvWaitTime(); 
+		
+	}
+	
+	public int getAgvWaitTime(){
+		return agvWaitTime; 
 	}
 	
 	public void setTravelling(boolean t){

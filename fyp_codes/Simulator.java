@@ -118,7 +118,7 @@ public class Simulator {
 		System.out.println("average delay per QC: " + (float)Constants.TOTALDELAY/4.0);
 		System.out.println("total agv travel time: " + Constants.TRAVELTIME);
 		System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
-		
+		dispatcher.showCreatedOrder();	//this was correct
 		 
 		
 		/*	

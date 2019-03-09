@@ -50,6 +50,13 @@ public class DispatcherTest {
 	//arraylist to store the order of jobs 
 	private static ArrayList<Job> jobOrder = new ArrayList<>(); 
 	
+	// see the order of completed jobs (let's see where is the weird one) 
+	private static ArrayList<Job> createdOrder = new ArrayList(); 
+	private static ArrayList<Job> finishOrder = new ArrayList(); 
+	private static ArrayList<ArrayList<Job>> unloadWaitOrder = new ArrayList(); 
+	
+	private static ReentrantLock rl = new ReentrantLock(true); 
+	
 	private String name; 
 	
 	//private static int[] jobCompleted = new int[Constants.NUM_QC]; 
@@ -68,6 +75,8 @@ public class DispatcherTest {
 	private static ArrayList<ArrayList<Job>> agvWait = new ArrayList<>(); // agv waiting for jobs 
 	
 	private static ArrayList<ArrayList<Job>> prevWaitList = new ArrayList<>(); 
+	
+	private static ArrayList<ArrayList<Job>> completeList = new ArrayList<>(); 
 	
 	//private static int[] bayWait = new int[Constants.NUM_QC]; //to keep track of whether to wait in front or not 
 	
@@ -121,6 +130,15 @@ public class DispatcherTest {
 			prevWaitList.add(prevWait); 
 		}
 		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			ArrayList<Job> complete = new ArrayList<>(); 
+			completeList.add(complete); 
+		}
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			ArrayList<Job> uwOrder = new ArrayList<>();
+			unloadWaitOrder.add(uwOrder); 
+		}
 		
 		
 		sortJobs(); 
@@ -138,6 +156,7 @@ public class DispatcherTest {
 		// for greedy method 
 		dispatchOrder(); 
 		//these are also in correct order 
+		
 		/*
 		for(int i=0; i<jobOrder.size(); i++){
 			System.out.println("job: " + jobOrder.get(i).getY() + ", " + jobOrder.get(i).getX());
@@ -185,7 +204,7 @@ public class DispatcherTest {
 		
 		Job j;
 		ArrayList<Job> jarr; 
-		
+		int index = 0; 
 		while(totalSum>0){
 			int max = 0; 
 			int maxIndex = 0; 
@@ -204,11 +223,13 @@ public class DispatcherTest {
 			*/ 
 			
 			j = q_jobsList.get(maxIndex).get(0); 
+			j.setJobIndex(index);
 			
 			jobOrder.add(j);
 			q_jobsList.get(maxIndex).remove(0); 
 			totalQcCost[maxIndex] -= j.getTotalCost(); 
 			totalSum -= j.getTotalCost();
+			index++; 
 			//System.out.println("total sum after removing: " + totalSum);
 		}
 		
@@ -393,6 +414,9 @@ public class DispatcherTest {
 			}
 			
 			Agv idleAgv = agvLock.agvRemove(); 
+			if(idleAgv == null){
+				continue; 
+			}
 			addDelay = 0; 
 			
 			//System.out.println("agvlist size before agv remove: " +agvList.size());
@@ -403,6 +427,10 @@ public class DispatcherTest {
 			
 			Job j = jobOrder.get(0);
 			jobOrder.remove(0); 	//remove the first job in the queue 	
+			
+			//here, add to arraylist to check the job order. 
+			createdOrder.add(j); 
+			
 			
 			//update delayCounter 
 			delayCounter[j.getQcIndex()] = 0; 
@@ -608,6 +636,18 @@ public class DispatcherTest {
 		
 		
 	}
+	
+	class jobCompare implements Comparator<Job>{
+
+		@Override
+		public int compare(Job a, Job b) {
+			// TODO Auto-generated method stub
+			Integer aj = a.getJobIndex(); 
+			Integer bj = b.getJobIndex();
+			return aj.compareTo(bj); 
+		}
+	}
+
 		
 	
 	class ReentrantLock1 extends ReentrantLock{
@@ -638,6 +678,8 @@ public class DispatcherTest {
 					e.printStackTrace();
 				}
 			}
+			
+			completeList.get(aj.getJob().getQcIndex()).remove(0); 
 			unlock(); 
 		}
 		
@@ -697,9 +739,40 @@ public class DispatcherTest {
 			}
 			Agv idleAgv = agvList.get(0); //need to change this part 
 			agvList.remove(0);
+			
 			unlock(); 
 			return idleAgv;
 			
+		}
+		
+		public void sortUnloadWait(ArrayList<Job> uw){
+			
+		}
+	}
+	
+	public void showCreatedOrder(){
+		
+		System.out.println("creted order: ");
+		for(int i=0; i<createdOrder.size(); i++){
+			System.out.print(" (" + createdOrder.get(i).getY() + ", " + createdOrder.get(i).getX() + "), ");
+		}
+		
+		System.out.println(" ");
+		System.out.println("unloadWait order:" );
+		for(int i=0; i<unloadWaitOrder.size(); i++){
+			System.out.println("qc : " + i);
+			for(int j=0; j<unloadWaitOrder.get(i).size(); j++){
+				System.out.print(" (" + unloadWaitOrder.get(i).get(j).getY() + ", " + unloadWaitOrder.get(i).get(j).getX() + "), ");
+			}
+			System.out.println("");
+			
+		}
+		
+		
+		System.out.println(" ");
+		System.out.println("finished order:" );
+		for(int i=0; i<finishOrder.size(); i++){
+			System.out.print(" (" + finishOrder.get(i).getY() + ", " + finishOrder.get(i).getX() + "), ");
 		}
 	}
 	
@@ -758,6 +831,7 @@ public class DispatcherTest {
 					e.printStackTrace();
 				} 
 			}
+			
 			
 			
 			
@@ -920,6 +994,24 @@ public class DispatcherTest {
 			ReentrantLock1 l = lockArr[qcIndex]; 
 			
 			//complete the job
+			if(!completeList.get(qcIndex).contains(j)){
+				completeList.get(qcIndex).add(j); 
+			}
+			
+			while(true){
+				if(completeList.get(qcIndex).get(0) == j){
+					break; 
+				}
+				System.out.println("first item in the queue: " + completeList.get(qcIndex).get(0).getY() + ", " + completeList.get(qcIndex).get(0).getX());
+				System.out.println("this job: " + j.getY() + ", " + j.getX());
+				try {
+					Thread.sleep(Constants.SLEEP);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
 			l.completingJob(this, true);
 			/*
 			synchronized(l){
@@ -930,7 +1022,7 @@ public class DispatcherTest {
 			
 			agvList.add(agv);
 			completeJobsBay[j.getQcIndex()][j.getBayIndex()]--; 
-			
+			finishOrder.add(j); 
 
 		}
 		
@@ -976,6 +1068,7 @@ public class DispatcherTest {
 			*/
 			
 			jobNo+= 1;
+			finishOrder.add(j); 
 		}
 		
 		
@@ -1091,12 +1184,20 @@ public class DispatcherTest {
 		
 		public void unloadSharedQc(){// so this is the sharing function//// 
 			int qcIndex = j.getQcIndex();		
+			ReentrantLock1 l = lockArr[qcIndex]; 
 			
 			if(!unloadWait.get(qcIndex).contains(j)){
 				//System.out.println("job was put in the unloadwait list: " + j.getY() +  ", " + j.getX());
 				//if waitlist does not contain j, 
 				j.setIsWaiting(true);
 				unloadWait.get(j.getQcIndex()).add(j); 
+				unloadWaitOrder.get(j.getQcIndex()).add(j)
+				
+				//sort unloadWait (lock here) in the correct order (smaller job index first)
+				adsf
+				
+				
+				; 
 			}
 			
 			//2. is this job waiting for previous job? 
@@ -1200,7 +1301,7 @@ public class DispatcherTest {
 					}
 					
 					
-					ReentrantLock1 l = lockArr[qcIndex]; 
+					
 					l.unloadAssign(this);
 					try {
 						Thread.sleep(Constants.SLEEP);								
@@ -1236,7 +1337,7 @@ public class DispatcherTest {
 						}
 						
 						//if the job right in front if prev waiting, and the next it itself 
-						if(!bayWaited && unloadWait.get(qcIndex).get(0).getPrevWaiting() && unloadWait.get(qcIndex).get(1) == j){
+						if(!bayWaited && !unloadWait.get(qcIndex).isEmpty() && unloadWait.get(qcIndex).get(0).getPrevWaiting() && unloadWait.get(qcIndex).get(1) == j){
 							break; 
 						}
 				
@@ -1273,7 +1374,7 @@ public class DispatcherTest {
 						}
 					}
 					
-					ReentrantLock1 l = lockArr[qcIndex]; 
+					 
 						l.unloadAssign(this);
 						try {
 							Thread.sleep(Constants.SLEEP);								
@@ -1515,6 +1616,8 @@ public class DispatcherTest {
 			jobList.repaint();
 			//System.out.println("job " + j.getY() + ", " + j.getX()+ " completed");
 			Constants.jobsCompleted++; 
+			
+			
 			
 		}
 		

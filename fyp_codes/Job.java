@@ -2,7 +2,7 @@ package fyp_codes;
 
 import java.util.Random;
 
-public class Job {
+public class Job{
 	private final int x;	//no. of bay (column)
 	private final int y;	//tier 		(row) 
 	//private int index; //priority 
@@ -36,6 +36,8 @@ public class Job {
 	private int splitY = 0; 
 	
 	private Agv agv; 
+	
+	private int jobIndex = 0; 
 	
 	private int qcIndex;
 	private int bayIndex; 
@@ -487,4 +489,14 @@ public class Job {
 	public void setPrevWaiting(boolean b){
 		prevWaiting = b; 
 	}
+	
+	public void setJobIndex(int i){
+		jobIndex = i; 
+	}
+	
+	public int getJobIndex(){
+		return jobIndex; 
+	}
+
+
 }

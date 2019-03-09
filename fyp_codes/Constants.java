@@ -45,7 +45,7 @@ public class Constants {
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	public static final Color COLOR_WAITAGV = Color.LIGHT_GRAY; //assigned vehicle, but waiting for agv 
 	
-	public static final int SLEEP = 100; 
+	public static final int SLEEP = 5; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;

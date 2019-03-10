@@ -83,11 +83,13 @@ public class Event {
 					
 					//check baywait (after this state change, just break) 
 					//check baywait (if the bay index is greater than 0
-					if(job.getBayIndex() > 0){//check if previous bay waiting. 
-						if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()] < Constants.BAYSIZE){
+					if(job.getBayIndex() > 0){//check if previous bay waiting.
+						System.out.println("bay wait check: " + job.getY() + ", " + job.getX() + " waitbay: " + Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1]);	
+						if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] > 0){
 							eventType = Constants.BAYWAIT; 
 							job.setIsWaiting(true);
 							time++; 
+							System.out.println("bay wait updated: " + job.getY() + ", " + job.getX());
 							break; 
 						}
 					}
@@ -103,9 +105,15 @@ public class Event {
 						minY = Constants.MAX_Y; 
 					}
 					
-					if(prevY >= minY && jobList.getJob(prevY, job.getX()).getLoading()){
-						if(!jobList.getJob(prevY, job.getX()).getComplete()){
+					if(prevY >= minY ){
+						if(jobList.getJob(prevY, job.getX()).getLoading() && !jobList.getJob(prevY, job.getX()).getComplete()){
 							//if prev job is not complete 
+							job.setIsWaiting(true);
+							eventType = Constants.PREVWAIT; 
+							time++; 
+							break; 
+						}else if(!jobList.getJob(prevY, job.getX()).getLoading() && 
+								(jobList.getJob(prevY, job.getX()).getAgvWait() || !jobList.getJob(prevY, job.getX()).getAssigned() || jobList.getJob(prevY, job.getX()).getIsWaiting())){
 							job.setIsWaiting(true);
 							eventType = Constants.PREVWAIT; 
 							time++; 
@@ -132,7 +140,7 @@ public class Event {
 						Constants.jobsCompleted++; 
 						
 						//also add for baywait
-						Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()]++; 
+						Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()]--; 
 					}
 					break; 
 				case 2: //delay <- not going into delay. why??? 
@@ -146,8 +154,9 @@ public class Event {
 
 					break;
 				case 3: //baywait 
+					System.out.println("bay waited job: " + job.getY() + ", " + job.getX()); 
 					//if baywait ends, then go to release. then reset 
-					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()] >= Constants.BAYSIZE){
+					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] < 1){
 						//check if delay is needed here too. 
 						if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
 							eventType = Constants.DELAY; 
@@ -171,9 +180,14 @@ public class Event {
 				case 4: //prevwait 
 					int prevY2 = job.getY()-1; 
 					
-					if(jobList.getJob(prevY2, job.getX()).getAgvWait() || !jobList.getJob(prevY2, job.getX()).getAssigned() || jobList.getJob(prevY2, job.getX()).getIsWaiting()){
+					System.out.println("job waiting prev loading: " + job.getY() + ", " + job.getX());
+					
+					if(jobList.getJob(prevY2, job.getX()).getLoading() && !jobList.getJob(prevY2, job.getX()).getComplete()){
 						//if prev job waiting for agv, or is waiting for qc, or is not assigned at all
-						eventType = Constants.PREVWAIT; 
+						//eventType = Constants.PREVWAIT; 
+						time++; 
+					}else if(!jobList.getJob(prevY2, job.getX()).getLoading() && 
+							(jobList.getJob(prevY2, job.getX()).getAgvWait() || !jobList.getJob(prevY2, job.getX()).getAssigned() || jobList.getJob(prevY2, job.getX()).getIsWaiting())){
 						time++; 
 					}else{
 						job.setIsWaiting(false);
@@ -207,8 +221,10 @@ public class Event {
 					job.setAgvWait(false);
 					
 					//check baywait (if the bay index is greater than 0
+					
 					if(job.getBayIndex() > 0){//check if previous bay waiting. 
-						if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()] < Constants.BAYSIZE){
+						System.out.println("bay wait check: " + job.getY() + ", " + job.getX() + " waitbay: " + Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1]);
+						if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] > 0){
 							eventType = Constants.BAYWAIT; 
 							job.setIsWaiting(true);
 							time++; 
@@ -232,6 +248,7 @@ public class Event {
 							job.setIsWaiting(true);
 							eventType = Constants.PREVWAIT; 
 							time++; 
+							System.out.println("bay wait updated: " + job.getY() + ", " + job.getX());
 							break; 
 						}
 					}
@@ -262,7 +279,7 @@ public class Event {
 					job.getAgv().setAgvLocation(job.getEndPos());
 					Constants.jobsCompleted++; 
 					//also add for baywait
-					Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()]++; 
+					Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()]--; 
 					break; 
 				case 2: //delay
 					job.setAssigned();
@@ -273,7 +290,8 @@ public class Event {
 					break;
 				case 3: //baywait 
 					//if baywait ends, then go to release. then reset 
-					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] >= Constants.BAYSIZE){
+					System.out.println("bay waited job: " + job.getY() + ", " + job.getX()); 
+					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] < 1){
 						//check if delay is needed here too. 
 						if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
 							System.out.println("consecutive job, need to wait: " + job.getY() + ", " + job.getX());
@@ -301,7 +319,7 @@ public class Event {
 					
 					if(jobList.getJob(prevY2, job.getX()).getAgvWait() || !jobList.getJob(prevY2, job.getX()).getAssigned() || jobList.getJob(prevY2, job.getX()).getIsWaiting()){
 						//if prev job waiting for agv, or is waiting for qc, or is not assigned at all
-						eventType = Constants.PREVWAIT; 
+						//eventType = Constants.PREVWAIT; 
 						time++; 
 					}else{
 						//prev job is done  

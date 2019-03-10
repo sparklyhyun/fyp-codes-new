@@ -193,9 +193,15 @@ public class DispatcherTest2 {
 								
 							}else{ //if travelling or delay or baywait 
 								eventOrder.get(i).get(k).changeState();
+								
 								for(int l=0; l<Constants.NUM_QC; l++){
 									Collections.sort(eventOrder.get(l), new EventCompare());
 								}
+								
+								/*
+								System.out.println("job state changed: " + eventOrder.get(i).get(k).getJob().getY() + ", " + eventOrder.get(i).get(k).getJob().getX() +
+										"event Type: " + eventOrder.get(i).get(k).getEventType());
+								*/
 								
 								//print arraylist
 								
@@ -245,16 +251,12 @@ public class DispatcherTest2 {
 			Integer ae = a.getTime(); 
 			Integer be = b.getTime();
 			
-			Integer ai = a.getJob().getJobIndex(); 
-			Integer bi = b.getJob().getJobIndex(); 
-			
-			/*
-			if(ai.compareTo(bi) > 0){
-				return be.compareTo(ae); 
-				//the ai is bigger, the job index of a is bigger, swap.
-			}else{
-				return ae.compareTo(be); 
-			}*/
+			if( ae == be){
+				Integer ai = a.getJob().getJobIndex(); 
+				Integer bi = b.getJob().getJobIndex();
+				
+				return Integer.compare(ai, bi);
+			}
 			
 			return ae.compareTo(be); 
 		}

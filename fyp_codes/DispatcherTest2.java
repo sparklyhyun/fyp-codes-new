@@ -176,9 +176,11 @@ public class DispatcherTest2 {
 										eventOrder.get(i).remove(k);
 									}
 								}
+								
+								/*
 								for(int l=0; l<Constants.NUM_QC; l++){
 									Collections.sort(eventOrder.get(l), new EventCompare());
-								}
+								}*/
 								//eventOrder.get(i).remove(k); // this has to be handled..... 
 								
 								/*
@@ -207,23 +209,26 @@ public class DispatcherTest2 {
 								
 								//print arraylist
 								
-								
+								/*
 								for(int m=0; m<1; m++){
 									System.out.println("qc: " + m);
 									for(int n=0; n<eventOrder.get(m).size(); n++){
 										System.out.print(" (" + eventOrder.get(m).get(n).getJob().getY()+ ", " + eventOrder.get(m).get(n).getJob().getX() + "), ");
 									}
 									System.out.println(" ");
-								}
+								}*/
 								
 								k = 0;
 								continue; 
 							}
 							
 						}
+						
+						/*
 						for(int l=0; l<Constants.NUM_QC; l++){
 							Collections.sort(eventOrder.get(l), new EventCompare());
-						}
+						}*/
+						
 						k++; 
 					}
 				}
@@ -232,6 +237,14 @@ public class DispatcherTest2 {
 			
 			//see event job, if any event needs to be created. 
 			//for(int i=0)
+			
+			
+			//add delay if qc not used for more than 1 unit 
+			for(int i=0; i<Constants.CRANEUSED.length; i++){
+				if(Constants.CRANEUSED[i] < Constants.TOTALTIME-1){
+					noAgv++; 
+				}
+			}
 			
 			
 			jobList.repaint(); 

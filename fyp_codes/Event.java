@@ -23,6 +23,7 @@ public class Event {
 		
 		if(a.getAgvWait()){
 			this.time = time + a.getAgvWaitTime(); 
+			Constants.TRAVELTIME += a.getAgvWaitTime(); 
 		}
 		
 		System.out.println("job calculated time: " + job.getY() + ", " +  job.getX() + " = " + this.time); 
@@ -96,6 +97,7 @@ public class Event {
 						if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] > 0){
 							eventType = Constants.BAYWAIT; 
 							job.setIsWaiting(true);
+							Constants.TOTALDELAY++;
 							time++; 
 							System.out.println("bay wait updated: " + job.getY() + ", " + job.getX());
 							break; 
@@ -119,13 +121,15 @@ public class Event {
 							job.setIsWaiting(true);
 							eventType = Constants.PREVWAIT; 
 							time++; 
+							Constants.TOTALDELAY++;
 
 							break; 
 						}else if(!jobList.getJob(prevY, job.getX()).getLoading() && 
 								(jobList.getJob(prevY, job.getX()).getAgvWait() || !jobList.getJob(prevY, job.getX()).getAssigned() || jobList.getJob(prevY, job.getX()).getIsWaiting())){
 							job.setIsWaiting(true);
 							eventType = Constants.PREVWAIT; 
-							time++; 
+							time++;
+							Constants.TOTALDELAY++;
 
 							break; 
 						}
@@ -141,6 +145,7 @@ public class Event {
 					if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
 						System.out.println("consecutive job, need to wait: " + job.getY() + ", " + job.getX());
 						time++; 
+						Constants.TOTALDELAY++;
 						//time = Constants.CRANEUSED[job.getQcIndex()]+1; 
 						//time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]); 
 						//Constants.CRANEUSED[job.getQcIndex()]++; 
@@ -165,6 +170,7 @@ public class Event {
 
 					}else{
 						time++; 
+						Constants.TOTALDELAY++;
 						System.out.println("baywait new time: " + job.getY() + ", " + job.getX() + " time = " + time);
 						
 					}
@@ -180,12 +186,14 @@ public class Event {
 						//eventType = Constants.PREVWAIT; 
 						delayed = true; 
 						time++; 
+						Constants.TOTALDELAY++;
 						
 						
 					}else if(!jobList.getJob(prevY2, job.getX()).getLoading() && 
 							(jobList.getJob(prevY2, job.getX()).getAgvWait() || !jobList.getJob(prevY2, job.getX()).getAssigned() || jobList.getJob(prevY2, job.getX()).getIsWaiting())){
 						delayed = true; 
 						time++; 
+						Constants.TOTALDELAY++;
 					}else{
 						job.setIsWaiting(false);
 						
@@ -215,6 +223,7 @@ public class Event {
 							this.eventType = Constants.BAYWAIT; 
 							this.job.setIsWaiting(true);
 							this.time++;
+							Constants.TOTALDELAY++;
 							System.out.println("bay wait new time job: " + job.getY() + ", " + job.getX() + " new time = " + time); 
 							break; 
 						}
@@ -237,6 +246,7 @@ public class Event {
 							job.setIsWaiting(true);
 							eventType = Constants.PREVWAIT; 
 							time++; 
+							Constants.TOTALDELAY++;
 							System.out.println("bay wait updated: " + job.getY() + ", " + job.getX());
 							break; 
 						}
@@ -265,6 +275,7 @@ public class Event {
 					if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
 						System.out.println("consecutive job, need to wait: " + job.getY() + ", " + job.getX());
 						time++; 
+						Constants.TOTALDELAY++;
 						//Constants.CRANEUSED[job.getQcIndex()]++; 
 						//time = Constants.CRANEUSED[job.getQcIndex()]+1; 
 						//time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
@@ -282,7 +293,8 @@ public class Event {
 					//if baywait ends, then go to release. then reset 
 					//System.out.println("bay waited job: " + job.getY() + ", " + job.getX() + " jobs left: " + Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1]); 
 					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] > 0){
-						this.time+= 1; 
+						this.time++; 
+						Constants.TOTALDELAY++;
 						System.out.println("Still in baywait");
 						//System.out.println("bay waited job: " + job.getY() + ", " + job.getX() + " time: " + time); 
 	
@@ -308,6 +320,7 @@ public class Event {
 						//eventType = Constants.PREVWAIT; 
 						delayed = true; 
 						time++; 
+						Constants.TOTALDELAY++;
 					}else{
 						//prev job is done  
 						job.setIsWaiting(false);
@@ -315,12 +328,6 @@ public class Event {
 
 						
 					}
-					
-					break; 
-					
-				case 5: //baywait delay 
-					 
-					
 					
 					break; 
 				default: break; 
@@ -340,7 +347,7 @@ public class Event {
 			eventType = Constants.DELAY; 
 			job.setIsWaiting(true);
 			time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
-			
+			Constants.TOTALDELAY++;
 
 			System.out.println("loading consecutive job: " + job.getY() + ", " + job.getX() + " = " + Constants.CRANEUSED[job.getQcIndex()] + ", " + time +  " , event type: " + eventType);
 			
@@ -367,6 +374,7 @@ public class Event {
 			job.setIsWaiting(true);
 			
 			time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
+			Constants.TOTALDELAY++;
 			
 		}else{ //not consecutive, thus change to complete 
 			job.setAssigned();
@@ -378,6 +386,7 @@ public class Event {
 		}
 	}
 	
+	/*
 	public void checkBayWaitConsecutive(){
 		if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
 			//System.out.println("consecutive job, need to wait: " + job.getY() + ", " + job.getX());
@@ -396,7 +405,7 @@ public class Event {
 			
 			System.out.println("job finished travelling: " + job.getY() + ", " + job.getX() + " new crane time: " + Constants.CRANEUSED[job.getQcIndex()]);
 		}
-	}
+	}*/
 	
 	/*
 	public void craneUpdated(){

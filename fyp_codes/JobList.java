@@ -19,9 +19,10 @@ public class JobList extends JPanel{
 		}*/
 		
 		//creating the full job list 
-		//createJobLists(); 
+		createJobLists(); 
 		
-		tests(2); 
+		//fixed test cases for testing 
+		//tests(3); 
 		
 		
 		

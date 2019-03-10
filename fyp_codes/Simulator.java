@@ -56,6 +56,81 @@ public class Simulator {
 	//new one with dispatcher*************************************************************************
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args){
+		singleTestSimulation(); 
+		
+		/*
+		resetTimers();
+		
+		joblist = new JobList(); 
+		//joblist.printStartEndPt();
+		
+		//seeJobList(joblist); 
+		
+		viewSimulator();
+		
+		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
+		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		String qcName; 
+		
+		CalcTime totalTimer = new CalcTime("totalTimer"); 
+		totalTimer.start();
+		
+		//Dispatcher dispatcher = new Dispatcher(joblist); 
+		//DispatcherTest dispatcher = new DispatcherTest(joblist); 
+		
+		DispatcherTest2 dispatcher = new DispatcherTest2(joblist); 
+		
+		//need dispatcher to run 
+		
+		initTasks();
+
+		
+		joblist.setLayout(null);
+
+		
+		//updating the timer test
+		//tenative, stops after all threads are created, not when all ends 
+		
+		int wait = 0; 
+		while(true){
+			System.out.println("jobs completed: " + Constants.jobsCompleted);
+			if(Constants.jobsCompleted >= Constants.TOTAL_SIZE){
+				totalTimer.t.stop();
+				break;
+			}
+			
+			if(wait > 50){
+				totalTimer.t.stop();
+				break; 
+			}
+			
+			try {
+				Thread.sleep(Constants.SLEEP);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			wait++; 
+		}
+
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
+		System.out.println("=========================All completed========================");
+		System.out.println("total time taken: " + Constants.TOTALTIME);
+		System.out.println("total delay: " + Constants.TOTALDELAY);
+		System.out.println("average delay per QC: " + (float)Constants.TOTALDELAY/4.0);
+		System.out.println("total agv travel time: " + Constants.TRAVELTIME);
+		System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
+		//dispatcher.showCreatedOrder();	//this was correct
+		*/		
+
+	}
+	
+	public static void singleTestSimulation(){
 		resetTimers();
 		
 		joblist = new JobList(); 
@@ -124,16 +199,6 @@ public class Simulator {
 		System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
 		//dispatcher.showCreatedOrder();	//this was correct
 		 
-		
-		/*	
-		if(Constants.allComplete >= Constants.NUM_QC){
-			System.out.println("---------------------------greedy complete=========");
-			System.out.println("total delay: " + Constants.TOTALDELAY);
-			System.out.println("total time: " + Constants.TOTALTIME);
-			
-		}*/ 
-		
-
 	}
 	
 /*

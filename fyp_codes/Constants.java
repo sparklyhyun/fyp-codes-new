@@ -55,7 +55,7 @@ public class Constants {
 	
 	
 	public static int[] CRANEUSED = {0,0,0,0}; //the latest crane used time 
-	
+	public static int[][] WAITBAY ; 	//jobs completed per bay 
 	
 	
 	

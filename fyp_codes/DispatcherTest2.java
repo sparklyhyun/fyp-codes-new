@@ -17,7 +17,6 @@ public class DispatcherTest2 {
 	
 	private static ArrayList<ArrayList<Job>> q_jobsList = new ArrayList<ArrayList<Job>>();  
 	private static int[] totalQcCost = new int[Constants.NUM_QC]; 
-	private static int[][] completeJobsBay; 
 	
 	
 	
@@ -36,6 +35,7 @@ public class DispatcherTest2 {
 		for(int i=0; i<Constants.NUM_QC; i++){
 			eventJob.add(new ArrayList<Job>()); 
 		}
+		
 		//sort jobs
 		sortJobs(); 
 		
@@ -55,7 +55,7 @@ public class DispatcherTest2 {
 		Sort sort = new Sort(jobList); 
 		q_jobsList = sort.getJobListsSorted(); 
 		totalQcCost = sort.getTotalCost(); 
-		completeJobsBay = sort.getCompleteBayList(); 
+		Constants.WAITBAY = sort.getCompleteBayList(); 
 		//jobsCreated = sort.getCompleteBayList(); 
 
 	}
@@ -164,14 +164,7 @@ public class DispatcherTest2 {
 								k = 0;
 								continue; 
 								
-							}else if(eventOrder.get(i).get(k).getEventType() == 0){ //if travelling or delay.
-								eventOrder.get(i).get(k).changeState();
-								for(int l=0; l<Constants.NUM_QC; l++){
-									Collections.sort(eventOrder.get(l), new EventCompare());
-								}
-								k = 0;
-								continue; 
-							}else if(eventOrder.get(i).get(k).getEventType() == 2){	//this is for delay jobs 
+							}else{ //if travelling or delay or baywait 
 								eventOrder.get(i).get(k).changeState();
 								for(int l=0; l<Constants.NUM_QC; l++){
 									Collections.sort(eventOrder.get(l), new EventCompare());
@@ -212,6 +205,12 @@ public class DispatcherTest2 {
 			// TODO Auto-generated method stub
 			Integer ae = a.getTime(); 
 			Integer be = b.getTime();
+			
+			Integer ai = a.getJob().getJobIndex(); 
+			Integer bi = b.getJob().getJobIndex(); 
+			
+			ai.compareTo(bi); 
+			
 			return ae.compareTo(be); 
 		}
 	}

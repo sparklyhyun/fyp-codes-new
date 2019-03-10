@@ -176,7 +176,9 @@ public class DispatcherTest2 {
 										eventOrder.get(i).remove(k);
 									}
 								}
-								
+								for(int l=0; l<Constants.NUM_QC; l++){
+									Collections.sort(eventOrder.get(l), new EventCompare());
+								}
 								//eventOrder.get(i).remove(k); // this has to be handled..... 
 								
 								/*
@@ -205,19 +207,22 @@ public class DispatcherTest2 {
 								
 								//print arraylist
 								
-								/*
-								for(int m=0; m<Constants.NUM_QC; m++){
+								
+								for(int m=0; m<1; m++){
 									System.out.println("qc: " + m);
 									for(int n=0; n<eventOrder.get(m).size(); n++){
 										System.out.print(" (" + eventOrder.get(m).get(n).getJob().getY()+ ", " + eventOrder.get(m).get(n).getJob().getX() + "), ");
 									}
 									System.out.println(" ");
-								}*/
+								}
 								
 								k = 0;
 								continue; 
 							}
 							
+						}
+						for(int l=0; l<Constants.NUM_QC; l++){
+							Collections.sort(eventOrder.get(l), new EventCompare());
 						}
 						k++; 
 					}
@@ -238,7 +243,7 @@ public class DispatcherTest2 {
 				e.printStackTrace();
 			}
 			
-			System.out.println("current time: " + Constants.TOTALTIME);
+			//System.out.println("current time: " + Constants.TOTALTIME);
 		
 		}
 	}

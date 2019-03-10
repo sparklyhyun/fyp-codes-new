@@ -52,6 +52,10 @@ public class Event {
 					System.out.println("job finished travelling: " + job.getY() + ", " + job.getX());
 					job.setAgvWait(false);
 					
+					//check baywait 
+					
+					
+					//check consecutive 
 					if(time <= Constants.CRANEUSED[job.getQcIndex()]){
 						eventType = Constants.DELAY; 
 						job.setIsWaiting(true);
@@ -77,19 +81,21 @@ public class Event {
 				case 2: //delay
 					if(time >= Constants.CRANEUSED[job.getQcIndex()]){
 						job.setIsWaiting(false);
-						job.setAssigned();
 						eventType = Constants.RELEASE; 
 						Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;
 					}else{
 						time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]); 
 						Constants.CRANEUSED[job.getQcIndex()]+= 1; 
 					}
+					break;
+				case 3: //baywait
 					break; 
 				default: break; 
 				}
 			}
 
-			
+			//baywait 
+			//previous job! 
 		
 		
 

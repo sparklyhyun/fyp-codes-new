@@ -161,7 +161,8 @@ public class DispatcherTest2 {
 							if(eventOrder.get(i).get(k).getEventType() == 1){	//if released, remove from the queue 
 								eventOrder.get(i).get(k).changeState();
 								eventOrder.get(i).remove(k); // this has to be handled..... 
-								k = -1;
+								k = 0;
+								continue; 
 								
 							}else if(eventOrder.get(i).get(k).getEventType() == 0){ //if travelling or delay.
 								eventOrder.get(i).get(k).changeState();

@@ -96,7 +96,7 @@ public class Simulator {
 				break;
 			}
 			
-			if(wait > 30){
+			if(wait > 50){
 				totalTimer.t.stop();
 				break; 
 			}

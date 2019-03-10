@@ -41,9 +41,11 @@ public class DispatcherTest2 {
 		
 		//job order
 		dispatchOrder();
+		
+		/*
 		for(int i=0; i<jobOrder.size(); i++){
 			System.out.println("job: " + jobOrder.get(i).getY() + ", " + jobOrder.get(i).getX());
-		}
+		}*/
 		
 		//create event order
 		//initEventList(); 
@@ -133,15 +135,15 @@ public class DispatcherTest2 {
 						idleAgv = agvList.get(i); 
 						
 						j = jobOrder.get(0); 
-						System.out.println("job removed from job order: " + j.getY() + ", " + j.getX());
+						//System.out.println("job removed from job order: " + j.getY() + ", " + j.getX());
 						//eventJob.get(j.getQcIndex()).add(j); 
 						jobOrder.remove(0); 
 						
 						idleAgv.setAgvWaitTime(j);	
 						j.setAgv(idleAgv);
 						
-						eventOrder.get(j.getQcIndex()).add(new Event(j, Constants.TOTALTIME, Constants.TRAVEL,j.getLoading()));	//create 1 travelling event
-						System.out.println("event created: " + j.getY() + ", " + j.getX());
+						eventOrder.get(j.getQcIndex()).add(new Event(j, Constants.TOTALTIME, Constants.TRAVEL,j.getLoading(), jobList));	//create 1 travelling event
+						//System.out.println("event created: " + j.getY() + ", " + j.getX());
 						break; 
 					}
 				}
@@ -159,8 +161,33 @@ public class DispatcherTest2 {
 					while(k<eventOrder.get(i).size()){
 						if(eventOrder.get(i).get(k).getTime() == Constants.TOTALTIME){
 							if(eventOrder.get(i).get(k).getEventType() == 1){	//if released, remove from the queue 
+								//System.out.println("finish state job: " + eventOrder.get(i).get(k).getJob().getY() + ", " + eventOrder.get(i).get(k).getJob().getX());
 								eventOrder.get(i).get(k).changeState();
-								eventOrder.get(i).remove(k); // this has to be handled..... 
+								
+								
+								if(!eventOrder.get(i).get(k).getJob().getLoading()){
+									eventOrder.get(i).remove(k);
+								}else{
+									/*
+									System.out.println("finish state job state changed: " + eventOrder.get(i).get(k).getJob().getY() + ", " + eventOrder.get(i).get(k).getJob().getX() +
+											"event Type: " + eventOrder.get(i).get(k).getEventType());
+									*/
+									if(eventOrder.get(i).get(k).getEventType() == 1){
+										eventOrder.get(i).remove(k);
+									}
+								}
+								
+								//eventOrder.get(i).remove(k); // this has to be handled..... 
+								
+								/*
+								for(int m=0; m<Constants.NUM_QC; m++){
+									System.out.println("Removed qc: " + m);
+									for(int n=0; n<eventOrder.get(m).size(); n++){
+										System.out.print(" (" + eventOrder.get(m).get(n).getJob().getY()+ ", " + eventOrder.get(m).get(n).getJob().getX() + "), ");
+									}
+									System.out.println(" ");
+								}*/
+								
 								k = 0;
 								continue; 
 								
@@ -169,6 +196,18 @@ public class DispatcherTest2 {
 								for(int l=0; l<Constants.NUM_QC; l++){
 									Collections.sort(eventOrder.get(l), new EventCompare());
 								}
+								
+								//print arraylist
+								
+								/*
+								for(int m=0; m<Constants.NUM_QC; m++){
+									System.out.println("qc: " + m);
+									for(int n=0; n<eventOrder.get(m).size(); n++){
+										System.out.print(" (" + eventOrder.get(m).get(n).getJob().getY()+ ", " + eventOrder.get(m).get(n).getJob().getX() + "), ");
+									}
+									System.out.println(" ");
+								}*/
+								
 								k = 0;
 								continue; 
 							}
@@ -193,7 +232,7 @@ public class DispatcherTest2 {
 				e.printStackTrace();
 			}
 			
-			//System.out.println("current time: " + Constants.TOTALTIME);
+			System.out.println("current time: " + Constants.TOTALTIME);
 		
 		}
 	}
@@ -209,7 +248,13 @@ public class DispatcherTest2 {
 			Integer ai = a.getJob().getJobIndex(); 
 			Integer bi = b.getJob().getJobIndex(); 
 			
-			ai.compareTo(bi); 
+			/*
+			if(ai.compareTo(bi) > 0){
+				return be.compareTo(ae); 
+				//the ai is bigger, the job index of a is bigger, swap.
+			}else{
+				return ae.compareTo(be); 
+			}*/
 			
 			return ae.compareTo(be); 
 		}

@@ -3,13 +3,18 @@ package fyp_codes;
 public class Event {
 	private Job job; 
 	private int time; //time of occurence of this event 
-	private int eventType; // 0 - travel, 1 - release, 2 - delay 
+	private int eventType; // 0 - travel, 1 - release, 2 - delay, 3- baywait, 4 - prevwait?? 
+	private JobList jobList; 
+	
+	private boolean delayed = false; 
+	private boolean prevWait = false; 
 
 	private boolean loading = false; //true - loading, false - unloading 
 	
 	// loading jobs
-	public Event(Job a, int time, int eventType, boolean loading){
+	public Event(Job a, int time, int eventType, boolean loading, JobList joblist){
 		job = a; 
+		this.jobList = joblist; 
 		if(!job.getAgvWait()){
 			job.setAgvWait(true);
 		}
@@ -44,6 +49,8 @@ public class Event {
 		//System.out.println("change state job: " + job.getY() + ", " + job.getX() + " = " + eventType);
 		
 			if(loading){
+				System.out.println("Current job : " + job.getY()+ ", " + job.getX() + " , Current eventType : " + eventType);
+				//System.out.println("Current eventType : " + eventType);
 				switch(eventType){
 				case 0:	//travel ended. then update time.
 					//need to check for delay in front 
@@ -55,10 +62,38 @@ public class Event {
 					break; 
 					
 				case 1:	//job finished
-					
 					System.out.println("job: " + job.getY() + ", " + job.getX() + " time: " + time + " crane used: " + Constants.CRANEUSED[job.getQcIndex()] );
 					
+					// if this was delayed before
+					if(delayed){
+						System.out.println("job finished completion: " + job.getY() + ", " + job.getX());
+						job.setIsWaiting(false);
+						job.setComplete();
+						job.getAgv().setIdle(true);
+						job.getAgv().setAgvLocation(job.getEndPos());
+						
+						Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;//next free time is +2 after this  
+						Constants.jobsCompleted++; 
+						
+						//also add for baywait
+						Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()]++; 
+						break; 
+					}
+					
+					
 					//check baywait (after this state change, just break) 
+					//check baywait (if the bay index is greater than 0
+					if(job.getBayIndex() > 0){//check if previous bay waiting. 
+						if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()] < Constants.BAYSIZE){
+							eventType = Constants.BAYWAIT; 
+							job.setIsWaiting(true);
+							time++; 
+							break; 
+						}
+					}
+					
+					//check prev job 
+					
 					
 					//check consecutive 
 					if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
@@ -66,7 +101,7 @@ public class Event {
 						job.setIsWaiting(true);
 						time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
 						Constants.CRANEUSED[job.getQcIndex()]+= 1; 
-						System.out.println("loading consecutive job: " + job.getY() + ", " + job.getX() + " = " + time);
+						System.out.println("loading consecutive job: " + job.getY() + ", " + job.getX() + " = " + time + " , event type: " + eventType);
 						
 					}else{ //not consecutive, thus change to complete 
 						System.out.println("job finished completion: " + job.getY() + ", " + job.getX());
@@ -82,12 +117,12 @@ public class Event {
 						Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()]++; 
 					}
 					break; 
-				case 2: //delay
+				case 2: //delay <- not going into delay. why??? 
+					
 					System.out.println("delay job: " + job.getY() + ", " + job.getX());
-					job.setAssigned();
 					job.setIsWaiting(false);
-					job.setComplete();
 					eventType = Constants.RELEASE; 
+					delayed = true; 
 					//Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;
 					//no need time, as change state will change to finish job 
 
@@ -120,7 +155,32 @@ public class Event {
 					System.out.println("job finished travelling: " + job.getY() + ", " + job.getX());
 					job.setAgvWait(false);
 					
-					//check baywait 
+					//check baywait (if the bay index is greater than 0
+					if(job.getBayIndex() > 0){//check if previous bay waiting. 
+						if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()] < Constants.BAYSIZE){
+							eventType = Constants.BAYWAIT; 
+							job.setIsWaiting(true);
+							time++; 
+							break; 
+						}
+					}
+					
+					//check prevJob (if prev job not complete, wait (also break here) )
+					int prevY = job.getY()-1; 
+					
+					int minY;
+					if(job.getQcIndex()<2){
+						minY = 0; 
+					}else{
+						minY = Constants.MAX_Y; 
+					}
+
+					if(prevY >= minY){
+						if(jobList.getJob(prevY, job.getX()).getAgvWait() || jobList.getJob(prevY, job.getX()).getAssigned()){
+							
+						}
+					}
+					
 					
 					System.out.println("job: " + job.getY() + ", " + job.getX() + " time: " + time + " crane used: " + Constants.CRANEUSED[job.getQcIndex()] );
 
@@ -158,14 +218,23 @@ public class Event {
 					break;
 				case 3: //baywait 
 					//if baywait ends, then go to release. then reset 
-					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()] >= Constants.BAYSIZE){
-						
+					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] >= Constants.BAYSIZE){
 						//check if delay is needed here too. 
-						
-						job.setIsWaiting(false);
-						time = job.getTotalCost() + Constants.TOTALTIME; 
-						eventType = Constants.RELEASE; 
-						Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;
+						if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
+							System.out.println("consecutive job, need to wait: " + job.getY() + ", " + job.getX());
+							eventType = Constants.DELAY; 
+							job.setIsWaiting(true);
+							time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
+							Constants.CRANEUSED[job.getQcIndex()]+= 1; 
+							
+						}else{ //not consecutive, thus change to complete 
+							job.setAssigned();
+							job.setIsWaiting(false);
+							time = job.getTotalCost() + Constants.TOTALTIME; 
+							eventType = Constants.RELEASE; 
+							Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;//next free time is +2 after this  
+							System.out.println("job finished travelling: " + job.getY() + ", " + job.getX() + " new crane time: " + Constants.CRANEUSED[job.getQcIndex()]);
+						}
 					}else{
 						time = time++; 
 					}

@@ -116,14 +116,14 @@ public class Event {
 							job.setIsWaiting(true);
 							eventType = Constants.PREVWAIT; 
 							time++; 
-							Constants.CRANEUPDATED[job.getQcIndex()] = 0; 
+
 							break; 
 						}else if(!jobList.getJob(prevY, job.getX()).getLoading() && 
 								(jobList.getJob(prevY, job.getX()).getAgvWait() || !jobList.getJob(prevY, job.getX()).getAssigned() || jobList.getJob(prevY, job.getX()).getIsWaiting())){
 							job.setIsWaiting(true);
 							eventType = Constants.PREVWAIT; 
 							time++; 
-							Constants.CRANEUPDATED[job.getQcIndex()]++; 
+
 							break; 
 						}
 					}
@@ -321,8 +321,7 @@ public class Event {
 			System.out.println("job: " + job.getY() + ", " + job.getX() + " time: " + time +" crane used: " + Constants.CRANEUSED[job.getQcIndex()]);
 			eventType = Constants.DELAY; 
 			job.setIsWaiting(true);
-			Constants.CRANEUSED[job.getQcIndex()]++; 
-			time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]); 
+			time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
 			
 
 			System.out.println("loading consecutive job: " + job.getY() + ", " + job.getX() + " = " + Constants.CRANEUSED[job.getQcIndex()] + ", " + time +  " , event type: " + eventType);
@@ -348,8 +347,8 @@ public class Event {
 			System.out.println("consecutive job, need to wait: " + job.getY() + ", " + job.getX());
 			eventType = Constants.DELAY; 
 			job.setIsWaiting(true);
-			Constants.CRANEUSED[job.getQcIndex()]++; 
-			time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]); 
+			
+			time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
 			
 
 			
@@ -363,11 +362,12 @@ public class Event {
 		}
 	}
 	
+	/*
 	public void craneUpdated(){
 		if(Constants.CRANEUPDATED[job.getQcIndex()] > 0 && Constants.CRANEUSED[job.getQcIndex()] == Constants.CRANEUSEDPREV[job.getQcIndex()]){
 			Constants.CRANEUSED[job.getQcIndex()]++; 
 		}
-	}
+	}*/
 
 
 }

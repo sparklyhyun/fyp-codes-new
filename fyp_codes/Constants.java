@@ -52,6 +52,7 @@ public class Constants {
 	public static final int RELEASE = 1; 	//agv release time 
 	public static final int DELAY = 2; 		//agv delay 
 	public static final int BAYWAIT = 3; 	//job waiting for the bay!
+	public static final int PREVWAIT = 4; 
 	
 	
 	public static int[] CRANEUSED = {0,0,0,0}; //the latest crane used time 

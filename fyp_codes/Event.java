@@ -94,6 +94,24 @@ public class Event {
 					
 					//check prev job 
 					
+					int prevY = job.getY()-1; 
+					
+					int minY;
+					if(job.getQcIndex()<2){
+						minY = 0; 
+					}else{
+						minY = Constants.MAX_Y; 
+					}
+					
+					if(prevY >= minY && jobList.getJob(prevY, job.getX()).getLoading()){
+						if(!jobList.getJob(prevY, job.getX()).getComplete()){
+							//if prev job is not complete 
+							job.setIsWaiting(true);
+							eventType = Constants.PREVWAIT; 
+							time++; 
+							break; 
+						}
+					}
 					
 					//check consecutive 
 					if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
@@ -130,24 +148,57 @@ public class Event {
 				case 3: //baywait 
 					//if baywait ends, then go to release. then reset 
 					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()] >= Constants.BAYSIZE){
-						
 						//check if delay is needed here too. 
-						
-						
-						//this is else condition for the delay 
-						job.setIsWaiting(false);
-						time = job.getTotalCost() + Constants.TOTALTIME; 
-						eventType = Constants.RELEASE; 
-						Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;
+						if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
+							eventType = Constants.DELAY; 
+							job.setIsWaiting(true);
+							time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
+							Constants.CRANEUSED[job.getQcIndex()]+= 1; 
+							System.out.println("loading consecutive job: " + job.getY() + ", " + job.getX() + " = " + time + " , event type: " + eventType);
+							
+						}else{ //not consecutive, thus change to complete 
+							//this is else condition for the delay 
+							job.setIsWaiting(false);
+							time = job.getTotalCost() + Constants.TOTALTIME; 
+							eventType = Constants.RELEASE; 
+							Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;
+						}
 					}else{
 						time = time++; 
+					}
+					break; 
+					
+				case 4: //prevwait 
+					int prevY2 = job.getY()-1; 
+					
+					if(jobList.getJob(prevY2, job.getX()).getAgvWait() || !jobList.getJob(prevY2, job.getX()).getAssigned() || jobList.getJob(prevY2, job.getX()).getIsWaiting()){
+						//if prev job waiting for agv, or is waiting for qc, or is not assigned at all
+						eventType = Constants.PREVWAIT; 
+						time++; 
+					}else{
+						job.setIsWaiting(false);
+						
+						//check consecutive 
+						if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
+							eventType = Constants.DELAY; 
+							job.setIsWaiting(true);
+							time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
+							Constants.CRANEUSED[job.getQcIndex()]+= 1; 
+							System.out.println("loading consecutive job: " + job.getY() + ", " + job.getX() + " = " + time + " , event type: " + eventType);
+							
+						}else{ //not consecutive, thus change to complete 
+							System.out.println("job finished completion: " + job.getY() + ", " + job.getX());
+							job.setIsWaiting(false);
+							eventType = Constants.RELEASE; 
+							Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;//next free time is +2 after this  
+						}
 					}
 					
 					break; 
 				default: break; 
 				}
 				
-			}else{
+			}else{///////////////////////////////////////////////////////////////////////////////////////////////////////
 				//this, need to differentiate by loading & unloading 
 				switch(eventType){
 				case 0:	//travel ended. then update time.
@@ -175,9 +226,13 @@ public class Event {
 						minY = Constants.MAX_Y; 
 					}
 
-					if(prevY >= minY){
-						if(jobList.getJob(prevY, job.getX()).getAgvWait() || jobList.getJob(prevY, job.getX()).getAssigned()){
-							
+					if(prevY >= minY && !jobList.getJob(prevY, job.getX()).getLoading()){
+						if(jobList.getJob(prevY, job.getX()).getAgvWait() || !jobList.getJob(prevY, job.getX()).getAssigned() || jobList.getJob(prevY, job.getX()).getIsWaiting()){
+							//if prev job waiting for agv, or is waiting for qc, or is not assigned at all
+							job.setIsWaiting(true);
+							eventType = Constants.PREVWAIT; 
+							time++; 
+							break; 
 						}
 					}
 					
@@ -238,6 +293,37 @@ public class Event {
 					}else{
 						time = time++; 
 					}
+					
+					break; 
+				case 4: //prevwait 
+					
+					int prevY2 = job.getY()-1; 
+					
+					if(jobList.getJob(prevY2, job.getX()).getAgvWait() || !jobList.getJob(prevY2, job.getX()).getAssigned() || jobList.getJob(prevY2, job.getX()).getIsWaiting()){
+						//if prev job waiting for agv, or is waiting for qc, or is not assigned at all
+						eventType = Constants.PREVWAIT; 
+						time++; 
+					}else{
+						//prev job is done  
+						job.setIsWaiting(false);
+						
+						if(time <= Constants.CRANEUSED[job.getQcIndex()]){	//consecutive, need to change to delay 
+							System.out.println("consecutive job, need to wait: " + job.getY() + ", " + job.getX());
+							eventType = Constants.DELAY; 
+							job.setIsWaiting(true);
+							time = Math.max(time, Constants.CRANEUSED[job.getQcIndex()]+1); 
+							Constants.CRANEUSED[job.getQcIndex()]+= 1; 
+							
+						}else{ //not consecutive, thus change to complete 
+							job.setAssigned();
+							time = job.getTotalCost() + Constants.TOTALTIME; 
+							eventType = Constants.RELEASE; 
+							Constants.CRANEUSED[job.getQcIndex()] = Constants.TOTALTIME + 1;//next free time is +2 after this  
+							System.out.println("job finished travelling: " + job.getY() + ", " + job.getX() + " new crane time: " + Constants.CRANEUSED[job.getQcIndex()]);
+						}
+						
+					}
+					
 					
 					break; 
 				default: break; 

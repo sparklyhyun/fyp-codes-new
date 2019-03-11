@@ -132,18 +132,9 @@ public class Simulator {
 		//do 10 times maybe?
 		int k=0;
 		
-		//when abnormal delay > 30, terminate test, start over again. 
-		//or total time > 2000 (no such test case so far), terminate test, report error, start over agian. 
-		
-		//joblist should be created here. 
-		
-		
-		//does it work multiple times??? 
-		
 		resetTimers();	//this, no need if i decide to do dispatcher.reset(); 
 		joblist = new JobList(); 
-		//viewSimulator();
-		//===================================================================================================
+		
 		_frame = new JFrame();
 		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
 		_frame.setResizable(true);
@@ -177,7 +168,7 @@ public class Simulator {
 		initTasks();
 		
 		//initialize button layout
-		initButtons();
+		//initButtons();
 		
 		//initialize timers
 		initTimers(); 
@@ -185,12 +176,6 @@ public class Simulator {
 		//view full display of the application
 		_frame.setVisible(true);
 		_frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		
-		
-		//==================================================================================================
-		
-		
-		
 		
 		CalcTime totalTimer = new CalcTime(); 
 		Thread t = new Thread(totalTimer); 
@@ -238,13 +223,10 @@ public class Simulator {
 		while(k<9){
 			Constants.BUGDETECTED = false; 
 			
-			//resetTimers();	//this, no need if i decide to do dispatcher.reset(); 
-			
 			joblist.clearJobList(); //<- this will start from where it was left at 
 			joblist = new JobList();  
 			
 			totalTimer = new CalcTime(); 
-			
 			initTimers(); 
 			
 			Thread t1 = new Thread(totalTimer);	//need to stop this for a while after every iteration 
@@ -265,9 +247,7 @@ public class Simulator {
 			// lets try multiple single simulation 
 
 			totalTimer.shutdown(true);
-			
-			
-			
+
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -284,9 +264,7 @@ public class Simulator {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
-				//joblist.repaint();
-				
+
 				continue; //don't increment k
 			}
 			
@@ -511,7 +489,7 @@ public class Simulator {
 		initTasks();
 		
 		//initialize button layout
-		initButtons();
+		//initButtons();
 		
 		//initialize timers
 		initTimers(); 
@@ -553,7 +531,7 @@ public class Simulator {
 		JLabel lblTotalTime = new JLabel("Total Time: ");
 		lblTotalTime.setVerticalAlignment(SwingConstants.BOTTOM);
 		lblTotalTime.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblTotalTime.setBounds(280, 370, 84, 15);
+		lblTotalTime.setBounds(162, 10, 84, 15);
 		joblist.add(lblTotalTime);
 		
 		joblist.add(Constants.TIMERS.getTotalCounter());
@@ -561,7 +539,7 @@ public class Simulator {
 		JLabel lblDelayTime = new JLabel("Delay Time: ");
 		lblDelayTime.setVerticalAlignment(SwingConstants.BOTTOM);
 		lblDelayTime.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblDelayTime.setBounds(460, 370, 75, 15);
+		lblDelayTime.setBounds(290, 10, 75, 15);
 		joblist.add(lblDelayTime);
 		
 		joblist.add(Constants.TIMERS.getDelayCounter());

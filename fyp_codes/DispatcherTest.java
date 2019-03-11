@@ -784,7 +784,7 @@ public class DispatcherTest {
 		Job j; 
 		private Thread t; 
 		private String name; 
-		private Agv agv = new Agv(000);
+		private Agv agv = new Agv();
 		private boolean qcWait;	//true- unloading not first, false- unloading first/ loading. true - need to set delay 1 unit before  
 		private boolean bayWaited = false; 
 		private int bayWaitedTime = 0; // total waiting time waiting for next bay 

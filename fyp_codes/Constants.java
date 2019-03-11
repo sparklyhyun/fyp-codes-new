@@ -45,7 +45,7 @@ public class Constants {
 	public static final Color COLOR_WAITING = Color.ORANGE;
 	public static final Color COLOR_WAITAGV = Color.LIGHT_GRAY; //assigned vehicle, but waiting for agv 
 	
-	public static final int SLEEP = 50; 
+	public static final int SLEEP = 15; 
 	
 	// events here....
 	public static final int TRAVEL = 0; 	//agv travel end time
@@ -61,7 +61,7 @@ public class Constants {
 	//public static int[] CRANEUSEDPREV = {0,0,0,0}; 
 	public static int[][] WAITBAY ; 	//jobs completed per bay 
 	
-	
+	public static boolean BUGDETECTED = false; 
 	
 	public static int TOTALDELAY = 0; 
 	public static int TOTALTIME = 0;

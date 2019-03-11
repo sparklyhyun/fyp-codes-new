@@ -23,10 +23,11 @@ public class JobList extends JPanel{
 		
 		//fixed test cases for testing 
 		//tests(3); 
-		
-		
-		
+
 		calcTotalJobNum(); 
+		
+		//print jobs
+		//printJobs(jobs); 
 		
 		reset(); 
 		System.out.println("job list done");
@@ -518,8 +519,12 @@ public class JobList extends JPanel{
 		return jobs[y][x].getAssigned();
 	}
 	
-	public boolean isComplete(int y, int x){
+	public boolean isComplet(int y, int x){
 
+		return jobs[y][x].getComplete(); 
+	}
+	
+	public boolean isComplete(int y, int x){
 		return jobs[y][x].getComplete(); 
 	}
 	
@@ -540,6 +545,12 @@ public class JobList extends JPanel{
 	
 	public boolean isAgvWait(int y, int x){
 		return jobs[y][x].getAgvWait(); 
+	}
+	
+	public void clearJobList(){
+		for(int i=0; i<jobs.length; i++){
+			Arrays.fill(jobs[i], null);
+		}
 	}
 	
 	//GUI

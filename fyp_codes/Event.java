@@ -11,6 +11,9 @@ public class Event {
 
 	private boolean loading = false; //true - loading, false - unloading 
 	
+	private int numCall = 0; //this is to check if this event is stuck somewhere 
+	
+	
 	// loading jobs
 	public Event(Job a, int time, int eventType, boolean loading, JobList joblist){
 		job = a; 
@@ -19,17 +22,19 @@ public class Event {
 			job.setAgvWait(true);
 		}
 		
-		System.out.println("job agvwait?: " + job.getY() + " , " + job.getX() + " = " + job.getAgvWait());
+		//System.out.println("job agvwait?: " + job.getY() + " , " + job.getX() + " = " + job.getAgvWait());
 		
 		if(a.getAgvWait()){
 			this.time = time + a.getAgvWaitTime(); 
 			Constants.TRAVELTIME += a.getAgvWaitTime(); 
 		}
 		
-		System.out.println("job calculated time: " + job.getY() + ", " +  job.getX() + " = " + this.time); 
+		//System.out.println("job calculated time: " + job.getY() + ", " +  job.getX() + " = " + this.time); 
 		
 		this.eventType = eventType;
 		this.loading = loading; 
+		
+		System.out.println("event created: " + job.getY() + ", " + job.getX());
 
 	}
 
@@ -52,8 +57,17 @@ public class Event {
 	public void changeState(){
 		//System.out.println("change state job: " + job.getY() + ", " + job.getX() + " = " + eventType);
 		
+		if(numCall > 100){
+			System.out.println("job is stuck: " + job.getY() + ", " + job.getX() + " ---need to stop---");
+			Constants.BUGDETECTED = true; 
+		}
+		
+		
 			if(loading){
 				System.out.println("Current job : " + job.getY()+ ", " + job.getX() + " , Current eventType : " + eventType);
+				System.out.println("job assigned: " + job.getAssigned() + ", job get agv wait: " + job.getAgvWaitTime() + 
+						", job get iswaiting: " + job.getIsWaiting() + ", job completed: " + job.getComplete());
+				
 				//System.out.println("Current eventType : " + eventType);
 				switch(eventType){
 				case 0:	//travel ended. then update time.
@@ -295,7 +309,7 @@ public class Event {
 					if(Constants.WAITBAY[job.getQcIndex()][job.getBayIndex()-1] > 0){
 						this.time++; 
 						Constants.TOTALDELAY++;
-						System.out.println("Still in baywait");
+						//System.out.println("Still in baywait");
 						//System.out.println("bay waited job: " + job.getY() + ", " + job.getX() + " time: " + time); 
 	
 					}else{
@@ -332,8 +346,13 @@ public class Event {
 					break; 
 				default: break; 
 				}
+			
 			}
-
+			
+			numCall++; 
+			
+			System.out.println("job next event occur time: " + job.getY() + ", " + job.getX() + " time = " + time + " eventType = " + eventType);
+			System.out.println("jobs completed: " + Constants.jobsCompleted);
 			//baywait 
 			//previous job! 
 		

@@ -4,15 +4,16 @@ public class TestResult {
 	private int tTime;
 	private int tDelay; 
 	private int tTravel;
-	private int aDelay; 
-	private int aTravel; 
+	private float aDelay; 
+	private float aTravel; 
 	
-	public TestResult(int tTime, int tDelay, int tTravel, int aDelay, int aTravel){
+	public TestResult(int tTime, int tDelay, int tTravel){
 		this.tTime = tTime;
 		this.tDelay = tDelay;
 		this.tTravel = tTravel;
-		this.aDelay = aDelay;
-		this.aTravel = aTravel; 
+
+		aDelay = (float)tDelay / Constants.NUM_QC; 
+		aTravel = (float)tDelay / Constants.AGV; 
 	}
 	
 	public int getTotalTime(){
@@ -27,11 +28,11 @@ public class TestResult {
 		return tTravel;
 	}
 	
-	public int getAvgDelay(){
+	public float getAvgDelay(){
 		return aDelay; 
 	}
 	
-	public int getAgvTravel(){
+	public float getAgvTravel(){
 		return aTravel; 
 	}
 	

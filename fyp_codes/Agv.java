@@ -27,6 +27,12 @@ public class Agv {
 		currCoord[1] = rand.nextInt(4); 		// index from 0 to 3
 	}
 	
+	public void resetAgvLocation(){
+		//for multiple testing! 
+		currCoord[0] = 0;
+		currCoord[1] = 0; 
+	}
+	
 	public void setIdle(boolean b){
 		this.idle = b;
 	}

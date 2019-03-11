@@ -10,7 +10,7 @@ public class DispatcherTest2 {
 	
 	//arraylist to store the order of jobs 
 	private static ArrayList<Job> jobOrder = new ArrayList<>();
-	private static ArrayList<ArrayList<Job>> eventJob = new ArrayList<>(); 
+	//private static ArrayList<ArrayList<Job>> eventJob = new ArrayList<>(); 
 	
 	//event priority queue here
 	private static ArrayList<ArrayList<Event>> eventOrder = new ArrayList<>(); 
@@ -20,7 +20,21 @@ public class DispatcherTest2 {
 	
 	
 	
-	public DispatcherTest2(JobList j){
+	public DispatcherTest2(JobList j, int x){
+		
+		switch(x){
+		case 1: // single simulation
+			singleSimulation(j); 
+			break; 
+		case 2:
+			multipleSimulation(j); 
+			break; 
+		default: break; 
+		}
+		//singleSimulation(j); 
+		
+		
+		/*
 		jobList = j; 
 		
 		//add agv 
@@ -36,21 +50,115 @@ public class DispatcherTest2 {
 			eventJob.add(new ArrayList<Job>()); 
 		}
 		
-		//sort jobs
-		sortJobs(); 
-		
-		//job order
-		dispatchOrder();
-		
-		/*
-		for(int i=0; i<jobOrder.size(); i++){
-			System.out.println("job: " + jobOrder.get(i).getY() + ", " + jobOrder.get(i).getX());
-		}*/
+		initDispatcher(); 
 		
 		//create event order
 		//initEventList(); 
 		
 		startDispatching(); 
+		
+		//create multiple testing! 
+		*/ 
+	}
+	
+	public void singleSimulation( JobList j){
+		jobList = j; 
+		
+		//add agv 
+		for(int i=0; i<Constants.AGV; i++){
+			agvList.add(new Agv()); 
+		}
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			eventOrder.add(new ArrayList<Event>()); 
+		}
+		
+		/*
+		for(int i=0; i<Constants.NUM_QC; i++){
+			eventJob.add(new ArrayList<Job>()); 
+		}*/
+		
+		initDispatcher(); 
+		
+		//create event order
+		//initEventList(); 
+		
+		startDispatching(); 
+		
+		//create multiple testing! 
+		
+		System.out.println("dispatching ended! ");
+	}
+	
+	public void multipleSimulation(JobList j){
+		jobList = j; 
+	}
+	
+	public void initArrLists(){
+		for(int i=0; i<Constants.AGV; i++){
+			agvList.add(new Agv()); 
+		}
+		
+		for(int i=0; i<Constants.NUM_QC; i++){
+			eventOrder.add(new ArrayList<Event>()); 
+		}
+	}
+	
+	public void resetDispatcher(JobList j){
+		//need to reset all the timings
+		Constants.TOTALTIME = 0;
+		Constants.TOTALDELAY = 0;
+		Constants.TRAVELTIME = 0; 
+		
+		//reset jobs completed
+		Constants.jobsCompleted = 0; 
+		
+		//reset bay 
+		Constants.allComplete = 0;
+		
+		//reset total job no
+		Constants.TOTAL_JOB_NO = Constants.TOTAL_SIZE; 
+		
+		//reset crane used
+		for(int i=0; i<Constants.NUM_QC; i++){
+			Constants.CRANEUSED[i] = 0; 
+		}
+		
+		//reset all jobs <- create new joblist?? 
+		jobList = j; 
+		
+		//reset agv location
+		agvList.clear();
+		for(int i=0; i<Constants.AGV; i++){
+			agvList.add(new Agv()); 
+			//agvList.get(i).resetAgvLocation(); 
+			//agvList.get(i).setIdle(true);
+		}
+		
+		//empty event order list
+		for(int i=0; i<Constants.NUM_QC; i++){
+			eventOrder.clear();
+		}
+		
+		//create a new one??
+		eventOrder = new ArrayList<>(); 
+		for(int i=0; i<Constants.NUM_QC; i++){
+			eventOrder.add(new ArrayList<Event>()); 
+		}
+		
+		jobOrder.clear();
+		
+		//
+		
+		
+	}
+	
+	public void initDispatcher(){
+		//sort jobs
+		sortJobs(); 
+		
+		//job order
+		dispatchOrder();
 	}
 	
 	public void sortJobs(){
@@ -125,12 +233,56 @@ public class DispatcherTest2 {
 		int noAgv; 	//need to calculate delay due to no agv available <- this, i will deal with it later! 
 		Agv idleAgv; 
 		Job j; 
+		
+		
+		//check every 100 units??
+		int completeSoFar = 0; 
+		
+		System.out.println(" \t\t\t\t inside here, jobsCompleted: " + Constants.jobsCompleted + " total job no: " + Constants.TOTAL_JOB_NO);
+		
+		System.out.println("job order: ");
+		for(int i=0; i<jobOrder.size(); i++){
+			System.out.print("(" + jobOrder.get(i).getY() + ", " + jobOrder.get(i).getX() + ") , ");
+		}
+		System.out.println(" ");
+		
 		while(Constants.jobsCompleted < Constants.TOTAL_JOB_NO){
+			
+			if(Constants.TOTALTIME % 200 == 0 && Constants.TOTALTIME > 0){
+				if(completeSoFar < Constants.jobsCompleted){
+					completeSoFar = Constants.jobsCompleted; 
+				}else{
+					System.out.println("Some job is stuck, terminating....");
+					Constants.BUGDETECTED = true; 
+					
+					jobOrder.clear();
+					eventOrder.clear();
+					agvList.clear();
+					
+					System.out.println("event order empty?: " + eventOrder.isEmpty());
+					System.out.println("job order empty?: " + jobOrder.isEmpty());
+
+					break; 
+				}
+			}
+			
+			if(Constants.BUGDETECTED){
+				System.out.println("some job is stuck, terminating.....");
+				Constants.TOTALTIME = 0; 
+				Constants.BUGDETECTED = true; 
+				break; 
+			}
 			//check if agv idle (if idle, need to add delay times...) 
 			noAgv = 0; 
+			//System.out.println(" \t\t\t\t inside here2, jobsCompleted: " + Constants.jobsCompleted + " total job no: " + Constants.TOTAL_JOB_NO);
+			
 			if(jobOrder.size()>0){
+				System.out.println(" \t\t\t\t\t\t inside here3");
 				for(int i=0; i<Constants.AGV; i++){
+					//System.out.println("\t\t\t agv idle?: " + agvList.get(i).getIdle() );
 					if(agvList.get(i).getIdle()){
+						
+						System.out.println("\t\t inside here 4");
 						agvList.get(i).setIdle(false);
 						idleAgv = agvList.get(i); 
 						
@@ -256,10 +408,11 @@ public class DispatcherTest2 {
 				e.printStackTrace();
 			}
 			
-			//System.out.println("current time: " + Constants.TOTALTIME);
+			System.out.println("current time: " + Constants.TOTALTIME);
 		
 		}
 	}
+	
 	
 	class EventCompare implements Comparator<Event>{
 

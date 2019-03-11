@@ -49,8 +49,6 @@ public class Simulator {
 	
 	private static boolean pause = false; 
 	
-	//for shared pool of agvs 
-	static Semaphore sem; 
 
 	
 	//public static DelayComp bothTimers = new DelayComp(); 
@@ -77,7 +75,7 @@ public class Simulator {
 		Thread t = new Thread(totalTimer); 
 		t.start();
 
-		DispatcherTest2 dispatcher = new DispatcherTest2(joblist, 1); 	// 1- single simulation 
+		DispatcherTest2 dispatcher = new DispatcherTest2(joblist); 	// 1- single simulation 
 		
 		
 		initTasks();
@@ -181,7 +179,7 @@ public class Simulator {
 		Thread t = new Thread(totalTimer); 
 		t.start();	//need to stop this for a while after every iteration 
 		
-		DispatcherTest2 dispatcher = new DispatcherTest2(joblist, 1); //2 - multiple simulation  
+		DispatcherTest2 dispatcher = new DispatcherTest2(joblist); //2 - multiple simulation  
 		// lets try multiple single simulation 
 		
 		initTasks();	
@@ -242,9 +240,7 @@ public class Simulator {
 			joblist.setLayout(null);
 			
 			dispatcher.startDispatching();
-			
-			//dispatcher = new DispatcherTest2(joblist, 1); //2 - multiple simulation  
-			// lets try multiple single simulation 
+
 
 			totalTimer.shutdown(true);
 

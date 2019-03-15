@@ -20,7 +20,6 @@ public class Job{
 	
 	private int travel; 	//time taken to travel to the pick up point + time taken to pickup 
 	//private final int pCost = 1; 	//time taken to execute the task (pickup)
-	private int dCost = 2;	//time takent to drop off / pick up 
 	private int tCost = 0; 				//actual end time 
 	
 	private int idealEnd = 0; 		//idealEnd == previous.endtime, or can be later than prev.endtime 
@@ -247,7 +246,7 @@ public class Job{
 	
 	public void calcTotalCost(){
 		int diff = Math.abs(endPos[1] - startPos[1]); 
-		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2 + dCost; 
+		tCost = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2;  // + dCost; 
 	}
 	
 
@@ -258,7 +257,7 @@ public class Job{
 	}
 	
 	public int getY(){
-		return y;
+		return y; 
 	}
 	
 	/*
@@ -392,7 +391,7 @@ public class Job{
 	}
 	
 	public void setTotalCost(){	//previous total cost
-		tCost = travel + dCost;
+		tCost = travel;  //+ dCost;
 
 	}
 	

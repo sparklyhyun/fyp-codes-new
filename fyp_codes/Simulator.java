@@ -260,7 +260,7 @@ public class Simulator {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
+				System.out.println("k = " + k);
 				continue; //don't increment k
 			}
 			

@@ -66,8 +66,6 @@ public class Agv {
 			agvWaitTime = diff + Constants.VERT_COST + Constants.HOR_COST + Constants.TURN_COST*2; 
 		}
 		
-		
-		
 	}
 	
 	public void setAgvLocation(int[] loc){

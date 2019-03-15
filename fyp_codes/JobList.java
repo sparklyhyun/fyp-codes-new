@@ -27,7 +27,7 @@ public class JobList extends JPanel{
 		calcTotalJobNum(); 
 		
 		//print jobs
-		//printJobs(jobs); 
+		printJobs(jobs); 
 		
 		reset(); 
 		System.out.println("job list done");
@@ -67,9 +67,9 @@ public class JobList extends JPanel{
 		//allRandomCost(); 
 		
 		//updated ones with new coordinates (try with random one first) 
-		//createFullList(); 
+		createFullList(); 
 		//firstQcHigherCost();
-		firstQcLowerCost(); 
+		//firstQcLowerCost(); 
 		
 	}
 
@@ -134,38 +134,48 @@ public class JobList extends JPanel{
 	
 	public void printJobs(Job[][] lists){
 		System.out.println("print test cases");
+		/*
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
 				System.out.print(lists[i][j].getTotalCost()+ " ");
+			}
+			System.out.println(" ");
+		}*/
+		
+		System.out.println("start y position");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(lists[i][j].getStartPos()[0]+ ", ");
+			}
+			System.out.println(" ");
+		}
+		
+		System.out.println("start x position");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(lists[i][j].getStartPos()[1]+ ", ");
+			}
+			System.out.println(" ");
+		}
+		
+		System.out.println("end y position");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(lists[i][j].getEndPos()[0]+ ", ");
+			}
+			System.out.println(" ");
+		}
+		
+		System.out.println("end x position");
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(lists[i][j].getEndPos()[1]+ ", ");
 			}
 			System.out.println(" ");
 		}
 	}
 	
 	public void createFullList(){
-		/*
-		for(int j=0; j<Constants.TOTAL_X; j++){
-			for(int i=0; i<5; i++){
-				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
-				jobs[i][j].initCost(1);
-				//System.out.println("job y: " + i + "job x: " + j + " created");
-			}
-			for(int i=5; i<10; i++){
-				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
-				jobs[i][j].initCost(1);
-				//System.out.println("job y: " + i + "job x: " + j + " created");
-			}
-			for(int i=10; i<15; i++){
-				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
-				jobs[i][j].initCost(1);
-				//System.out.println("job y: " + i + "job x: " + j + " created");
-			}
-			for(int i=15; i<20; i++){
-				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
-				jobs[i][j].initCost(1);
-				//System.out.println("job y: " + i + "job x: " + j + " created");
-			}
-		}*/
 		
 		for(int j=0; j<Constants.TOTAL_X; j++){
 			for(int i=0; i<5; i++){
@@ -191,43 +201,7 @@ public class JobList extends JPanel{
 		}
 	}
 	
-	public void firstQcHigherCost(){
-		//qc 1
-		/*
-		for(int i=0; i<Constants.TOTAL_X; i++){
-			if(i<Constants.QC_X){ //1st qc 
-				for(int j=0; j<5; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost(0);
-				}
-				for(int k=5;k<10; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost(0);
-				}
-			}else{
-				for(int j=0; j<5; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost(1);
-				}
-				for(int k=5;k<10; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost(1);
-				}
-			}
-		}
-		
-		for(int i=0; i<Constants.TOTAL_X; i++){
-			for(int j=10; j<15; j++){
-				jobs[j][i] = new Job(j, i, false);
-				jobs[j][i].initCost(1);
-			}
-			for(int j=15; j<20; j++){
-				jobs[j][i] = new Job(j, i, true);
-				jobs[j][i].initCost(1);
-			}
-		}
-		*/
-		
+	public void firstQcHigherCost(){		
 		for(int i=0; i<Constants.TOTAL_X; i++){
 			if(i<Constants.QC_X){ //1st qc 
 				for(int j=0; j<5; j++){
@@ -265,39 +239,7 @@ public class JobList extends JPanel{
 	}
 	
 	public void firstQcLowerCost(){
-		/*
-		for(int i=0; i<Constants.TOTAL_X; i++){
-			if(i<Constants.QC_X){ //1st qc 
-				for(int j=0; j<5; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost(2);
-				}
-				for(int k=5;k<10; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost(2);
-				}
-			}else{
-				for(int j=0; j<5; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost(1);
-				}
-				for(int k=5;k<10; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost(1);
-				}
-			}
-		}
-		
-		for(int i=0; i<Constants.TOTAL_X; i++){
-			for(int j=10; j<15; j++){
-				jobs[j][i] = new Job(j, i, false);
-				jobs[j][i].initCost(1);
-			}
-			for(int j=15; j<20; j++){
-				jobs[j][i] = new Job(j, i, true);
-				jobs[j][i].initCost(1);
-			}
-		}*/
+
 		
 		for(int i=0; i<Constants.TOTAL_X; i++){
 			if(i<Constants.QC_X){ //1st qc 
@@ -393,33 +335,7 @@ public class JobList extends JPanel{
 			}
 		}
 	}
-	
-	/*
-	public JobList(int y, int x, JobList fullList){
-		//for splitjob, hence set true 
-		this.splitJobList = true; 
-		
-		int k = 0; //Constants.QC_X;
-		int l = 0; //Constants.MAX_Y; 
-		
-		//System.out.println("\nspllit list index: " + y + ", " + x);
-		
-		for(int j=x*Constants.QC_X; j<(x+1)*Constants.QC_X; j++){
-			//System.out.println("x value: " + j);
-			for(int i=y*(Constants.MAX_Y); i<(y+1)*(Constants.MAX_Y); i++){
-				//System.out.println("y value: " + i);
-				splitJobs[l][k] = fullList.getJob(i, j); 
-				splitJobs[l][k].setSplitX(k);
-				splitJobs[l][k].setSplitY(l);
-				//testing index
-				//System.out.println("split job y: " + splitJobs[l][k].getY() + ", x: " + splitJobs[l][k].getY() + ", fullList y: " + fullList.getJob(i, j).getY() + ", x: " + fullList.getJob(i, j).getX());
-				
-				l++;
-			}
-			k++; 
-			l = 0; 
-		}
-	}*/ 
+
 	
 	public void reset(){
 		
@@ -431,22 +347,7 @@ public class JobList extends JPanel{
 				jobs[i][j].setIsWaiting(false);
 			}
 		}
-		/*
-		if(splitJobList == true){
-			for(int i=0; i<Constants.MAX_Y; i++){
-				for(int j=0; j<Constants.QC_X; j++){
-					splitJobs[i][j].setIncomplete();
-					splitJobs[i][j].setNotvisited();
-				}
-			}
-		}else{
-			for(int i=0; i<Constants.TOTAL_Y; i++){
-				for(int j=0; j<Constants.TOTAL_X; j++){
-					jobs[i][j].setIncomplete();
-					jobs[i][j].setNotvisited();
-				}
-			}
-		}*/
+
 	}
 	
 	public void calcTotalJobNum(){
@@ -513,9 +414,7 @@ public class JobList extends JPanel{
 	}
 	
 	public boolean isAssigned(int y, int x){
-		/*if(splitJobList == true){
-			return splitJobs[y][x].getAssigned();
-		}*/
+
 		return jobs[y][x].getAssigned();
 	}
 	
@@ -529,16 +428,12 @@ public class JobList extends JPanel{
 	}
 	
 	public boolean isWaiting(int y, int x){
-		/*if(splitJobList == true){
-			return splitJobs[y][x].getIsWaiting();
-		}*/
+
 		return jobs[y][x].getIsWaiting();
 	}
 	
 	public Job getJob(int y, int x){
-		/*if(splitJobList == true){
-			return  splitJobs[y][x]; 
-		}*/
+
 		return jobs[y][x];
 		
 	}

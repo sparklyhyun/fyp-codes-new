@@ -26,9 +26,9 @@ public class DispatcherTest2 {
 	public DispatcherTest2(JobList j){
 		
 
-		//sharedAgvSimulation(j); 
+		sharedAgvSimulation(j); 
 		
-		agvNotSharedSimulation(j); 
+		//agvNotSharedSimulation(j); 
 	}
 	
 	public void sharedAgvSimulation( JobList j){
@@ -168,8 +168,8 @@ public class DispatcherTest2 {
 	}
 	
 	public void dispatchOrder(){
-		//simpleGreedyTotalCost(); 
-		tabuSearch();
+		simpleGreedyTotalCost(); 
+		//tabuSearch();
 	}
 	
 	public void simpleGreedyTotalCost(){

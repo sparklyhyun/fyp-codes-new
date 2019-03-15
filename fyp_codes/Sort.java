@@ -130,18 +130,18 @@ public class Sort {
 
 			//sort 1 bay at a time. update q_jobs accordingly 
 			//sort unloading first
-			sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
+			//sortUnloading(l, sortArray, sjl, q_jobs, qcIndex);
 			//sortUnloadingTop(l, sjl, q_jobs, qcIndex); 
 			//test if this works for unloading too
 			
 			
 			//sort loading
 			//sortLoading(l, sortArray, sjl, q_jobs, qcIndex);
-			sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
+			//sortLoadingSimple(l, sortArray, sjl, q_jobs, qcIndex);
 			
 			//merged version of tier by tier sorting 
 			//sortMergedTop(l, sjl, q_jobs, qcIndex); 
-			//sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
+			sortMergedByTotalCost(l, sjl, q_jobs, qcIndex);
 			//sortModifiedMerged(l, sortArray, sjl, q_jobs, qcIndex);
 
 		}

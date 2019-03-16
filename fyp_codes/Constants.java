@@ -23,20 +23,20 @@ public class Constants {
 	
 	public static final int NUM_BAY = 3; 
 	
-	public static final int TOTAL_Y = 40; // 2 qc, top and bottom 
-	public static final int TOTAL_X = 48; // 2 qc, left and right
+	public static final int TOTAL_Y = 20; // 2 qc, top and bottom 
+	public static final int TOTAL_X = 24; // 2 qc, left and right
 	
 	//public static final int TOTAL_X = 48; // 2 qc, left and right
 	
 	public static final int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 
 	
-	public static final int NUM_QC_X = 4;
-	public static final int NUM_QC_Y = 4; 
+	public static final int NUM_QC_X = 2;
+	public static final int NUM_QC_Y = 2; 
 	public static int NUM_QC = Constants.NUM_QC_X * Constants.NUM_QC_Y;
 	
 	public static final int AGV = 12; //number of AGV
 	
-	public static final int CELL_SIZE = 15; 
+	public static final int CELL_SIZE = 20; 
 	public static final Color COLOR_LOADING = Color.BLUE;
 	public static final Color COLOR_LOADING_ASSIGNED = Color.CYAN;	//when assigned a vehicle
 	public static final Color COLOR_UNLOADING = Color.GREEN;

@@ -11,7 +11,6 @@ public class JobList extends JPanel{
 	public JobList(){
 		//creating the full job list 
 		createJobLists(); 
-		printJobs(jobs); 
 		
 		//fixed test cases for testing 
 		//tests(3); 
@@ -19,7 +18,7 @@ public class JobList extends JPanel{
 		calcTotalJobNum(); 
 		
 		//print jobs
-		//printJobs(jobs); 
+		printJobs(jobs); 
 		
 		reset(); 
 		System.out.println("job list done");
@@ -232,103 +231,29 @@ public class JobList extends JPanel{
 	
 	public void firstQcLowerCost(){
 
-		//1st qcs
+		
 		for(int i=0; i<Constants.TOTAL_X; i++){
-			if(i<Constants.QC_X || (i>=Constants.QC_X*6 && i < Constants.QC_X*7)){ //1st qc 
+			if(i<Constants.QC_X){ //1st qc 
 				for(int j=0; j<5; j++){
 					jobs[j][i] = new Job(j,i, false); 
 					jobs[j][i].initCost2(0);
-					System.out.println("job y: " + i + " job x: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
 				}
 				for(int k=5;k<10; k++ ){
 					jobs[k][i] = new Job(k,i, true);
 					jobs[k][i].initCost2(0);
-					System.out.println("job y: " + i + " job x: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
 				}
-				System.out.println("here");
-				for(int j=20; j<25; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost2(0);
-					System.out.println("job y: " + i + " job x: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
-				}
-				for(int k=25;k<30; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost2(0);
-					System.out.println("job y: " + i + " job x: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
-				}
-				System.out.println("here2");
-				
-				for(int j=10; j<15; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
-				}
-				for(int k=15;k<20; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
-				}
-				
-				for(int j=30; j<35; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
-				}
-				for(int k=35;k<40; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
-				}
-				
 			}else{
 				for(int j=0; j<5; j++){
 					jobs[j][i] = new Job(j,i, false); 
 					jobs[j][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
 				}
 				for(int k=5;k<10; k++ ){
 					jobs[k][i] = new Job(k,i, true);
 					jobs[k][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
 				}
-				System.out.println("here3");
-				for(int j=10; j<15; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
-				}
-				for(int k=15;k<20; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
-				}
-				System.out.println("here4");
-				for(int j=20; j<25; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
-				}
-				for(int k=25;k<30; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
-				}
-				System.out.println("here5");
-				for(int j=30; j<35; j++){
-					jobs[j][i] = new Job(j,i, false); 
-					jobs[j][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + j + " created, start pos X: " + jobs[j][i].getStartPos()[0]);
-				}
-				for(int k=35;k<40; k++ ){
-					jobs[k][i] = new Job(k,i, true);
-					jobs[k][i].initCost2(2);
-					System.out.println("job x: " + i + " job y: " + k + " created, start pos X: " + jobs[k][i].getStartPos()[0]);
-				}
-				System.out.println("here6");
 			}
 		}
 		
-		/*
 		for(int i=0; i<Constants.TOTAL_X; i++){
 			for(int j=10; j<15; j++){
 				jobs[j][i] = new Job(j, i, false);
@@ -338,15 +263,7 @@ public class JobList extends JPanel{
 				jobs[j][i] = new Job(j, i, true);
 				jobs[j][i].initCost2(2);
 			}
-			for(int j=20; j<15; j++){
-				jobs[j][i] = new Job(j, i, false);
-				jobs[j][i].initCost2(2);
-			}
-			for(int j=15; j<20; j++){
-				jobs[j][i] = new Job(j, i, true);
-				jobs[j][i].initCost2(2);
-			}
-		}*/
+		}
 		
 	}
 	

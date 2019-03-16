@@ -57,39 +57,35 @@ public class Simulator {
 	//new one with dispatcher*************************************************************************
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args){
-		//singleTestSimulation(); 
-		
-		//multipleSimulation(); 
-		
-		//singleTestCaseSimulation(); 
-		
-		multipleTestCaseSimulation(1);	// 1- all random, 2- qc1 lower, qc3 higher 
+		singleVesselTest(); 
 
+	}
+	
+	public static void singleVesselTest(){
+		//singleTestSimulation(); 
+		//multipleSimulation(); 
+		//singleTestCaseSimulation(); 	
+		multipleTestCaseSimulation(1);	// 1- all random, 2- qc1 lower, qc3 higher 
+	}
+	
+	public static void mulVesselTest(){
+		Constants.TOTAL_X = 48;
+		Constants.TOTAL_Y = 40; 
+		Constants.CRANEUSED = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		Constants.NUM_QC_X = 4; 
+		Constants.NUM_QC_Y = 4; 
 	}
 	
 	public static void singleTestSimulation(){
 		resetTimers();
-		
 		joblist = new JobList(); 
-		
 		viewSimulator();
-
-		
 		CalcTime totalTimer = new CalcTime(); 
 		Thread t = new Thread(totalTimer); 
 		t.start();
-
 		DispatcherTest2 dispatcher = new DispatcherTest2(joblist); 	// 1- single simulation 
-		
-		
 		initTasks();
-
-		
 		joblist.setLayout(null);
-
-		
-		//updating the timer test
-		//tenative, stops after all threads are created, not when all ends 
 		
 		int wait = 0; 
 		while(true){
@@ -98,7 +94,7 @@ public class Simulator {
 				totalTimer.shutdown(true); 
 				break;
 			}
-			
+	
 			if(wait > 50){
 				totalTimer.shutdown(true);
 				break; 
@@ -118,7 +114,6 @@ public class Simulator {
 			e.printStackTrace();
 		}
 		
-		
 		System.out.println("=========================All completed========================");
 		System.out.println("total time taken: " + Constants.TOTALTIME);
 		System.out.println("total delay: " + Constants.TOTALDELAY);
@@ -127,7 +122,6 @@ public class Simulator {
 		System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
 		
 		//dispatcher.showCreatedOrder();	//this was correct
-		 
 	}
 	
 	public static void singleTestCaseSimulation(){
@@ -141,24 +135,12 @@ public class Simulator {
 		} 
 		
 		viewSimulator();
-
-		
 		CalcTime totalTimer = new CalcTime(); 
 		Thread t = new Thread(totalTimer); 
 		t.start();
-
 		DispatcherTest2 dispatcher = new DispatcherTest2(joblist); 	// 1- single simulation 
-		
-		
 		initTasks();
-
-		
 		joblist.setLayout(null);
-
-		
-		//updating the timer test
-		//tenative, stops after all threads are created, not when all ends 
-		
 		int wait = 0; 
 		while(true){
 			System.out.println("jobs completed: " + Constants.jobsCompleted);
@@ -186,7 +168,6 @@ public class Simulator {
 			e.printStackTrace();
 		}
 		
-		
 		System.out.println("=========================All completed========================");
 		System.out.println("total time taken: " + Constants.TOTALTIME);
 		System.out.println("total delay: " + Constants.TOTALDELAY);
@@ -195,7 +176,6 @@ public class Simulator {
 		System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
 		
 		//dispatcher.showCreatedOrder();	//this was correct
-		 
 	}
 	
 	public static void multipleTestCaseSimulation(int type){
@@ -219,7 +199,6 @@ public class Simulator {
 		int xPos = dim.width/2 - _frame.getSize().width/2;
 		int yPos = dim.height/2 - _frame.getSize().height/2;
 		_frame.setLocation(xPos, yPos);
-		
 		
 		//components in the window 
 		_tiles = new JPanel(new CardLayout());
@@ -262,7 +241,6 @@ public class Simulator {
 		
 		joblist.setLayout(null);
 		
-	
 		totalTimer.shutdown(true);
 
 		try {
@@ -270,7 +248,6 @@ public class Simulator {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
 		
 		if(!Constants.BUGDETECTED){
 			System.out.println("=========================All completed========================");
@@ -285,15 +262,12 @@ public class Simulator {
 			System.out.println("test case discarded");
 		}
 		
-		
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}	
-		
-		
-		
+
 		while(k<10){
 			Constants.BUGDETECTED = false; 
 			
@@ -321,8 +295,7 @@ public class Simulator {
 			joblist.setLayout(null);
 			
 			dispatcher.startDispatching();
-
-
+			
 			totalTimer.shutdown(true);
 
 			try {
@@ -384,8 +357,7 @@ public class Simulator {
 		int xPos = dim.width/2 - _frame.getSize().width/2;
 		int yPos = dim.height/2 - _frame.getSize().height/2;
 		_frame.setLocation(xPos, yPos);
-		
-		
+
 		//components in the window 
 		_tiles = new JPanel(new CardLayout());
 		_buttons = new JPanel();
@@ -426,8 +398,7 @@ public class Simulator {
 		initTasks();	
 		
 		joblist.setLayout(null);
-		
-	
+
 		totalTimer.shutdown(true);
 		System.out.println("this test case discarded");
 
@@ -436,7 +407,6 @@ public class Simulator {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
 		
 		if(!Constants.BUGDETECTED){
 			System.out.println("=========================All completed========================");
@@ -449,16 +419,13 @@ public class Simulator {
 		}else{
 			k--; 
 		}
-		
-		
+
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}	
-		
-		
-		
+
 		while(k<9){
 			Constants.BUGDETECTED = false; 
 			
@@ -481,8 +448,7 @@ public class Simulator {
 			joblist.setLayout(null);
 			
 			dispatcher.startDispatching();
-
-
+			
 			totalTimer.shutdown(true);
 
 			try {
@@ -525,7 +491,6 @@ public class Simulator {
 		}
 		
 		printResultValues(); 
-		
 	}
 	
 	
@@ -536,110 +501,6 @@ public class Simulator {
 					" Average travel: " + results.get(i).getAgvTravel());
 		}
 	}
-	
-/*
-	public static void main(String[] args){
-		
-		resetTimers();
-		
-		joblist = new JobList(); 
-		seeJobList(joblist); 
-		
-		//shared pool of agv now *************************************** new version, this is not needed
-		
-		for(int i=0; i<Constants.AGV; i++){
-			Agv agv = new Agv(i); 
-			agvList.add(agv); 
-		}
-		System.out.println("agv done");
-		
-		//creating semaphore for agvs ********************************* new version, this is not needed. 
-		sem = new Semaphore(Constants.AGV); 
-		
-		viewSimulator();
-		
-		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
-		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
-		String qcName; 
-		
-		for(int i=0; i<numQcY; i++){
-			for(int j=0; j<numQcX; j++){
-				
-				
-				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
-				seeSplitJobList(splitJobList); 
-				splitJobListArr.add(splitJobList); 
-
-				qcName = "qc" + i + j; 
-				
-
-				
-				
-				//put greedy in queue ***************************************** new version, this part not needed
-				
-				Greedy g = new Greedy(joblist, splitJobList, agvList, qcName, sem); 
-				q_greedy.add(g); 
-				
-				System.out.println("splitting job is done\n");
-				
-				g.start(); 
-				
-				
-				
-			}
-		}
-		
-		
-		initTasks();
-
-		
-		joblist.setLayout(null);
-
-		
-		//updating the timer test
-		CalcTime totalTimer = new CalcTime("totalTimer"); 
-		totalTimer.start();
-		
-				
-		if(Constants.allComplete >= Constants.NUM_QC){
-			System.out.println("---------------------------greedy complete=========");
-			System.out.println("total delay: " + Constants.TOTALDELAY);
-			System.out.println("total time: " + Constants.TOTALTIME);
-			
-		}
-		
-
-	}
-	*/
-	/*
-	public static void startJobs(){
-		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
-		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
-		String qcName; 
-		
-		for(int i=0; i<numQcY; i++){
-			for(int j=0; j<numQcX; j++){
-				SplitJobList splitJobList = new SplitJobList(i, j, joblist); 
-				seeSplitJobList(splitJobList); 
-				splitJobListArr.add(splitJobList); 
-				
-				qcName = "qc" + i + j; 
-
-				Greedy g = new Greedy(joblist, splitJobList, agvList,qcName, sem); 
-				
-				//put greedy in queue ************************************* new version, this part needs to be changed
-				
-				q_greedy.add(g); 
-				
-				System.out.println("splitting job is done\n");
-				
-				g.start(); 
-				
-				
-			}
-		}
-	}
-	*/
 	
 	public static void resetTimers(){
 		Constants.TOTALDELAY = 0;
@@ -654,27 +515,6 @@ public class Simulator {
 			}
 			System.out.println(" ");
 		}
-		
-		
-		/*
-		int mulBays = Constants.QC_X / Constants.MAX_X;
-		for(int k=0; k<mulBays; k++){
-			for(int i=0; i<Constants.MAX_Y; i++){
-				for(int j=k*Constants.MAX_X; j<(k+1)*Constants.MAX_X; j++){
-					System.out.print(jl.getJob(i, j).getTotalCost()+ " ");
-				}
-				System.out.println(" ");
-			}
-			
-		}*/
-	
-		/*
-		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.MAX_X; j++){
-				System.out.print(joblist.getJob(i, j).getTotalCost()+ " ");
-			}
-			System.out.println(" ");
-		}*/
 		
 	}
 	
@@ -704,14 +544,11 @@ public class Simulator {
 		int yPos = dim.height/2 - _frame.getSize().height/2;
 		_frame.setLocation(xPos, yPos);
 		
-		
 		//components in the window 
 		_tiles = new JPanel(new CardLayout());
 		_buttons = new JPanel();
 
 		Container contentPane = _frame.getContentPane();
-		
-		//contentPane.setLayout(new BorderLayout());
 		
 		_frame.setLocationRelativeTo(null);
 		contentPane.add(_tiles, BorderLayout.CENTER);
@@ -719,8 +556,6 @@ public class Simulator {
 		//test the one with splitjoblist
 		contentPane.add(_buttons, BorderLayout.PAGE_END); 
 		((JComponent) contentPane).setBorder(new EmptyBorder(10, 10, 10, 10));
-		
-		//_tiles.add(_label);
 		
 		//initialize map layout
 		initTasks();
@@ -743,28 +578,10 @@ public class Simulator {
 		CardLayout c = ((CardLayout)_tiles.getLayout());
 		
 		c.show(_tiles, "TASK_LIST");
-		
-		
-		//can I do this?
-		/*
-		_splitTile1.add(splitJobListArr.get(0), "SPLIT_TASK1");
-		_splitTile2.add(splitJobListArr.get(0), "SPLIT_TASK1");
-		_splitTile3.add(splitJobListArr.get(0), "SPLIT_TASK1");
-		_splitTile4.add(splitJobListArr.get(0), "SPLIT_TASK1");
-		*/
-		
-		//not sure if correct or not 
-		/*
-		CardLayout card = new CardLayout();
-		JPanel cards = new JPanel(card);
-		cards.add(joblist, "TASK_LIST");
-		card.show(cards, "TASK_LIST");
-		*/
 	}
 	
 	private static void initTimers(){
 
-		
 		JLabel lblTotalTime = new JLabel("Total Time: ");
 		lblTotalTime.setVerticalAlignment(SwingConstants.BOTTOM);
 		lblTotalTime.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -780,66 +597,7 @@ public class Simulator {
 		joblist.add(lblDelayTime);
 		
 		joblist.add(Constants.TIMERS.getDelayCounter());
-		
-		//make sure there is space
-		/*
-		JLabel lblDelaytime_counter_blank = new JLabel("\t\t\t\t");
-		JLabel lblTotaltime_counter_blank = new JLabel("\t\t\t\t");
-		
-		lblTotaltime_counter_blank.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblTotaltime_counter_blank.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblTotaltime_counter_blank.setBounds(360, 370, 70, 15);
-		
-		lblDelaytime_counter_blank.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblDelaytime_counter_blank.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblDelaytime_counter_blank.setBounds(525, 370, 70, 15);
-		*/
-		
-		
-		//labels added to constant class
-		//JLabel lblTotaltime_counter = new JLabel("total_time");
-		/*
-		lblTotaltime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblTotaltime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblTotaltime_counter.setBounds(363, 370, 67, 15);
-		joblist.add(lblTotaltime_counter);
-		*/
-		
-		//labels added to constant class
-		//JLabel lblDelaytime_counter = new JLabel("delay_time");
-		/*
-		lblDelaytime_counter.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblDelaytime_counter.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblDelaytime_counter.setBounds(525, 370, 69, 15);
-		joblist.add(lblDelaytime_counter);
-		*/
-		
-		//timer (total time)
-		/*
-		Timer total_timer = new Timer(100, new ActionListener(){
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				lblTotaltime_counter.setText(Integer.toString(totalTime));
-			    totalTime++;
-			}
-			
-		});
-		
-		//timer (delay time)
-		Timer delay_timer = new Timer(100, new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				lblDelaytime_counter.setText(Integer.toString(totalDelay));
-				totalDelay++; 
-			}
-			
-			
-		});
-		*/
 	}
 	
 	
@@ -847,9 +605,6 @@ public class Simulator {
 	private static void initTimersAgain(){
 		//joblist.add(lblTotalTime);
 		joblist.add(Constants.TIMERS.getTotalCounter());
-		
-		//joblist.add(lblDelayTime);
-		
 		joblist.add(Constants.TIMERS.getDelayCounter());
 		
 	}
@@ -941,10 +696,5 @@ public class Simulator {
 		}
 		
 	}
-	
-	//lock for agv?
-	static class Lock{
-		
-	} 
 }
 

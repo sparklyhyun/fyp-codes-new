@@ -23,18 +23,18 @@ public class Constants {
 	
 	public static final int NUM_BAY = 3; 
 	
-	public static final int TOTAL_Y = 20; // 2 qc, top and bottom 
-	public static final int TOTAL_X = 24; // 2 qc, left and right
+	public static int TOTAL_Y = 20; // 2 qc, top and bottom 
+	public static int TOTAL_X = 24; // 2 qc, left and right
 	
 	//public static final int TOTAL_X = 48; // 2 qc, left and right
 	
 	public static final int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 
 	
-	public static final int NUM_QC_X = 2;
-	public static final int NUM_QC_Y = 2; 
+	public static int NUM_QC_X = 2;
+	public static int NUM_QC_Y = 2; 
 	public static int NUM_QC = Constants.NUM_QC_X * Constants.NUM_QC_Y;
 	
-	public static final int AGV = 12; //number of AGV
+	public static int AGV = 12; //number of AGV
 	
 	public static final int CELL_SIZE = 20; 
 	public static final Color COLOR_LOADING = Color.BLUE;
@@ -53,8 +53,6 @@ public class Constants {
 	public static final int DELAY = 2; 		//agv delay 
 	public static final int BAYWAIT = 3; 	//job waiting for the bay!
 	public static final int PREVWAIT = 4; 
-	//public static final int BAYWAITDELAY = 5; 
-	
 	
 	public static int[] CRANEUSED = {0,0,0,0}; //the latest crane used time 
 	public static int[][] WAITBAY ; 	//jobs completed per bay 
@@ -323,12 +321,6 @@ public class Constants {
 			{12,12,12,12,12,12,12,12,12,12,12,12,17,17,17,17,17,17,17,17,17,17,17,17}, 
 			{12,12,12,12,12,12,12,12,12,12,12,12,17,17,17,17,17,17,17,17,17,17,17,17} 
 	}; 
-	
-	/*
-	public static final int[][] testCaseCostNew3; //qc2 higher cost
-	public static final int[][] testCaseCostNew4; 
-	*/ 
-	
 	
 	
 }

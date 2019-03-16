@@ -594,7 +594,7 @@ public class JobList extends JPanel{
 		//change later! 
 		public GuiCell(int borderX, int borderY, int borderSize){
 			this.x = borderX + 2; 			//2 = outline
-			this.y = 410 - borderY - 1; 	//400 = map y (not sure if pixels)
+			this.y = 600 - borderY - 1; 	//400 = map y (not sure if pixels)
 			this.cellSize = borderSize - 4;	//4 = outline *2 
 		}
 		

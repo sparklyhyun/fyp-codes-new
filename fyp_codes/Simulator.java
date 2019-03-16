@@ -134,7 +134,7 @@ public class Simulator {
 		joblist = new JobList(); 
 		
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		_frame.setSize(new Dimension(800, 700));	//window size 400(width) by 400(height)  
 		_frame.setResizable(true);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
@@ -453,8 +453,8 @@ public class Simulator {
 	//don't add buttons yet 
 	private static void viewSimulator(){
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
-		_frame.setResizable(true);
+		_frame.setSize(new Dimension(800, 700));	//window size 400(width) by 400(height)  
+		_frame.setResizable(false);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
 		

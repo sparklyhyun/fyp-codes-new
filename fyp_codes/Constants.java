@@ -22,6 +22,7 @@ public class Constants {
 	public static final int QC_X = 12; // 3 bays here 
 	
 	public static final int NUM_BAY = 3; 
+	public static final int NUM_VESSEL = 4; 
 	
 	public static final int TOTAL_Y = 40; // 2 qc, top and bottom 
 	public static final int TOTAL_X = 48; // 2 qc, left and right
@@ -56,7 +57,7 @@ public class Constants {
 	//public static final int BAYWAITDELAY = 5; 
 	
 	
-	public static int[] CRANEUSED = {0,0,0,0}; //the latest crane used time 
+	public static int[] CRANEUSED = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; //the latest crane used time 
 	public static int[][] WAITBAY ; 	//jobs completed per bay 
 	
 	public static boolean BUGDETECTED = false; 

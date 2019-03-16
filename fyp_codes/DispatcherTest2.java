@@ -152,10 +152,10 @@ public class DispatcherTest2 {
 	
 	public void initDispatcher(){
 		//sort jobs
-		sortJobs(); 
+		sortJobs(); //need to update lol 
 		
 		//job order
-		dispatchOrder();
+		dispatchOrder(); //this needs to be changed. right now joblist has 16 queues. <- need to split vessel by vessel? 
 	}
 	
 	public void sortJobs(){

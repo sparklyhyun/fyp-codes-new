@@ -27,6 +27,8 @@ public class Sort {
 	
 	//private String name; 
 	
+	//private ArrayList<SplitJobList> splitJobListArr = new ArrayList<>();
+	
 	private ArrayList<SplitJobList> splitJobListArr = new ArrayList<>();
 	
 	//Hashmap to store cost of jobs for each qc
@@ -65,8 +67,8 @@ public class Sort {
 	}
 	
 	public void jobListSplit(){
-		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
-		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		int numQcY = Constants.TOTAL_Y / Constants.MAX_Y; 
+		int numQcX = Constants.TOTAL_X / Constants.QC_X; 
 		String qcName; 
 		
 		int index = 0; 
@@ -113,7 +115,7 @@ public class Sort {
 	
 	public void sortSplitJobLists(){
 		// the sorting happens here
-		for(int i=0; i<splitJobListArr.size(); i++){
+		for(int i=0; i<splitJobListArr.size(); i++){ //16 qcs now 
 			sortMerged(splitJobListArr.get(i), i);
 		}
 		
@@ -146,7 +148,7 @@ public class Sort {
 
 		}
 		//add the q_jobs into the q_jobsList
-		q_jobsList.add(q_jobs); 
+		q_jobsList.add(q_jobs); 	//16 of them now 
 		
 		//System.out.println("q_jobs size inside sorted function: " + q_jobsList.size());
 	}

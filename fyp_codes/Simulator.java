@@ -8,6 +8,7 @@ import fyp_codes.Constants.DelayComp;
 import java.awt.*;
 import java.awt.event.MouseAdapter;	//see what this does
 import java.awt.event.MouseEvent;	//see what this does
+import java.io.FileNotFoundException;
 import java.awt.event.ActionEvent;	//testing timer implenmentation
 import java.awt.event.ActionListener;	//testing timer implementation 
 
@@ -58,8 +59,9 @@ public class Simulator {
 	public static void main(String[] args){
 		//singleTestSimulation(); 
 		
-		multipleSimulation(); 
+		//multipleSimulation(); 
 		
+		singleTestCaseSimulation(); 
 
 	}
 	
@@ -67,6 +69,74 @@ public class Simulator {
 		resetTimers();
 		
 		joblist = new JobList(); 
+		
+		viewSimulator();
+
+		
+		CalcTime totalTimer = new CalcTime(); 
+		Thread t = new Thread(totalTimer); 
+		t.start();
+
+		DispatcherTest2 dispatcher = new DispatcherTest2(joblist); 	// 1- single simulation 
+		
+		
+		initTasks();
+
+		
+		joblist.setLayout(null);
+
+		
+		//updating the timer test
+		//tenative, stops after all threads are created, not when all ends 
+		
+		int wait = 0; 
+		while(true){
+			System.out.println("jobs completed: " + Constants.jobsCompleted);
+			if(Constants.jobsCompleted >= Constants.TOTAL_SIZE){
+				totalTimer.shutdown(true); 
+				break;
+			}
+			
+			if(wait > 50){
+				totalTimer.shutdown(true);
+				break; 
+			}
+			
+			try {
+				Thread.sleep(Constants.SLEEP);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			wait++; 
+		}
+
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
+		System.out.println("=========================All completed========================");
+		System.out.println("total time taken: " + Constants.TOTALTIME);
+		System.out.println("total delay: " + Constants.TOTALDELAY);
+		System.out.println("average delay per QC: " + (float)Constants.TOTALDELAY/4.0);
+		System.out.println("total agv travel time: " + Constants.TRAVELTIME);
+		System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
+		
+		//dispatcher.showCreatedOrder();	//this was correct
+		 
+	}
+	
+	public static void singleTestCaseSimulation(){
+		resetTimers();
+		
+		try {
+			joblist = new JobList(1, 1);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
 		
 		viewSimulator();
 

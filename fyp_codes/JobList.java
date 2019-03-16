@@ -3,6 +3,7 @@ package fyp_codes;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 
 //list of jobs to be completed
 public class JobList extends JPanel{
@@ -23,6 +24,129 @@ public class JobList extends JPanel{
 		reset(); 
 		System.out.println("job list done");
 	}
+	
+	public JobList(int x, int y) throws FileNotFoundException{	//x is which type, y is the index of each 
+		//read job list 
+		readTestCase(x,y); 
+
+		calcTotalJobNum(); 
+		
+		//print jobs
+		printJobs(jobs); 
+		
+		reset(); 
+		System.out.println("job list done");
+	}
+	
+	public void readTestCase(int x, int y) throws FileNotFoundException{
+		//get working directory
+		String wd = System.getProperty("user.dir") + "/src/fyp_codes"; 
+		//System.out.println(wd);
+		
+		String fName = "/case" + x; 
+		String inputLine = ""; 
+		
+		int[][] startY = new int[Constants.TOTAL_Y][Constants.TOTAL_X];
+		int[][] startX = new int[Constants.TOTAL_Y][Constants.TOTAL_X];
+		int[][] endY = new int[Constants.TOTAL_Y][Constants.TOTAL_X];
+		int[][] endX = new int[Constants.TOTAL_Y][Constants.TOTAL_X];
+
+		//read start y
+		int z = 0; 
+		Scanner s = new Scanner(new BufferedReader(new FileReader(wd + "/startY.txt"))); 
+		while(s.hasNextLine()){
+			inputLine = s.nextLine(); 
+			String[] inArray = inputLine.split(","); 
+			//int[] inArrInt = new int[inArray.length];
+			for(int i=0; i<inArray.length; i++){
+				startY[z][i] = Integer.parseInt(inArray[i]); 
+			}
+			z++;
+		}
+		
+		//lets print the array 
+		/*
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(startY[i][j] + ", ");
+			}
+			System.out.println("");
+		}*/
+		
+		
+		
+		//read start x
+		z = 0; 
+		//fName += ("startX" + y + ".txt"); 
+		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "startX" + y + ".txt"))); 
+		while(s.hasNextLine()){
+			inputLine = s.nextLine(); 
+			String[] inArray = inputLine.split(","); 
+			//int[] inArrInt = new int[inArray.length];
+			for(int i=0; i<inArray.length; i++){
+				startX[z][i] = Integer.parseInt(inArray[i]); 
+			}
+			z++;
+		}
+		
+		/*
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(startX[i][j] + ", ");
+			}
+			System.out.println("");
+		}*/
+		
+		//read end y
+		z = 0; 
+		s = new Scanner(new BufferedReader(new FileReader(wd + "/endY.txt"))); 
+		while(s.hasNextLine()){
+			inputLine = s.nextLine(); 
+			String[] inArray = inputLine.split(","); 
+			//int[] inArrInt = new int[inArray.length];
+			for(int i=0; i<inArray.length; i++){
+				endY[z][i] = Integer.parseInt(inArray[i]); 
+			}
+			z++;
+		}
+		
+		//lets print the array 
+		
+		/*
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(endY[i][j] + ", ");
+			}
+			System.out.println("");
+		}*/
+		
+		
+		//read end x
+		
+		z = 0; 
+		//fName += ("endX" + y + ".txt"); 
+		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "endX" + y + ".txt"))); 
+		while(s.hasNextLine()){
+			inputLine = s.nextLine(); 
+			String[] inArray = inputLine.split(","); 
+			//int[] inArrInt = new int[inArray.length];
+			for(int i=0; i<inArray.length; i++){
+				endX[z][i] = Integer.parseInt(inArray[i]); 
+			}
+			z++;
+		}
+		
+		/*
+		for(int i=0; i<Constants.TOTAL_Y; i++){
+			for(int j=0; j<Constants.TOTAL_X; j++){
+				System.out.print(endX[i][j] + ", ");
+			}
+			System.out.println("");
+		}*/
+		
+		testCases(startY, startX, endY, endX); 
+	}
+	
 	
 	public void tests(int x){
 		/*

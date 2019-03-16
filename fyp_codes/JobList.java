@@ -59,9 +59,9 @@ public class JobList extends JPanel{
 		//allRandomCost(); 
 		
 		//updated ones with new coordinates (try with random one first) 
-		//createFullList(); 
+		createFullList(); 
 		//firstQcHigherCost();
-		firstQcLowerCost(); 
+		//firstQcLowerCost(); 
 		
 	}
 
@@ -186,6 +186,28 @@ public class JobList extends JPanel{
 				//System.out.println("job y: " + i + "job x: " + j + " created");
 			}
 			for(int i=15; i<20; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost2(2);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+
+
+			for(int i=20; i<25; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost2(2);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=25; i<30; i++){
+				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+				jobs[i][j].initCost2(2);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=30; i<35; i++){
+				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+				jobs[i][j].initCost2(2);
+				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			for(int i=35; i<40; i++){
 				jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
 				jobs[i][j].initCost2(2);
 				//System.out.println("job y: " + i + "job x: " + j + " created");
@@ -594,7 +616,7 @@ public class JobList extends JPanel{
 		//change later! 
 		public GuiCell(int borderX, int borderY, int borderSize){
 			this.x = borderX + 2; 			//2 = outline
-			this.y = 600 - borderY - 1; 	//400 = map y (not sure if pixels)
+			this.y = 620 - borderY - 1; 	//400 = map y (not sure if pixels)
 			this.cellSize = borderSize - 4;	//4 = outline *2 
 		}
 		

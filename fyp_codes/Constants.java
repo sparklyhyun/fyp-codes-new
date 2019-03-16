@@ -35,7 +35,7 @@ public class Constants {
 	public static final int NUM_QC_Y = 4; 
 	public static int NUM_QC = Constants.NUM_QC_X * Constants.NUM_QC_Y;
 	
-	public static final int AGV = 12; //number of AGV
+	public static final int AGV = 24; //number of AGV
 	
 	public static final int CELL_SIZE = 15; 
 	public static final Color COLOR_LOADING = Color.BLUE;

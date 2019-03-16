@@ -61,7 +61,9 @@ public class Simulator {
 		
 		//multipleSimulation(); 
 		
-		singleTestCaseSimulation(); 
+		//singleTestCaseSimulation(); 
+		
+		multipleTestCaseSimulation(1);	// 1- all random, 2- qc1 lower, qc3 higher 
 
 	}
 	
@@ -194,6 +196,175 @@ public class Simulator {
 		
 		//dispatcher.showCreatedOrder();	//this was correct
 		 
+	}
+	
+	public static void multipleTestCaseSimulation(int type){
+		int k=1; 
+		
+		resetTimers();	//this, no need if i decide to do dispatcher.reset(); 
+		try {
+			joblist = new JobList(type, k);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		
+		_frame = new JFrame();
+		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		_frame.setResizable(true);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
+		
+		//set location of the window
+		int xPos = dim.width/2 - _frame.getSize().width/2;
+		int yPos = dim.height/2 - _frame.getSize().height/2;
+		_frame.setLocation(xPos, yPos);
+		
+		
+		//components in the window 
+		_tiles = new JPanel(new CardLayout());
+		_buttons = new JPanel();
+
+		Container contentPane = _frame.getContentPane();
+		
+		//contentPane.setLayout(new BorderLayout());
+		
+		_frame.setLocationRelativeTo(null);
+		contentPane.add(_tiles, BorderLayout.CENTER);
+		
+		//test the one with splitjoblist
+		contentPane.add(_buttons, BorderLayout.PAGE_END); 
+		((JComponent) contentPane).setBorder(new EmptyBorder(10, 10, 10, 10));
+		
+		//_tiles.add(_label);
+		
+		//initialize map layout
+		initTasks();
+		
+		//initialize button layout
+		//initButtons();
+		
+		//initialize timers
+		initTimers(); 
+		
+		//view full display of the application
+		_frame.setVisible(true);
+		_frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		
+		CalcTime totalTimer = new CalcTime(); 
+		Thread t = new Thread(totalTimer); 
+		t.start();	//need to stop this for a while after every iteration 
+		
+		DispatcherTest2 dispatcher = new DispatcherTest2(joblist); //2 - multiple simulation  
+		// lets try multiple single simulation 
+		
+		initTasks();	
+		
+		joblist.setLayout(null);
+		
+	
+		totalTimer.shutdown(true);
+
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
+		if(!Constants.BUGDETECTED){
+			System.out.println("=========================All completed========================");
+			System.out.println("total time taken: " + Constants.TOTALTIME);
+			System.out.println("total delay: " + Constants.TOTALDELAY);
+			System.out.println("average delay per QC: " + (float)Constants.TOTALDELAY/4.0);
+			System.out.println("total agv travel time: " + Constants.TRAVELTIME);
+			System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
+			results.add(new TestResult(Constants.TOTALTIME, Constants.TOTALDELAY, Constants.TRAVELTIME)); 
+			k++; 
+		}else{
+			System.out.println("test case discarded");
+		}
+		
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}	
+		
+		
+		
+		while(k<10){
+			Constants.BUGDETECTED = false; 
+			
+			joblist.clearJobList(); //<- this will start from where it was left at 
+			try {
+				joblist = new JobList(type, k);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}  
+			
+			totalTimer = new CalcTime(); 
+			initTimers(); 
+			
+			Thread t1 = new Thread(totalTimer);	//need to stop this for a while after every iteration 
+			t1.start();
+
+			dispatcher.resetDispatcher(joblist);
+
+			dispatcher.initDispatcher();
+			joblist.setLayout(null);
+			
+			initTasks();
+			
+			joblist.setLayout(null);
+			
+			dispatcher.startDispatching();
+
+
+			totalTimer.shutdown(true);
+
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			System.out.println("after timer stopped");
+			
+			if(Constants.BUGDETECTED){
+				System.out.println("this test case discarded");
+				System.out.println("k = " + k);
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				continue; //don't increment k
+			}
+			
+			System.out.println("=========================All completed========================");
+			System.out.println("total time taken: " + Constants.TOTALTIME);
+			System.out.println("total delay: " + Constants.TOTALDELAY);
+			System.out.println("average delay per QC: " + (float)Constants.TOTALDELAY/4.0);
+			System.out.println("total agv travel time: " + Constants.TRAVELTIME);
+			System.out.println("average agv travel time: " + (float)Constants.TRAVELTIME/4.0); 
+			
+			results.add(new TestResult(Constants.TOTALTIME, Constants.TOTALDELAY, Constants.TRAVELTIME)); 
+			
+			k++; 
+			System.out.println("k = " + k);
+			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		printResultValues(); 
 	}
 	
 	public static void multipleSimulation(){
@@ -360,9 +531,9 @@ public class Simulator {
 	
 	public static void printResultValues(){
 		for(int i=0; i<results.size(); i++){
-			System.out.println("Total time: " + results.get(i).getTotalTime() + ", Total delay: " + results.get(i).getTotalDelay() + 
-					", Total travel: " + results.get(i).getTotalTravel() + ", Average delay: " + results.get(i).getAvgDelay() +   
-					", Average travel: " + results.get(i).getAgvTravel());
+			System.out.println("Total time: " + results.get(i).getTotalTime() + " Total delay: " + results.get(i).getTotalDelay() + 
+					" Total travel: " + results.get(i).getTotalTravel() + " Average delay: " + results.get(i).getAvgDelay() +   
+					" Average travel: " + results.get(i).getAgvTravel());
 		}
 	}
 	

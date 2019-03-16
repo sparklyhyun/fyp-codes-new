@@ -64,17 +64,6 @@ public class JobList extends JPanel{
 			z++;
 		}
 		
-		//lets print the array 
-		/*
-		for(int i=0; i<Constants.TOTAL_Y; i++){
-			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(startY[i][j] + ", ");
-			}
-			System.out.println("");
-		}*/
-		
-		
-		
 		//read start x
 		z = 0; 
 		//fName += ("startX" + y + ".txt"); 
@@ -89,13 +78,6 @@ public class JobList extends JPanel{
 			z++;
 		}
 		
-		/*
-		for(int i=0; i<Constants.TOTAL_Y; i++){
-			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(startX[i][j] + ", ");
-			}
-			System.out.println("");
-		}*/
 		
 		//read end y
 		z = 0; 
@@ -109,17 +91,7 @@ public class JobList extends JPanel{
 			}
 			z++;
 		}
-		
-		//lets print the array 
-		
-		/*
-		for(int i=0; i<Constants.TOTAL_Y; i++){
-			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(endY[i][j] + ", ");
-			}
-			System.out.println("");
-		}*/
-		
+
 		
 		//read end x
 		
@@ -136,13 +108,7 @@ public class JobList extends JPanel{
 			z++;
 		}
 		
-		/*
-		for(int i=0; i<Constants.TOTAL_Y; i++){
-			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(endX[i][j] + ", ");
-			}
-			System.out.println("");
-		}*/
+		s.close();
 		
 		testCases(startY, startX, endY, endX); 
 	}

@@ -9,15 +9,6 @@ public class JobList extends JPanel{
 	public final Job[][] jobs = new Job[Constants.TOTAL_Y][Constants.TOTAL_X];
 	
 	public JobList(){
-	
-		/*
-		for(int i=0; i<Constants.MAX_Y; i++){
-			for(int j=0; j<Constants.QC_X; j++){
-				jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
-				System.out.println("job y: " + i + "job x: " + j + " created");
-			}
-		}*/
-		
 		//creating the full job list 
 		createJobLists(); 
 		
@@ -45,13 +36,13 @@ public class JobList extends JPanel{
 		
 		switch(x){
 		case 1: //all at random cost
-			testCases(Constants.testCaseNew1Start0, Constants.testCaseNew1Start1, Constants.testCaseNew1End0, Constants.testCaseNew1End1);
+			testCases(Constants.testCaseStart0, Constants.testCaseNew1Start1, Constants.testCaseEnd0, Constants.testCaseNew1End1);
 			break; 
 		case 2:	//qc1 higher cost, others low cost
-			testCases(Constants.testCaseNew1Start0, Constants.testCaseNew2Start1, Constants.testCaseNew1End0, Constants.testCaseNew2End1);
+			testCases(Constants.testCaseStart0, Constants.testCaseNew2Start1, Constants.testCaseEnd0, Constants.testCaseNew2End1);
 			break; 
 		case 3: // qc1 lower cost, others at random 
-			testCases(Constants.testCaseNew1Start0, Constants.testCaseNew3Start1, Constants.testCaseNew1End0, Constants.testCaseNew3End1);
+			testCases(Constants.testCaseStart0, Constants.testCaseNew3Start1, Constants.testCaseEnd0, Constants.testCaseNew3End1);
 			break; 
 		default: break; 
 		}
@@ -67,9 +58,9 @@ public class JobList extends JPanel{
 		//allRandomCost(); 
 		
 		//updated ones with new coordinates (try with random one first) 
-		createFullList(); 
+		//createFullList(); 
 		//firstQcHigherCost();
-		//firstQcLowerCost(); 
+		firstQcLowerCost(); 
 		
 	}
 
@@ -145,33 +136,33 @@ public class JobList extends JPanel{
 		System.out.println("start y position");
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(lists[i][j].getStartPos()[0]+ ", ");
+				System.out.print(lists[i][j].getStartPos()[0]+ ",");
 			}
-			System.out.println(" ");
+			System.out.println("");
 		}
 		
 		System.out.println("start x position");
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(lists[i][j].getStartPos()[1]+ ", ");
+				System.out.print(lists[i][j].getStartPos()[1]+ ",");
 			}
-			System.out.println(" ");
+			System.out.println("");
 		}
 		
 		System.out.println("end y position");
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(lists[i][j].getEndPos()[0]+ ", ");
+				System.out.print(lists[i][j].getEndPos()[0]+ ",");
 			}
-			System.out.println(" ");
+			System.out.println("");
 		}
 		
 		System.out.println("end x position");
 		for(int i=0; i<Constants.TOTAL_Y; i++){
 			for(int j=0; j<Constants.TOTAL_X; j++){
-				System.out.print(lists[i][j].getEndPos()[1]+ ", ");
+				System.out.print(lists[i][j].getEndPos()[1]+ ",");
 			}
-			System.out.println(" ");
+			System.out.println("");
 		}
 	}
 	

@@ -41,6 +41,7 @@ public class Sort {
 	
 	//public Sort(JobList j, SplitJobList sj, String name){
 	public Sort(JobList j){
+		
 		this.jobList = j; 
 		//this.splitJobList = sj; 
 		
@@ -65,7 +66,7 @@ public class Sort {
 	}
 	
 	public void jobListSplit(){
-		int numQcY =  Constants.TOTAL_Y / Constants.MAX_Y; 
+		int numQcY = Constants.TOTAL_Y / Constants.MAX_Y; 
 		int numQcX = Constants.TOTAL_X / Constants.QC_X;
 		String qcName; 
 		

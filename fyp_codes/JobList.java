@@ -28,6 +28,7 @@ public class JobList extends JPanel{
 	public JobList(int x, int y) throws FileNotFoundException{	//x is which type, y is the index of each 
 		//read job list 
 		readTestCase(x,y); 
+		printJobs(jobs); 
 
 		calcTotalJobNum(); 
 		
@@ -68,9 +69,17 @@ public class JobList extends JPanel{
 			z++;
 		}
 		
+		/*
+		System.out.println("start y");
+		for(int i=0; i<startY.length; i++){
+			for(int j=0; j<startY[i].length; j++){
+				System.out.print(startY[i][j] + ",");
+			}
+			System.out.println("");
+		}*/
+		
 		//read start x
 		z = 0; 
-		//fName += ("startX" + y + ".txt"); 
 		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "startX" + y + ext + ".txt"))); 
 		while(s.hasNextLine()){
 			inputLine = s.nextLine(); 
@@ -82,6 +91,14 @@ public class JobList extends JPanel{
 			z++;
 		}
 		
+		/*
+		System.out.println("start x");
+		for(int i=0; i<startX.length; i++){
+			for(int j=0; j<startX[i].length; j++){
+				System.out.print(startX[i][j] + ",");
+			}
+			System.out.println("");
+		}*/
 		
 		//read end y
 		z = 0; 
@@ -95,12 +112,19 @@ public class JobList extends JPanel{
 			}
 			z++;
 		}
-
+		
+		/*
+		System.out.println("end y");
+		for(int i=0; i<endY.length; i++){
+			for(int j=0; j<endY[i].length; j++){
+				System.out.print(endY[i][j] + ",");
+			}
+			System.out.println("");
+		}*/
 		
 		//read end x
 		
 		z = 0; 
-		//fName += ("endX" + y + ".txt"); 
 		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "endX" + y + ext + ".txt"))); 
 		while(s.hasNextLine()){
 			inputLine = s.nextLine(); 
@@ -111,6 +135,15 @@ public class JobList extends JPanel{
 			}
 			z++;
 		}
+		
+		/*
+		System.out.println("end x");
+		for(int i=0; i<endX.length; i++){
+			for(int j=0; j<endX[i].length; j++){
+				System.out.print(endX[i][j] + ",");
+			}
+			System.out.println("");
+		}*/
 		
 		s.close();
 		
@@ -213,6 +246,37 @@ public class JobList extends JPanel{
 				jobs[i][j].setEndPos(end0[i][j], end1[i][j]);
 				jobs[i][j].calcTotalCost();
 				//System.out.println("job y: " + i + "job x: " + j + " created");
+			}
+			
+			if(Constants.MULVESSEL){
+				for(int i=20; i<25; i++){
+					jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+					jobs[i][j].setStartPos(start0[i][j], start1[i][j]);
+					jobs[i][j].setEndPos(end0[i][j], end1[i][j]);
+					jobs[i][j].calcTotalCost();
+					//System.out.println("job y: " + i + "job x: " + j + " created");
+				}
+				for(int i=25; i<30; i++){
+					jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+					jobs[i][j].setStartPos(start0[i][j], start1[i][j]);
+					jobs[i][j].setEndPos(end0[i][j], end1[i][j]);
+					jobs[i][j].calcTotalCost();
+					//System.out.println("job y: " + i + "job x: " + j + " created");
+				}
+				for(int i=30; i<35; i++){
+					jobs[i][j] = new Job(i,j, false); //true - loading, false - unloading 
+					jobs[i][j].setStartPos(start0[i][j], start1[i][j]);
+					jobs[i][j].setEndPos(end0[i][j], end1[i][j]);
+					jobs[i][j].calcTotalCost();
+					//System.out.println("job y: " + i + "job x: " + j + " created");
+				}
+				for(int i=35; i<40; i++){
+					jobs[i][j] = new Job(i,j, true); //true - loading, false - unloading 
+					jobs[i][j].setStartPos(start0[i][j], start1[i][j]);
+					jobs[i][j].setEndPos(end0[i][j], end1[i][j]);
+					jobs[i][j].calcTotalCost();
+					//System.out.println("job y: " + i + "job x: " + j + " created");
+				}
 			}
 		}
 	}

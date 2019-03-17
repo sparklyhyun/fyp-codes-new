@@ -36,7 +36,7 @@ public class Constants {
 	
 	public static int AGV = 12; //number of AGV
 	
-	public static final int CELL_SIZE = 20; 
+	public static int CELL_SIZE = 20; 
 	public static final Color COLOR_LOADING = Color.BLUE;
 	public static final Color COLOR_LOADING_ASSIGNED = Color.CYAN;	//when assigned a vehicle
 	public static final Color COLOR_UNLOADING = Color.GREEN;

@@ -58,6 +58,7 @@ public class Simulator {
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args){
 		singleVesselTest(); 
+		//mulVesselTest(); 
 
 	}
 	
@@ -74,7 +75,18 @@ public class Simulator {
 		Constants.CRANEUSED = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		Constants.NUM_QC_X = 4; 
 		Constants.NUM_QC_Y = 4; 
+		Constants.NUM_QC = Constants.NUM_QC_X * Constants.NUM_QC_Y;
+		Constants.CELL_SIZE = 15; 
 		Constants.MULVESSEL = true; 
+		Constants.AGV = 48; //just for testng sake 
+		
+		System.out.println(Constants.TOTAL_X);
+		System.out.println(Constants.TOTAL_Y);
+		System.out.println(Constants.NUM_QC_X);
+		System.out.println(Constants.NUM_QC_Y);
+		System.out.println(Constants.MULVESSEL);
+		
+		multipleTestCaseSimulation(1);
 	}
 	
 	public static void singleTestSimulation(){

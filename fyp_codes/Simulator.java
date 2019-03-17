@@ -74,6 +74,7 @@ public class Simulator {
 		Constants.CRANEUSED = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		Constants.NUM_QC_X = 4; 
 		Constants.NUM_QC_Y = 4; 
+		Constants.MULVESSEL = true; 
 	}
 	
 	public static void singleTestSimulation(){
@@ -190,7 +191,11 @@ public class Simulator {
 		} 
 		
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		if(Constants.MULVESSEL){
+			_frame.setSize(new Dimension(800, 700));	 
+		}else{
+			_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		}
 		_frame.setResizable(true);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
@@ -348,7 +353,11 @@ public class Simulator {
 		joblist = new JobList(); 
 		
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		if(Constants.MULVESSEL){
+			_frame.setSize(new Dimension(800, 700));	 
+		}else{
+			_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		}
 		_frame.setResizable(true);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 
@@ -534,7 +543,13 @@ public class Simulator {
 	//don't add buttons yet 
 	private static void viewSimulator(){
 		_frame = new JFrame();
-		_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		
+		if(Constants.MULVESSEL){
+			_frame.setSize(new Dimension(800, 700));	 
+		}else{
+			_frame.setSize(new Dimension(600, 530));	//window size 400(width) by 400(height)  
+		}
+		
 		_frame.setResizable(true);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();	//toolkit impt!! 

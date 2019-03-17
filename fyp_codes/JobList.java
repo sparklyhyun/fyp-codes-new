@@ -43,7 +43,8 @@ public class JobList extends JPanel{
 		String wd = System.getProperty("user.dir") + "/src/fyp_codes"; 
 		//System.out.println(wd);
 		
-		String fName = "/case" + x; 
+		String fName = "/case" + x;
+		String ext = ""; 
 		String inputLine = ""; 
 		
 		int[][] startY = new int[Constants.TOTAL_Y][Constants.TOTAL_X];
@@ -53,7 +54,10 @@ public class JobList extends JPanel{
 
 		//read start y
 		int z = 0; 
-		Scanner s = new Scanner(new BufferedReader(new FileReader(wd + "/startY.txt"))); 
+		if(Constants.MULVESSEL){
+			ext += "Ext"; 
+		}
+		Scanner s = new Scanner(new BufferedReader(new FileReader(wd + "/startY" + ext + ".txt"))); 
 		while(s.hasNextLine()){
 			inputLine = s.nextLine(); 
 			String[] inArray = inputLine.split(","); 
@@ -67,7 +71,7 @@ public class JobList extends JPanel{
 		//read start x
 		z = 0; 
 		//fName += ("startX" + y + ".txt"); 
-		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "startX" + y + ".txt"))); 
+		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "startX" + y + ext + ".txt"))); 
 		while(s.hasNextLine()){
 			inputLine = s.nextLine(); 
 			String[] inArray = inputLine.split(","); 
@@ -81,7 +85,7 @@ public class JobList extends JPanel{
 		
 		//read end y
 		z = 0; 
-		s = new Scanner(new BufferedReader(new FileReader(wd + "/endY.txt"))); 
+		s = new Scanner(new BufferedReader(new FileReader(wd + "/endY" + ext + ".txt"))); 
 		while(s.hasNextLine()){
 			inputLine = s.nextLine(); 
 			String[] inArray = inputLine.split(","); 
@@ -97,7 +101,7 @@ public class JobList extends JPanel{
 		
 		z = 0; 
 		//fName += ("endX" + y + ".txt"); 
-		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "endX" + y + ".txt"))); 
+		s = new Scanner(new BufferedReader(new FileReader(wd + fName + "endX" + y + ext + ".txt"))); 
 		while(s.hasNextLine()){
 			inputLine = s.nextLine(); 
 			String[] inArray = inputLine.split(","); 
@@ -601,7 +605,13 @@ public class JobList extends JPanel{
 		//change later! 
 		public GuiCell(int borderX, int borderY, int borderSize){
 			this.x = borderX + 2; 			//2 = outline
-			this.y = 410 - borderY - 1; 	//400 = map y (not sure if pixels)
+			
+			if(Constants.MULVESSEL){
+				this.y = 620 - borderY - 1;
+			}else{
+				this.y = 410 - borderY - 1; 	//400 = map y (not sure if pixels)
+			}
+			
 			this.cellSize = borderSize - 4;	//4 = outline *2 
 		}
 		

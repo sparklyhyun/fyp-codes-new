@@ -70,6 +70,8 @@ public class Constants {
 	
 	public static int[] craneCoord = {2, 7, 12, 17}; 
 	
+	public static boolean MULVESSEL = false; 
+	
 	//for cost calculation
 	public static final int TURN_COST = 1; 
 	public static final int VERT_COST = 5;

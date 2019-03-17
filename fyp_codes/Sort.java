@@ -65,8 +65,8 @@ public class Sort {
 	}
 	
 	public void jobListSplit(){
-		int numQcY = Constants.TOTAL_X / Constants.QC_X; 
-		int numQcX = Constants.TOTAL_Y / Constants.MAX_Y; 
+		int numQcY =  Constants.TOTAL_Y / Constants.MAX_Y; 
+		int numQcX = Constants.TOTAL_X / Constants.QC_X;
 		String qcName; 
 		
 		int index = 0; 

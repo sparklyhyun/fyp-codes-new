@@ -57,8 +57,8 @@ public class Simulator {
 	//new one with dispatcher*************************************************************************
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args){
-		singleVesselTest(); 
-		//mulVesselTest(); 
+		//singleVesselTest(); 
+		mulVesselTest(); 
 
 	}
 	
@@ -72,6 +72,7 @@ public class Simulator {
 	public static void mulVesselTest(){
 		Constants.TOTAL_X = 48;
 		Constants.TOTAL_Y = 40; 
+		Constants.TOTAL_SIZE = Constants.TOTAL_X * Constants.TOTAL_Y; 
 		Constants.CRANEUSED = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		Constants.NUM_QC_X = 4; 
 		Constants.NUM_QC_Y = 4; 
@@ -84,6 +85,7 @@ public class Simulator {
 		System.out.println(Constants.TOTAL_Y);
 		System.out.println(Constants.NUM_QC_X);
 		System.out.println(Constants.NUM_QC_Y);
+		System.out.println(Constants.TOTAL_SIZE);
 		System.out.println(Constants.MULVESSEL);
 		
 		multipleTestCaseSimulation(1);
@@ -280,14 +282,15 @@ public class Simulator {
 		}
 		
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}	
 
 		while(k<10){
+			//lets test this out....
 			Constants.BUGDETECTED = false; 
-			
+
 			joblist.clearJobList(); //<- this will start from where it was left at 
 			try {
 				joblist = new JobList(type, k);
@@ -322,7 +325,7 @@ public class Simulator {
 			}
 			
 			System.out.println("after timer stopped");
-			
+			System.out.println(Constants.BUGDETECTED);
 			if(Constants.BUGDETECTED){
 				System.out.println("this test case discarded");
 				System.out.println("k = " + k);
@@ -333,6 +336,7 @@ public class Simulator {
 				}
 				
 				continue; //don't increment k
+				
 			}
 			
 			System.out.println("=========================All completed========================");

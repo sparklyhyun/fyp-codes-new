@@ -28,7 +28,7 @@ public class Constants {
 	
 	//public static final int TOTAL_X = 48; // 2 qc, left and right
 	
-	public static final int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 
+	public static int TOTAL_SIZE = TOTAL_Y * TOTAL_X; 
 	
 	public static int NUM_QC_X = 2;
 	public static int NUM_QC_Y = 2; 
